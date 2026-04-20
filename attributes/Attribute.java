@@ -1,15 +1,15 @@
-/**
+/*
  * La classe astratta Attribute modella un generico attributo (discreto o continuo).
  * Fornisce le basi per memorizzare il nome e l'identificativo numerico.
  */
 
 public abstract class Attribute {
-    /** Nome simbolico dell'attributo. */
+    /* Nome simbolico dell'attributo. */
     private String name;
-    /** Identificativo numerico dell'attributo. */
+    /* Identificativo numerico dell'attributo. */
     private int index;
 
-    /**
+    /*
      * Costruttore di classe. Inizializza il nome e l'indice dell'attributo.
      * * @param name  Nome simbolico dell'attributo.
      * @param index Identificativo numerico dell'attributo.
@@ -18,7 +18,7 @@ public abstract class Attribute {
         this.name = name;
         this.index = index;
     }
-    /**
+    /*
      * Restituisce il nome dell'attributo.
      * * @return Il nome simbolico dell'attributo.
      */
@@ -26,7 +26,7 @@ public abstract class Attribute {
         return this.name;
     }
 
-    /**
+    /*
      * Restituisce l'indicec dell'attributo.
      * @return L'identificativo numerico dell'attributo.
      */
