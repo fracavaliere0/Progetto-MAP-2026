@@ -1,6 +1,22 @@
 import java.util.Set;
 import java.util.HashSet;
 
+/**
+ * La classe DiscreteAttribute estende Attribute e rappresenta un attributo
+ * discreto.
+ * Gestisce un insieme di valori simbolici definiti tramite un array.
+ */
+public class DiscreteAttribute extends Attribute {
+    /** Array di oggetti String per i valori discreti. */
+    private String[] values;
+
+    /**
+     * Costruttore: invoca il costruttore della super-classe e inizializza l'array
+     * values.
+     * 
+     * @param name   Nome dell'attributo.
+     * 
+     * @param index  Indice dell'attributo.
 /*
  * La classe DiscreteAttribute estende Attribute e rappresenta un attributo discreto.
  * Gestisce un insieme di valori simbolici definiti tramite un array.
@@ -25,6 +41,7 @@ public class DiscreteAttribute extends Attribute {
         this.values = values;
     }
 
+    /**
     /*
      * Restituisce la cardinalità dell'array values.
      * 
@@ -40,6 +57,7 @@ public class DiscreteAttribute extends Attribute {
         return uniqueValues.size();
     }
 
+    /**
     /*
      * Restituisce il valore in posizione i.
      * 
