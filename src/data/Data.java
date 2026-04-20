@@ -1,3 +1,4 @@
+import src.models.attributes.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -9,7 +10,7 @@ public class Data {
     private Attribute explanatorySet[];
     private ContinuousAttribute classAttribute;
 
-    Data(String fileName) {
+    Data(String fileName) throws FileNotFoundException {
 
         File inFile = new File(fileName);
 
@@ -87,6 +88,11 @@ public class Data {
      * @return Valore dell'attributo di classe (effettuando il cast a Double).
      */
     public Double getClassValue(int exampleIndex) {
+        if (exampleIndex < 0 || exampleIndex >= data.length) {
+            throw new IndexOutOfBoundsException(
+                    "il valore" + exampleIndex + "di exampleIndex all' in getClassValue e' out of bounds");
+        }
+
         return (Double) data[exampleIndex][explanatorySet.length];
     }
 
@@ -99,6 +105,14 @@ public class Data {
      * @return L'oggetto (valore) associato a quell'attributo per quell'esempio.
      */
     public Object getExplanatoryValue(int exampleIndex, int attributeIndex) {
+        if (exampleIndex < 0 || exampleIndex >= data.length) {
+            throw new IndexOutOfBoundsException(
+                    "il valore" + exampleIndex + "id exampleIndex in getExplanatoryValue e' out of bounds");
+        } else if (attributeIndex < 0 || attributeIndex >= explanatorySet.length) {
+            throw new IndexOutOfBoundsException(
+                    "il valore" + attributeIndex + "di attributeIndex all' in getExplanatoryValue e' out of bounds");
+        }
+
         return data[exampleIndex][attributeIndex];
     }
 
@@ -111,6 +125,10 @@ public class Data {
      *         da index
      */
     public Attribute getExplanatoryAttribute(int index) {
+        if (index < 0 || index > explanatorySet.length) {
+            throw new IndexOutOfBoundsException(
+                    "il valore" + index + "di index in getExplanatoryAttribute e' out of bounds");
+        }
         return explanatorySet[index];
     }
 
@@ -138,7 +156,6 @@ public class Data {
     }
 
     void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex) {
-
         quicksort(attribute, beginExampleIndex, endExampleIndex);
     }
 
@@ -226,5 +243,4 @@ public class Data {
         }
 
     }
-
 }
