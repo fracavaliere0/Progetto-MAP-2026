@@ -11,7 +11,7 @@ public class Data {
 	private Attribute explanatorySet[];
 	private ContinuousAttribute classAttribute;
 	
-	Data(String fileName)throws FileNotFoundException{
+	Data(String fileName){
 		
 		  File inFile = new File (fileName);
 
