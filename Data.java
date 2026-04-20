@@ -72,7 +72,7 @@ public class Data {
 
     /**
      * Restituisce il numero totale di esempi (righe) presenti nel training set.
-     * * @return Cardinalità dell'insieme di esempi.
+     * @return Cardinalità dell'insieme di esempi.
      */
     public int getNumberOfExamples() {
         return numberOfExamples;
@@ -81,7 +81,7 @@ public class Data {
     /**
      * Restituisce il numero di attributi indipendenti nel dataset. 
      * Corrisponde alla lunghezza dello spazio descrittivo.
-     * * @return Cardinalità dell'insieme degli attributi indipendenti.
+     * @return Cardinalità dell'insieme degli attributi indipendenti.
      */
     public int getNumberOfExplanatoryAttributes() {
         return explanatorySet.length;
@@ -89,7 +89,7 @@ public class Data {
 
     /**
      * Restituisce il valore dell'attributo di classe (target) per uno specifico esempio.
-     * * @param exampleIndex Indice di riga dell'esempio nella matrice dei dati.
+     * @param exampleIndex Indice di riga dell'esempio nella matrice dei dati.
      * @return Valore dell'attributo di classe (effettuando il cast a Double).
      */
     public Double getClassValue(int exampleIndex) {
@@ -98,13 +98,30 @@ public class Data {
 
     /**
      * Restituisce l'Object della matrice data incrociando riga e colonna.
-     * * @param exampleIndex Indice di riga dell'esempio nella matrice dei dati.
+     * @param exampleIndex Indice di riga dell'esempio nella matrice dei dati.
      * @param attributeIndex Indice di colonna dell'attributo indipendente di cui si desidera estrarre il valore.
      * @return L'oggetto (valore) associato a quell'attributo per quell'esempio.
      */
     public Object getExplanatoryValue(int exampleIndex, int attributeIndex) {
         return data[exampleIndex][attributeIndex];
     }
+
+    /**
+	 * Restituisce l'oggetto Attribute trovato in posizione index nell'array explanatorySet
+	 * @param index Indice che individua le posizioni nell'array explanatorySet
+	 * @return L'oggetto (Attribute) presente nell'array nella posizione specificata da index
+	 */
+	public Attribute getExplanatoryAttribute(int index) {
+		return explanatorySet[index];
+	}
+
+	/**
+	 * Restituisce l'attributo target, ovvero la variabile di istanza classAttribute.
+	 * @return L'oggetto (ContinuousAttribute) che, nella regressione, rappresenta l'attributo da prevedere.
+	 */
+	public ContinuousAttribute getClassAttribute() {
+		return classAttribute;
+	}
 	
 	public String toString(){
 		String value="";
