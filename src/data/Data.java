@@ -1,4 +1,3 @@
-import src.models.attributes.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -90,7 +89,7 @@ public class Data {
     public Double getClassValue(int exampleIndex) {
         if (exampleIndex < 0 || exampleIndex >= data.length) {
             throw new IndexOutOfBoundsException(
-                    "il valore" + exampleIndex + "di exampleIndex all' in getClassValue e' out of bounds");
+                    "il valore" + exampleIndex + "di exampleIndex all' in getClassValue e' fuori indice");
         }
 
         return (Double) data[exampleIndex][explanatorySet.length];
@@ -107,10 +106,10 @@ public class Data {
     public Object getExplanatoryValue(int exampleIndex, int attributeIndex) {
         if (exampleIndex < 0 || exampleIndex >= data.length) {
             throw new IndexOutOfBoundsException(
-                    "il valore" + exampleIndex + "id exampleIndex in getExplanatoryValue e' out of bounds");
+                    "il valore" + exampleIndex + "id exampleIndex in getExplanatoryValue e' fuori indice");
         } else if (attributeIndex < 0 || attributeIndex >= explanatorySet.length) {
             throw new IndexOutOfBoundsException(
-                    "il valore" + attributeIndex + "di attributeIndex all' in getExplanatoryValue e' out of bounds");
+                    "il valore" + attributeIndex + "di attributeIndex all' in getExplanatoryValue e' fuori indice");
         }
 
         return data[exampleIndex][attributeIndex];
@@ -127,7 +126,7 @@ public class Data {
     public Attribute getExplanatoryAttribute(int index) {
         if (index < 0 || index > explanatorySet.length) {
             throw new IndexOutOfBoundsException(
-                    "il valore" + index + "di index in getExplanatoryAttribute e' out of bounds");
+                    "il valore" + index + "di index in getExplanatoryAttribute e' fuori indice");
         }
         return explanatorySet[index];
     }

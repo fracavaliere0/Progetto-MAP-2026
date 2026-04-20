@@ -17,21 +17,6 @@ public class DiscreteAttribute extends Attribute {
      * @param name   Nome dell'attributo.
      * 
      * @param index  Indice dell'attributo.
-/*
- * La classe DiscreteAttribute estende Attribute e rappresenta un attributo discreto.
- * Gestisce un insieme di valori simbolici definiti tramite un array.
- */
-public class DiscreteAttribute extends Attribute {
-    /* Array di oggetti String per i valori discreti. */
-    private String[] values;
-
-    /*
-     * Costruttore: invoca il costruttore della super-classe e inizializza l'array
-     * values.
-     * 
-     * @param name Nome dell'attributo.
-     * 
-     * @param index Indice dell'attributo.
      * 
      * @param values Array di stringhe con i valori possibili.
      */
@@ -42,7 +27,7 @@ public class DiscreteAttribute extends Attribute {
     }
 
     /**
-    /*
+     *
      * Restituisce la cardinalità dell'array values.
      * 
      * @return Numero di valori distinti.
@@ -58,7 +43,7 @@ public class DiscreteAttribute extends Attribute {
     }
 
     /**
-    /*
+     *
      * Restituisce il valore in posizione i.
      * 
      * @param i indice del valore.
