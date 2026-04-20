@@ -14,10 +14,10 @@ public abstract class Attribute {
      * * @param name  Nome simbolico dell'attributo.
      * @param index Identificativo numerico dell'attributo.
      */
-    public Attribute(String name, int index)
+    public Attribute(String name, int index) {
         this.name = name;
         this.index = index;
-
+    }
     /**
      * Restituisce il nome dell'attributo.
      * * @return Il nome simbolico dell'attributo.

@@ -4,7 +4,7 @@
  */
 public class DiscreteAttribute extends Attribute {
     /** Array di oggetti String per i valori discreti. */
-    private String values[];
+    private String[] values;
 
     /**
      * Costruttore: invoca il costruttore della super-classe e inizializza l'array values.
@@ -12,7 +12,8 @@ public class DiscreteAttribute extends Attribute {
      * @param index Indice dell'attributo.
      * @param values Array di stringhe con i valori possibili.
      */
-    public DiscreteAttribute(String name, int index, String values[]) {
+    public DiscreteAttribute(String name, int index, String[] values) {
+        // Chiama il costruttore di Attribute
         super(name, index);
         this.values = values;
     }
@@ -30,7 +31,7 @@ public class DiscreteAttribute extends Attribute {
      * @param i indice del valore.
      * @return Il valore corrispondente.
      */
-    public int getValue(int i) {
-        return values(i);
+    public String getValue(int i) {
+        return values[i];
     }
 }
