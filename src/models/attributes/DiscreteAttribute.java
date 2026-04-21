@@ -27,7 +27,7 @@ public class DiscreteAttribute extends Attribute {
     }
 
     /**
-     *
+     * 
      * Restituisce la cardinalità dell'array values.
      * 
      * @return Numero di valori distinti.
