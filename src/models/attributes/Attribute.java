@@ -1,9 +1,7 @@
 /**
  * La classe astratta Attribute modella un generico attributo (discreto o
  * continuo).
- * 
- * La classe astratta Attribute modella un generico attributo (discreto o
- * continuo).
+ *
  * Fornisce le basi per memorizzare il nome e l'identificativo numerico.
  */
 
