@@ -1,7 +1,6 @@
 {
     "java.project.sourcePaths": [
-        "src\\models\\attributes",
-        "src\\models\\nodes"
+        "src"
     ],
     "java.project.referencedLibraries": []
 }
