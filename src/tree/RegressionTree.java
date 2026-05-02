@@ -92,11 +92,8 @@ public class RegressionTree {
 
         
     /**
-     * Genera ricorsivamente il sotto-albero relativo al sottoinsieme di input.
-     *
-     * Se il sottoinsieme soddisfa la condizione di arresto viene creato un nodo
-     * foglia; altrimenti viene determinato il miglior split e l'apprendimento
-     * prosegue sui rami figli.
+     * Genera un sotto-albero con il sotto-insieme di input istanziando un nodo 
+     * fogliare o un nodo di split. Richiama se stesso ricorsivamente sui figli.
      *
      * @param trainingSet             training set complessivo
      * @param begin                   indice iniziale del sotto-insieme di training
@@ -105,7 +102,7 @@ public class RegressionTree {
      */
     void learnTree(Data trainingSet,int begin, int end,int numberOfExamplesPerLeaf){
         if (isLeaf(trainingSet, begin, end, numberOfExamplesPerLeaf)){
-            // Istanzia una foglia usando la media dei valori di classe del sottoinsieme.
+            //determina la classe che compare più frequentemente nella partizione corrente
             root=new LeafNode(trainingSet,begin,end);
         }
         else //split node
@@ -126,7 +123,7 @@ public class RegressionTree {
             
 
     /**
-     * Stampa a console la rappresentazione testuale dell'intero albero.
+     * Stampa a console le informazioni dell'intero albero avvolte in un'intestazione.
      */
     public void printTree(){
         System.out.println("********* TREE **********\n");
@@ -180,14 +177,11 @@ public class RegressionTree {
     }
         
     /**
-     * Restituisce la rappresentazione testuale del sotto-albero corrente.
-     *
-     * La stringa include le informazioni della radice e, se presenti, quelle di
-     * tutti i sotto-alberi figli.
+     * Concatena in una stringa tutte le informazioni della radice (root) e dei 
+     * sotto-alberi figli (childTree) invocando ricorsivamente i loro metodi toString().
      *
      * @return stringa testuale con la struttura dell'albero
      */
-    @Override
     public String toString(){
         String tree=root.toString()+"\n";
             

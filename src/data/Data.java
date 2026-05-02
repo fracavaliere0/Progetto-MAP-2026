@@ -25,14 +25,6 @@ public class Data {
     /** Attributo di classe numerico da predire. */
     private ContinuousAttribute classAttribute;
 
-    /**
-     * Costruisce il training set leggendo la struttura e i valori dal file dato.
-     *
-     * @param fileName Percorso del file contenente schema e dati del dataset.
-     * @throws FileNotFoundException Se il file specificato non esiste.
-     * @throws RuntimeException Se il file non contiene una riga iniziale valida
-     *         con {@code @schema}.
-     */
     public Data(String fileName) throws FileNotFoundException {
 
         File inFile = new File(fileName);
@@ -171,15 +163,6 @@ public class Data {
         return classAttribute;
     }
 
-    /**
-     * Restituisce una rappresentazione testuale dell'intero training set.
-     *
-     * Ogni riga della stringa risultante contiene i valori degli attributi
-     * indipendenti seguiti dal valore dell'attributo di classe.
-     *
-     * @return Stringa contenente tutti gli esempi del dataset.
-     */
-    @Override
     public String toString() {
         String value = "";
         for (int i = 0; i < numberOfExamples; i++) {
@@ -192,24 +175,11 @@ public class Data {
 
     }
 
-    /**
-     * Ordina il sottoinsieme di esempi compreso tra due indici rispetto a un
-     * attributo discreto.
-     *
-     * @param attribute Attributo rispetto al quale eseguire l'ordinamento.
-     * @param beginExampleIndex Indice iniziale del sottoinsieme da ordinare.
-     * @param endExampleIndex Indice finale del sottoinsieme da ordinare.
-     */
     public void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex) {
         quicksort(attribute, beginExampleIndex, endExampleIndex);
     }
 
-    /**
-     * Scambia due righe della matrice dei dati.
-     *
-     * @param i Indice della prima riga da scambiare.
-     * @param j Indice della seconda riga da scambiare.
-     */
+    // scambio esempio i con esempi oj
     private void swap(int i, int j) {
         Object temp;
         for (int k = 0; k < getNumberOfExplanatoryAttributes() + 1; k++) {
@@ -220,13 +190,9 @@ public class Data {
 
     }
 
-    /**
-     * Partiziona il sottoinsieme di esempi rispetto al valore pivot dell'attributo.
-     *
-     * @param attribute Attributo discreto usato come chiave di partizionamento.
-     * @param inf Indice iniziale del sottoinsieme da partizionare.
-     * @param sup Indice finale del sottoinsieme da partizionare.
-     * @return Posizione finale del pivot dopo la partizione.
+    /*
+     * Partiziona il vettore rispetto all'elemento x e restiutisce il punto di
+     * separazione
      */
     private int partition(DiscreteAttribute attribute, int inf, int sup) {
         int i, j;
@@ -259,17 +225,11 @@ public class Data {
 
     }
 
-    /**
-     * Applica il quicksort al sottoinsieme di esempi identificato dagli indici
-     * estremi.
-     *
-     * L'ordinamento viene eseguito usando il valore assunto dall'attributo
-     * discreto specificato come chiave di confronto, con relazione d'ordine
-     * totale {@code <=}.
-     *
-     * @param attribute Attributo rispetto al quale ordinare gli esempi.
-     * @param inf Indice iniziale del sottoinsieme da ordinare.
-     * @param sup Indice finale del sottoinsieme da ordinare.
+    /*
+     * Algoritmo quicksort per l'ordinamento di un array di interi A
+     * usando come relazione d'ordine totale "<="
+     * 
+     * @param A
      */
     private void quicksort(Attribute attribute, int inf, int sup) {
 
@@ -291,15 +251,6 @@ public class Data {
 
     }
 
-    /**
-     * Metodo di test per la classe {@code Data}.
-     *
-     * Carica il dataset {@code servo.dat}, ne stampa il contenuto e mostra gli
-     * esempi ordinati rispetto a ciascun attributo indipendente.
-     *
-     * @param args Argomenti da linea di comando, non usati.
-     * @throws FileNotFoundException Se il file {@code servo.dat} non e' presente.
-     */
     public static void main(String args[]) throws FileNotFoundException {
         Data trainingSet = new Data("servo.dat");
         System.out.println(trainingSet);
