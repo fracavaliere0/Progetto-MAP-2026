@@ -1,23 +1,20 @@
-import java.util.Set;
-import java.util.HashSet;
+package data;
 
 /**
- * La classe DiscreteAttribute estende Attribute e rappresenta un attributo
- * discreto.
- * Gestisce un insieme di valori simbolici definiti tramite un array.
+ * Rappresenta un attributo discreto.
+ *
+ * L'attributo e' descritto dal suo nome, dal suo indice e dall'insieme dei
+ * valori discreti che puo' assumere.
  */
 public class DiscreteAttribute extends Attribute {
     /** Array di oggetti String per i valori discreti. */
     private String[] values;
 
     /**
-     * Costruttore: invoca il costruttore della super-classe e inizializza l'array
-     * values.
-     * 
-     * @param name   Nome dell'attributo.
-     * 
-     * @param index  Indice dell'attributo.
-     * 
+     * Costruisce un attributo discreto e ne memorizza i valori ammessi.
+     *
+     * @param name Nome dell'attributo.
+     * @param index Indice dell'attributo.
      * @param values Array di stringhe con i valori possibili.
      */
     public DiscreteAttribute(String name, int index, String[] values) {
@@ -27,28 +24,21 @@ public class DiscreteAttribute extends Attribute {
     }
 
     /**
-     * 
-     * Restituisce la cardinalità dell'array values.
-     * 
-     * @return Numero di valori distinti.
+     * Restituisce la cardinalita' dell'array {@code values}.
+     *
+     * @return Numero di valori discreti memorizzati nell'array.
      */
     public int getNumberOfDistinctValues() {
-        Set<String> uniqueValues = new HashSet<>();
-
-        for (String s : values) {
-            uniqueValues.add(s);
-        }
-
-        return uniqueValues.size();
+        return values.length;
     }
 
     /**
-     *
      * Restituisce il valore in posizione i.
-     * 
+     *
      * @param i indice del valore.
-     * 
      * @return Il valore corrispondente.
+     * @throws IndexOutOfBoundsException Se {@code i} non e' compreso tra 0 e
+     *         {@code values.length - 1}.
      */
     public String getValue(int i) {
         if (i >= values.length || i < 0) {

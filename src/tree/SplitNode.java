@@ -1,11 +1,18 @@
+package tree;
+
+import data.Attribute;
+import data.Data;
+
 /**
- * La classe astratta SplitNode estende Node e modella l'astrazione
- * dell'entità nodo di split (continuo o discreto).
+ * Modella un nodo interno dell'albero che suddivide gli esempi in piu' rami.
+ *
+ * La classe memorizza l'attributo usato per lo split, l'insieme dei rami
+ * prodotti e la varianza complessiva risultante dalla partizione.
  */
 abstract class SplitNode extends Node {
 
     /**
-     * Classe che colleziona le informazioni descrittive dello split.
+     * Raccoglie le informazioni associate a un singolo ramo dello split.
      */
     class SplitInfo {
         /** Valore che definisce lo split. */
@@ -53,6 +60,7 @@ abstract class SplitNode extends Node {
 
         /**
          * Restituisce l'indice di inizio della partizione.
+         *
          * @return Il valore di beginIndex.
          */
         int getBeginindex() {
@@ -61,6 +69,7 @@ abstract class SplitNode extends Node {
 
         /**
          * Restituisce l'indice di fine della partizione.
+         *
          * @return Il valore di endIndex.
          */
         int getEndIndex() {
@@ -69,6 +78,7 @@ abstract class SplitNode extends Node {
 
         /**
          * Restituisce il valore dello split.
+         *
          * @return Il valore di splitValue come Object.
          */
         Object getSplitValue() {
@@ -77,14 +87,17 @@ abstract class SplitNode extends Node {
 
         /**
          * Concatena in un oggetto String i valori interni di SplitInfo.
+         *
          * @return La stringa finale con le informazioni.
          */
+        @Override
         public String toString() {
             return "child " + numberChild + " split value" + comparator + splitValue + "[Examples:" + beginIndex + "-" + endIndex + "]";
         }
 
         /**
          * Restituisce l'operatore matematico che definisce il test.
+         *
          * @return L'operatore matematico.
          */
         String getComparator() {
@@ -102,7 +115,7 @@ abstract class SplitNode extends Node {
     double splitVariance;
 
     /**
-     * Metodo abstract per generare le informazioni necessarie per ciascuno split candidato.
+     * Genera le informazioni necessarie per ciascuno split candidato.
      *
      * @param trainingSet Training set complessivo.
      * @param beginExampelIndex Indice di inizio.
@@ -112,7 +125,7 @@ abstract class SplitNode extends Node {
     abstract void setSplitInfo(Data trainingSet, int beginExampelIndex, int endExampleIndex, Attribute attribute);
 
     /**
-     * Metodo abstract per modellare la condizione di test.
+     * Modella la condizione di test che seleziona un ramo dello split.
      *
      * @param value Valore dell'attributo che si vuole testare.
      * @return Identificativo del ramo di split.
@@ -120,7 +133,10 @@ abstract class SplitNode extends Node {
     abstract int testCondition(Object value);
 
     /**
-     * Costruttore che invoca la superclasse, ordina i valori e popola l'array mapSplit.
+     * Costruisce un nodo di split sul sottoinsieme specificato.
+     *
+     * Il costruttore ordina il training set rispetto all'attributo scelto,
+     * popola i rami candidati e calcola la varianza totale indotta dallo split.
      *
      * @param trainingSet Training set complessivo.
      * @param beginExampleIndex Indice estremo iniziale.
@@ -143,6 +159,7 @@ abstract class SplitNode extends Node {
 
     /**
      * Restituisce l'oggetto per l'attributo usato per lo split.
+     *
      * @return L'attributo dello split.
      */
     Attribute getAttribute() {
@@ -150,7 +167,8 @@ abstract class SplitNode extends Node {
     }
 
     /**
-     * Restituisce l'information gain per lo split corrente.
+     * Restituisce la varianza complessiva dello split corrente.
+     *
      * @return Il valore di splitVariance.
      */
     double getVariance() {
@@ -159,6 +177,7 @@ abstract class SplitNode extends Node {
 
     /**
      * Restituisce il numero dei rami originanti nel nodo corrente.
+     *
      * @return La lunghezza dell'array mapSplit.
      */
     int getNumberOfChildren() {
@@ -167,6 +186,7 @@ abstract class SplitNode extends Node {
 
     /**
      * Restituisce le informazioni per il ramo indicizzato da child.
+     *
      * @param child Indice del ramo in mapSplit.
      * @return Oggetto SplitInfo associato.
      */
@@ -175,7 +195,8 @@ abstract class SplitNode extends Node {
     }
 
     /**
-     * Concatena le informazioni di ciascun test in una String finale.
+     * Costruisce una rappresentazione testuale delle condizioni associate ai rami.
+     *
      * @return La query formattata per la predizione.
      */
     String formulateQuery() {
@@ -186,9 +207,11 @@ abstract class SplitNode extends Node {
     }
 
     /**
-     * Concatena le informazioni di test, esempi coperti e varianza di Split.
+     * Restituisce una rappresentazione testuale del nodo di split.
+     *
      * @return Stringa finale con i dettagli del nodo.
      */
+    @Override
     public String toString() {
         String v = "SPLIT : attribute=" + attribute + " " + super.toString() + " Split Variance: " + getVariance() + "\n";
 

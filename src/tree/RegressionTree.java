@@ -1,13 +1,20 @@
-/**
- * Modella l'intero albero di decisione come insieme di sotto-alberi.
- * Gestisce l'induzione dell'albero a partire dai dati di training e la sua struttura ricorsiva.
- */
-class RegressionTree {
+package tree;
 
-    /** Radice del sotto-albero corrente */
+import data.Data;
+import data.DiscreteAttribute;
+
+/**
+ * Modella l'albero di regressione come insieme ricorsivo di sotto-alberi.
+ *
+ * Ogni istanza mantiene il nodo radice del sotto-albero corrente ed eventuali
+ * sotto-alberi figli generati da uno split.
+ */
+public class RegressionTree {
+
+    /** Radice del sotto-albero corrente. */
     private Node root;
     
-    /** Array di sotto-alberi originanti nel nodo root: vi è un elemento per ogni figlio */
+    /** Array dei sotto-alberi originanti dalla radice corrente. */
     private RegressionTree[] childTree;
 
     /**
@@ -23,13 +30,15 @@ class RegressionTree {
      *
      * @param trainingSet training set complessivo
      */
-    RegressionTree(Data trainingSet){
+    public RegressionTree(Data trainingSet){
         learnTree(trainingSet,0,trainingSet.getNumberOfExamples()-1,trainingSet.getNumberOfExamples()*10/100);
     }
 
     /**
-     * Verifica se il sotto-insieme corrente può essere coperto da un nodo foglia
-     * controllando che il numero di esempi sia minore o uguale a numberOfExamplesPerLeaf.
+     * Verifica se il sottoinsieme corrente puo' essere coperto da un nodo foglia.
+     *
+     * Il criterio adottato confronta il numero di esempi compresi tra gli indici
+     * {@code begin} e {@code end} con la soglia minima richiesta per una foglia.
      *
      * @param trainingSet             training set complessivo
      * @param begin                   indice iniziale del sotto-insieme di training
@@ -47,8 +56,10 @@ class RegressionTree {
 
     /**
      * Determina il miglior nodo di split per il sotto-insieme di training.
-     * Prova tutti gli attributi discreti, calcola la varianza minore e ordina 
-     * la porzione di dataset rispetto all'attributo selezionato.
+     *
+     * Il metodo prova tutti gli attributi discreti, seleziona il nodo con
+     * varianza di split minima e ordina il sottoinsieme corrente rispetto
+     * all'attributo scelto.
      *
      * @param trainingSet training set complessivo
      * @param begin       indice iniziale del sotto-insieme di training
@@ -81,8 +92,11 @@ class RegressionTree {
 
         
     /**
-     * Genera un sotto-albero con il sotto-insieme di input istanziando un nodo 
-     * fogliare o un nodo di split. Richiama se stesso ricorsivamente sui figli.
+     * Genera ricorsivamente il sotto-albero relativo al sottoinsieme di input.
+     *
+     * Se il sottoinsieme soddisfa la condizione di arresto viene creato un nodo
+     * foglia; altrimenti viene determinato il miglior split e l'apprendimento
+     * prosegue sui rami figli.
      *
      * @param trainingSet             training set complessivo
      * @param begin                   indice iniziale del sotto-insieme di training
@@ -91,7 +105,7 @@ class RegressionTree {
      */
     void learnTree(Data trainingSet,int begin, int end,int numberOfExamplesPerLeaf){
         if (isLeaf(trainingSet, begin, end, numberOfExamplesPerLeaf)){
-            //determina la classe che compare più frequentemente nella partizione corrente
+            // Istanzia una foglia usando la media dei valori di classe del sottoinsieme.
             root=new LeafNode(trainingSet,begin,end);
         }
         else //split node
@@ -112,20 +126,68 @@ class RegressionTree {
             
 
     /**
-     * Stampa a console le informazioni dell'intero albero avvolte in un'intestazione.
+     * Stampa a console la rappresentazione testuale dell'intero albero.
      */
-    void printTree(){
+    public void printTree(){
         System.out.println("********* TREE **********\n");
         System.out.println(toString());
         System.out.println("*************************\n");
     }
+
+    /**
+     * Stampa le regole dell'albero dalla radice alle foglie.
+     */
+    public void printRules() {
+        System.out.println("********* RULES **********");
+        printRules("");
+        System.out.println("*************************");
+    }
+
+    /**
+     * Supporta la stampa ricorsiva delle regole del sotto-albero corrente.
+     *
+     * @param current Condizioni accumulate lungo il cammino dalla radice.
+     */
+    void printRules(String current) {
+        if (root == null) {
+            return;
+        }
+
+        if (root instanceof LeafNode) {
+            if (current.equals("")) {
+                System.out.println("Class=" + ((LeafNode) root).getPredictedClassValue());
+            } else {
+                System.out.println(current + " ==> Class=" + ((LeafNode) root).getPredictedClassValue());
+            }
+            return;
+        }
+
+        SplitNode splitRoot = (SplitNode) root;
+        for (int i = 0; i < childTree.length; i++) {
+            String condition = splitRoot.getAttribute().getName()
+                    + splitRoot.getSplitInfo(i).getComparator()
+                    + splitRoot.getSplitInfo(i).getSplitValue();
+
+            String nextCurrent;
+            if (current.equals("")) {
+                nextCurrent = condition;
+            } else {
+                nextCurrent = current + " AND " + condition;
+            }
+
+            childTree[i].printRules(nextCurrent);
+        }
+    }
         
     /**
-     * Concatena in una stringa tutte le informazioni della radice (root) e dei 
-     * sotto-alberi figli (childTree) invocando ricorsivamente i loro metodi toString().
+     * Restituisce la rappresentazione testuale del sotto-albero corrente.
+     *
+     * La stringa include le informazioni della radice e, se presenti, quelle di
+     * tutti i sotto-alberi figli.
      *
      * @return stringa testuale con la struttura dell'albero
      */
+    @Override
     public String toString(){
         String tree=root.toString()+"\n";
             

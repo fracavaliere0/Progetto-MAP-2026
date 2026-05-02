@@ -1,5 +1,12 @@
+package tree;
+
+import data.Data;
+
 /**
- * La classe astratta Node modella l'astrazione dell'entità nodo (fogliare o intermedio) dell'albero di decisione.
+ * Modella un nodo dell'albero di regressione.
+ *
+ * Un nodo copre un sottoinsieme contiguo di esempi del training set e mantiene
+ * lo SSE calcolato sull'attributo di classe relativo a quel sottoinsieme.
  */
 public abstract class Node {
 
@@ -19,7 +26,8 @@ public abstract class Node {
     double variance;
 
     /**
-     * Costruttore che avvalora gli attributi primitivi di classe.
+     * Costruisce un nodo e calcola lo SSE del sottoinsieme coperto.
+     *
      * @param trainingSet Oggetto di classe Data contenente il training set completo.
      * @param beginExampleIndex Indice del primo esempio del sotto-insieme.
      * @param endExampleIndex Indice dell'ultimo esempio del sotto-insieme.
@@ -29,13 +37,28 @@ public abstract class Node {
         this.beginExampleIndex = beginExampleIndex;
         this.endExampleIndex = endExampleIndex;
 
-        // TODO: La varianza andrà calcolata invocando un metodo sull'oggetto trainingSet.
-        // Attualmente impostata a 0 in attesa dell'implementazione del Membro B nella classe Data.
+        int numberOfExamples = endExampleIndex - beginExampleIndex + 1;
+        if (numberOfExamples <= 0) {
+            this.variance = 0.0;
+            return;
+        }
+
+        double sum = 0.0;
+        for (int i = beginExampleIndex; i <= endExampleIndex; i++) {
+            sum += trainingSet.getClassValue(i);
+        }
+
+        double average = sum / numberOfExamples;
         this.variance = 0.0;
+        for (int i = beginExampleIndex; i <= endExampleIndex; i++) {
+            double difference = trainingSet.getClassValue(i) - average;
+            this.variance += difference * difference;
+        }
     }
 
     /**
-     * Restituisce l'identificativo numerico del nodo
+     * Restituisce l'identificativo numerico del nodo.
+     *
      * @return il valore del membro idNode.
      */
     int getIdNode() {
@@ -44,6 +67,7 @@ public abstract class Node {
 
     /**
      * Restituisce l'indice del primo esempio del sotto-insieme.
+     *
      * @return il valore del membro beginExampleIndex.
      */
     int getBeginExampleIndex() {
@@ -52,6 +76,7 @@ public abstract class Node {
 
     /**
      * Restituisce l'indice dell'ultimo esempio del sotto-insieme.
+     *
      * @return il valore del membro endExampleIndex.
      */
     int getEndExampleIndex() {
@@ -60,6 +85,7 @@ public abstract class Node {
 
     /**
      * Restituisce il valore dello SSE rispetto al nodo corrente.
+     *
      * @return il valore del membro variance.
      */
     double getVariance() {
@@ -68,13 +94,15 @@ public abstract class Node {
 
     /**
      * Restituisce il numero di nodi figli originanti dal nodo corrente.
-     * Metodo astratto che verrà implementato dalle sottoclassi.
+     * Metodo astratto che verra' implementato dalle sottoclassi.
+     *
      * @return Valore del numero di nodi sottostanti.
      */
     abstract int getNumberOfChildren();
 
     /**
      * Concatena in un oggetto String le informazioni del nodo.
+     *
      * @return La stringa finale con indici e varianza.
      */
     @Override
@@ -82,4 +110,4 @@ public abstract class Node {
         return "[Examples:" + beginExampleIndex + "-" + endExampleIndex + "] variance: " + variance;
     }
 
-   }
+}

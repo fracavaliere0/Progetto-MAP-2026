@@ -1,15 +1,39 @@
+package data;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+/**
+ * Modella il training set usato per costruire l'albero di regressione.
+ *
+ * La classe legge i dati da file, memorizza gli attributi indipendenti,
+ * l'attributo di classe e la matrice degli esempi di training. Fornisce inoltre
+ * metodi di accesso e ordinamento del sottoinsieme di esempi.
+ */
 public class Data {
 
+    /** Matrice degli esempi di training organizzata per righe e colonne. */
     private Object data[][];
+
+    /** Numero totale di esempi presenti nel training set. */
     private int numberOfExamples;
+
+    /** Insieme degli attributi indipendenti del dataset. */
     private Attribute explanatorySet[];
+
+    /** Attributo di classe numerico da predire. */
     private ContinuousAttribute classAttribute;
 
-    Data(String fileName) throws FileNotFoundException {
+    /**
+     * Costruisce il training set leggendo la struttura e i valori dal file dato.
+     *
+     * @param fileName Percorso del file contenente schema e dati del dataset.
+     * @throws FileNotFoundException Se il file specificato non esiste.
+     * @throws RuntimeException Se il file non contiene una riga iniziale valida
+     *         con {@code @schema}.
+     */
+    public Data(String fileName) throws FileNotFoundException {
 
         File inFile = new File(fileName);
 
@@ -62,7 +86,7 @@ public class Data {
 
     /**
      * Restituisce il numero totale di esempi (righe) presenti nel training set.
-     * 
+     *
      * @return Cardinalità dell'insieme di esempi.
      */
     public int getNumberOfExamples() {
@@ -72,7 +96,7 @@ public class Data {
     /**
      * Restituisce il numero di attributi indipendenti nel dataset.
      * Corrisponde alla lunghezza dello spazio descrittivo.
-     * 
+     *
      * @return Cardinalità dell'insieme degli attributi indipendenti.
      */
     public int getNumberOfExplanatoryAttributes() {
@@ -82,9 +106,11 @@ public class Data {
     /**
      * Restituisce il valore dell'attributo di classe (target) per uno specifico
      * esempio.
-     * 
+     *
      * @param exampleIndex Indice di riga dell'esempio nella matrice dei dati.
      * @return Valore dell'attributo di classe (effettuando il cast a Double).
+     * @throws IndexOutOfBoundsException Se {@code exampleIndex} non e' un indice
+     *         valido della matrice dei dati.
      */
     public Double getClassValue(int exampleIndex) {
         if (exampleIndex < 0 || exampleIndex >= data.length) {
@@ -97,11 +123,12 @@ public class Data {
 
     /**
      * Restituisce l'Object della matrice data incrociando riga e colonna.
-     * 
+     *
      * @param exampleIndex   Indice di riga dell'esempio nella matrice dei dati.
      * @param attributeIndex Indice di colonna dell'attributo indipendente di cui si
      *                       desidera estrarre il valore.
      * @return L'oggetto (valore) associato a quell'attributo per quell'esempio.
+     * @throws IndexOutOfBoundsException Se uno degli indici non e' valido.
      */
     public Object getExplanatoryValue(int exampleIndex, int attributeIndex) {
         if (exampleIndex < 0 || exampleIndex >= data.length) {
@@ -117,14 +144,16 @@ public class Data {
 
     /**
      * Restituisce l'oggetto Attribute trovato in posizione index nell'array
-     * explanatorySet
-     * 
+     * explanatorySet.
+     *
      * @param index Indice che individua le posizioni nell'array explanatorySet
      * @return L'oggetto (Attribute) presente nell'array nella posizione specificata
-     *         da index
+      *         da index
+     * @throws IndexOutOfBoundsException Se {@code index} non e' un indice valido
+     *         dell'array explanatorySet.
      */
     public Attribute getExplanatoryAttribute(int index) {
-        if (index < 0 || index > explanatorySet.length) {
+        if (index < 0 || index >= explanatorySet.length) {
             throw new IndexOutOfBoundsException(
                     "il valore" + index + "di index in getExplanatoryAttribute e' fuori indice");
         }
@@ -134,7 +163,7 @@ public class Data {
     /**
      * Restituisce l'attributo target, ovvero la variabile di istanza
      * classAttribute.
-     * 
+     *
      * @return L'oggetto (ContinuousAttribute) che, nella regressione, rappresenta
      *         l'attributo da prevedere.
      */
@@ -142,6 +171,15 @@ public class Data {
         return classAttribute;
     }
 
+    /**
+     * Restituisce una rappresentazione testuale dell'intero training set.
+     *
+     * Ogni riga della stringa risultante contiene i valori degli attributi
+     * indipendenti seguiti dal valore dell'attributo di classe.
+     *
+     * @return Stringa contenente tutti gli esempi del dataset.
+     */
+    @Override
     public String toString() {
         String value = "";
         for (int i = 0; i < numberOfExamples; i++) {
@@ -154,11 +192,24 @@ public class Data {
 
     }
 
-    void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex) {
+    /**
+     * Ordina il sottoinsieme di esempi compreso tra due indici rispetto a un
+     * attributo discreto.
+     *
+     * @param attribute Attributo rispetto al quale eseguire l'ordinamento.
+     * @param beginExampleIndex Indice iniziale del sottoinsieme da ordinare.
+     * @param endExampleIndex Indice finale del sottoinsieme da ordinare.
+     */
+    public void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex) {
         quicksort(attribute, beginExampleIndex, endExampleIndex);
     }
 
-    // scambio esempio i con esempi oj
+    /**
+     * Scambia due righe della matrice dei dati.
+     *
+     * @param i Indice della prima riga da scambiare.
+     * @param j Indice della seconda riga da scambiare.
+     */
     private void swap(int i, int j) {
         Object temp;
         for (int k = 0; k < getNumberOfExplanatoryAttributes() + 1; k++) {
@@ -169,9 +220,13 @@ public class Data {
 
     }
 
-    /*
-     * Partiziona il vettore rispetto all'elemento x e restiutisce il punto di
-     * separazione
+    /**
+     * Partiziona il sottoinsieme di esempi rispetto al valore pivot dell'attributo.
+     *
+     * @param attribute Attributo discreto usato come chiave di partizionamento.
+     * @param inf Indice iniziale del sottoinsieme da partizionare.
+     * @param sup Indice finale del sottoinsieme da partizionare.
+     * @return Posizione finale del pivot dopo la partizione.
      */
     private int partition(DiscreteAttribute attribute, int inf, int sup) {
         int i, j;
@@ -204,11 +259,17 @@ public class Data {
 
     }
 
-    /*
-     * Algoritmo quicksort per l'ordinamento di un array di interi A
-     * usando come relazione d'ordine totale "<="
-     * 
-     * @param A
+    /**
+     * Applica il quicksort al sottoinsieme di esempi identificato dagli indici
+     * estremi.
+     *
+     * L'ordinamento viene eseguito usando il valore assunto dall'attributo
+     * discreto specificato come chiave di confronto, con relazione d'ordine
+     * totale {@code <=}.
+     *
+     * @param attribute Attributo rispetto al quale ordinare gli esempi.
+     * @param inf Indice iniziale del sottoinsieme da ordinare.
+     * @param sup Indice finale del sottoinsieme da ordinare.
      */
     private void quicksort(Attribute attribute, int inf, int sup) {
 
@@ -230,6 +291,15 @@ public class Data {
 
     }
 
+    /**
+     * Metodo di test per la classe {@code Data}.
+     *
+     * Carica il dataset {@code servo.dat}, ne stampa il contenuto e mostra gli
+     * esempi ordinati rispetto a ciascun attributo indipendente.
+     *
+     * @param args Argomenti da linea di comando, non usati.
+     * @throws FileNotFoundException Se il file {@code servo.dat} non e' presente.
+     */
     public static void main(String args[]) throws FileNotFoundException {
         Data trainingSet = new Data("servo.dat");
         System.out.println(trainingSet);

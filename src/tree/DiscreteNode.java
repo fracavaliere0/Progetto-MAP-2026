@@ -1,12 +1,19 @@
+package tree;
+
+import data.Attribute;
+import data.Data;
+import data.DiscreteAttribute;
+
 /**
- * Modella l'entità nodo di split relativo ad un attributo indipendente discreto.
- * Estende la superclasse astratta SplitNode ed è responsabile della creazione 
- * dei rami (SplitInfo) basati sui valori discreti assunti dall'attributo.
+ * Modella un nodo di split basato su un attributo discreto.
+ *
+ * Ogni ramo dello split corrisponde a uno dei valori distinti assunti
+ * dall'attributo nel sottoinsieme corrente del training set.
  */
 public class DiscreteNode extends SplitNode {
     
     /**
-     * Istanzia un oggetto invocando il costruttore della superclasse con il parametro attribute.
+     * Costruisce un nodo di split discreto.
      *
      * @param trainingSet       training set complessivo
      * @param beginExampleIndex indice nell'array del training set del primo esempio
@@ -18,8 +25,8 @@ public class DiscreteNode extends SplitNode {
     }
 
     /**
-     * Istanzia oggetti SplitInfo con ciascuno dei valori discreti dell'attributo 
-     * relativamente al sotto-insieme di training corrente, popolando l'array mapSplit.
+     * Popola {@code mapSplit} con un ramo per ogni valore distinto dell'attributo
+     * nel sottoinsieme corrente.
      *
      * @param trainingSet       training set complessivo
      * @param beginExampleIndex indice del primo esempio del sotto-insieme di training
@@ -44,7 +51,7 @@ public class DiscreteNode extends SplitNode {
             Object tempVal = trainingSet.getExplanatoryValue(i, attribute.getIndex());
             Object nextVal = trainingSet.getExplanatoryValue(i+1, attribute.getIndex());
             if (!tempVal.equals(nextVal)) {
-                mapSplit[splitIndex] = new SplitInfo(tempVal, currentBegin, i, 0);
+                mapSplit[splitIndex] = new SplitInfo(tempVal, currentBegin, i, splitIndex);
 
                 splitIndex++;
                 currentBegin = i + 1;
@@ -55,15 +62,16 @@ public class DiscreteNode extends SplitNode {
         Object lastVal = trainingSet.getExplanatoryValue(endExampleIndex, attribute.getIndex());
 
         // Creo lo SplitInfo finale e lo salvo
-        mapSplit[splitIndex] = new SplitInfo(lastVal, currentBegin, endExampleIndex, 0);
+        mapSplit[splitIndex] = new SplitInfo(lastVal, currentBegin, endExampleIndex, splitIndex);
     }
 
     /**
-     * Effettua il confronto del valore in input rispetto al valore contenuto 
+     * Effettua il confronto del valore in input rispetto al valore contenuto
      * nell'attributo splitValue di ciascuno degli oggetti SplitInfo in mapSplit.
      *
      * @param value valore discreto dell'attributo che si vuole testare
-     * @return l'identificativo dello split (indice dell'array mapSplit) con cui il test è positivo, -1 se non trovato
+     * @return l'identificativo dello split (indice dell'array mapSplit) con cui il
+     *         test e' positivo, oppure {@code -1} se non viene trovato alcun ramo.
      */
     public int testCondition(Object value) {
         for (int i = 0; i < mapSplit.length; i++) {
@@ -73,6 +81,16 @@ public class DiscreteNode extends SplitNode {
             }
         }
         return -1;
+    }
+
+    /**
+     * Specializza la stampa del nodo di split per attributi discreti.
+     *
+     * @return Stringa formattata con le informazioni del nodo discreto.
+     */
+    @Override
+    public String toString() {
+        return "DISCRETE " + super.toString();
     }
 
 }

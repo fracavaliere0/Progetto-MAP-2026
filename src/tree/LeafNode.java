@@ -1,5 +1,12 @@
+package tree;
+
+import data.Data;
+
 /**
- * La classe LeafNode estende Node e modella l'entità nodo fogliare.
+ * Modella un nodo fogliare dell'albero di regressione.
+ *
+ * La foglia memorizza il valore di classe predetto, calcolato come media dei
+ * valori di classe degli esempi coperti dal nodo.
  */
 public class LeafNode extends Node {
 
@@ -7,7 +14,7 @@ public class LeafNode extends Node {
     Double predictedClassValue;
 
     /**
-     * Istanzia un oggetto invocando il costruttore della superclasse e avvalora l'attributo predictedClassValue.
+     * Costruisce un nodo fogliare e ne calcola il valore predetto.
      *
      * @param trainingSet Oggetto di classe Data contenente il training set completo.
      * @param beginExampleIndex Indice del primo esempio coperto nella foglia.
@@ -16,9 +23,17 @@ public class LeafNode extends Node {
     public LeafNode(Data trainingSet, int beginExampleIndex, int endExampleIndex) {
         super(trainingSet, beginExampleIndex, endExampleIndex);
 
-        // TODO (Membro B): Avvalorare predictedClassValue come media dei valori dell'attributo
-        // di classe che ricadono nella partizione (beginExampleIndex - endExampleIndex).
-        // Si appoggerà alla classe Data, es: this.predictedClassValue = trainingSet.computeAverage(...);
+        int numberOfExamples = endExampleIndex - beginExampleIndex + 1;
+        if (numberOfExamples <= 0) {
+            predictedClassValue = 0.0;
+            return;
+        }
+
+        double sum = 0.0;
+        for (int i = beginExampleIndex; i <= endExampleIndex; i++) {
+            sum += trainingSet.getClassValue(i);
+        }
+        predictedClassValue = sum / numberOfExamples;
     }
 
     /**
@@ -41,12 +56,12 @@ public class LeafNode extends Node {
     }
 
     /**
-     * Invoca il metodo della superclasse assegnando anche il valore di classe della foglia.
+     * Restituisce una rappresentazione testuale del nodo fogliare.
      *
      * @return Stringa formattata con le informazioni del nodo fogliare.
      */
     @Override
     public String toString() {
-        return "LEAF class=" + predictedClassValue + " Nodo: " + super.toString();
+        return "LEAF : class=" + predictedClassValue + " Nodo: " + super.toString();
     }
 }
