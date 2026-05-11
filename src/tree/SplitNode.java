@@ -98,13 +98,13 @@ public abstract class SplitNode extends Node {
     }
 
     /** Oggetto Attribute che modella l'attributo indipendente sul quale lo split è generato. */
-    Attribute attribute;
+    protected Attribute attribute;
 
     /** Array per memorizzare gli split candidati. */
-    SplitInfo mapSplit[];
+    protected SplitInfo mapSplit[];
 
     /** Attributo che contiene il valore di varianza a seguito del partizionamento. */
-    double splitVariance;
+    protected double splitVariance;
 
     /**
      * Metodo abstract per generare le informazioni necessarie per ciascuno split candidato.

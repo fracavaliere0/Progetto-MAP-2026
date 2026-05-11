@@ -11,19 +11,19 @@ import data.Data;
 public abstract class Node {
 
     /** Contatore dei nodi generati nell'albero. */
-    static int idNodeCount = 0;
+    protected static int idNodeCount = 0;
 
     /** Identificativo numerico del nodo. */
-    int idNode;
+    protected int idNode;
 
     /** Indice nell'array del training set del primo esempio coperto dal nodo corrente. */
-    int beginExampleIndex;
+    protected int beginExampleIndex;
 
     /** Indice nell'array del training set dell'ultimo esempio coperto dal nodo corrente. */
-    int endExampleIndex;
+    protected int endExampleIndex;
 
     /** Valore dello SSE calcolato nel sotto-insieme di training del nodo. */
-    double variance;
+    protected double variance;
 
     /**
      * Costruisce un nodo e calcola lo SSE del sottoinsieme coperto.
