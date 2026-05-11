@@ -61,7 +61,7 @@ public abstract class Node {
      *
      * @return il valore del membro idNode.
      */
-    int getIdNode() {
+    public int getIdNode() {
         return idNode;
     }
 
@@ -70,7 +70,7 @@ public abstract class Node {
      *
      * @return il valore del membro beginExampleIndex.
      */
-    int getBeginExampleIndex() {
+    public int getBeginExampleIndex() {
         return beginExampleIndex;
     }
 
@@ -79,7 +79,7 @@ public abstract class Node {
      *
      * @return il valore del membro endExampleIndex.
      */
-    int getEndExampleIndex() {
+    public int getEndExampleIndex() {
         return endExampleIndex;
     }
 
@@ -88,7 +88,7 @@ public abstract class Node {
      *
      * @return il valore del membro variance.
      */
-    double getVariance() {
+    public double getVariance() {
         return variance;
     }
 
@@ -98,7 +98,7 @@ public abstract class Node {
      *
      * @return Valore del numero di nodi sottostanti.
      */
-    abstract int getNumberOfChildren();
+    public abstract int getNumberOfChildren();
 
     /**
      * Concatena in un oggetto String le informazioni del nodo.

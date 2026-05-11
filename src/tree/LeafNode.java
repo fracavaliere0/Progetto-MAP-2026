@@ -11,7 +11,7 @@ import data.Data;
 public class LeafNode extends Node {
 
     /** Valore dell'attributo di classe espresso nella foglia corrente. */
-    Double predictedClassValue;
+    private Double predictedClassValue;
 
     /**
      * Costruisce un nodo fogliare e ne calcola il valore predetto.
