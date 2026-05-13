@@ -2,6 +2,7 @@ package tree;
 
 import data.Data;
 import data.DiscreteAttribute;
+import utility.Keyboard;
 
 /**
  * Modella l'albero di regressione come insieme ricorsivo di sotto-alberi.
@@ -194,6 +195,20 @@ public class RegressionTree {
                 tree +=childTree[i];
             }
             return tree;
+    }
+
+    public Double predictClass()throws UnknownValueException {
+        if(root instanceof LeafNode)
+            return ((LeafNode) root).getPredictedClassValue();
+        else {
+            int risp;
+            System.out.println(((SplitNode)root).formulateQuery());
+            risp=Keyboard.readInt();
+            if(risp==-1 || risp>=root.getNumberOfChildren())
+                throw new UnknownValueException("The answer should be an integer between 0 and " +(root.getNumberOfChildren()-1)+"!");
+            else
+                return childTree[risp].predictClass();
+        }
     }
         
 }
