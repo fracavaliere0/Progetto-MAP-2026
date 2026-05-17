@@ -6,3 +6,7 @@ public class UnknownValueException extends Exception {
         super(message);
     }
 }
+    public UnknownValueException(String message) {
+        super(message);
+    }
+}
