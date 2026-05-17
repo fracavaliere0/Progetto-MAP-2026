@@ -33,7 +33,8 @@ public class DiscreteNode extends SplitNode {
      * @param endExampleIndex   indice dell'ultimo esempio del sotto-insieme di training
      * @param attribute         attributo indipendente sul quale si definisce lo split
      */
-    void setSplitInfo(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
+    @Override
+    public void setSplitInfo(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
         int valoriDistinti = 1;
         for (int i = beginExampleIndex; i < endExampleIndex; i++) {
             Object tempVal = trainingSet.getExplanatoryValue(i, attribute.getIndex());
@@ -73,6 +74,7 @@ public class DiscreteNode extends SplitNode {
      * @return l'identificativo dello split (indice dell'array mapSplit) con cui il
      *         test e' positivo, oppure {@code -1} se non viene trovato alcun ramo.
      */
+    @Override
     public int testCondition(Object value) {
         for (int i = 0; i < mapSplit.length; i++) {
             Object tempVal = mapSplit[i].getSplitValue();

@@ -158,7 +158,8 @@ public abstract class SplitNode extends Node {
      * Restituisce l'information gain per lo split corrente.
      * @return Il valore di splitVariance.
      */
-    double getVariance() {
+    @Override
+    public double getVariance() {
         return splitVariance;
     }
 
@@ -166,7 +167,8 @@ public abstract class SplitNode extends Node {
      * Restituisce il numero dei rami originanti nel nodo corrente.
      * @return La lunghezza dell'array mapSplit.
      */
-    int getNumberOfChildren() {
+    @Override
+    public int getNumberOfChildren() {
         return mapSplit.length;
     }
 
