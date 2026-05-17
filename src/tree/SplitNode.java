@@ -7,7 +7,7 @@ import data.Data;
  * La classe astratta SplitNode estende Node e modella l'astrazione
  * dell'entità nodo di split (continuo o discreto).
  */
-abstract class SplitNode extends Node {
+public abstract class SplitNode extends Node {
 
     /**
      * Classe che colleziona le informazioni descrittive dello split.
@@ -98,13 +98,13 @@ abstract class SplitNode extends Node {
     }
 
     /** Oggetto Attribute che modella l'attributo indipendente sul quale lo split è generato. */
-    Attribute attribute;
+    protected Attribute attribute;
 
     /** Array per memorizzare gli split candidati. */
-    SplitInfo mapSplit[];
+    protected SplitInfo mapSplit[];
 
     /** Attributo che contiene il valore di varianza a seguito del partizionamento. */
-    double splitVariance;
+    protected double splitVariance;
 
     /**
      * Metodo abstract per generare le informazioni necessarie per ciascuno split candidato.
@@ -114,7 +114,7 @@ abstract class SplitNode extends Node {
      * @param endExampleIndex Indice di fine.
      * @param attribute Attributo indipendente.
      */
-    abstract void setSplitInfo(Data trainingSet, int beginExampelIndex, int endExampleIndex, Attribute attribute);
+    public abstract void setSplitInfo(Data trainingSet, int beginExampelIndex, int endExampleIndex, Attribute attribute);
 
     /**
      * Metodo abstract per modellare la condizione di test.
@@ -122,7 +122,7 @@ abstract class SplitNode extends Node {
      * @param value Valore dell'attributo che si vuole testare.
      * @return Identificativo del ramo di split.
      */
-    abstract int testCondition(Object value);
+    public abstract int testCondition(Object value);
 
     /**
      * Costruttore che invoca la superclasse, ordina i valori e popola l'array mapSplit.
@@ -132,7 +132,7 @@ abstract class SplitNode extends Node {
      * @param endExampleIndex Indice estremo finale.
      * @param attribute Attributo indipendente su cui si definisce lo split.
      */
-    SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
+    public SplitNode(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
         super(trainingSet, beginExampleIndex, endExampleIndex);
         this.attribute = attribute;
         trainingSet.sort(attribute, beginExampleIndex, endExampleIndex); // order by attribute
@@ -183,7 +183,7 @@ abstract class SplitNode extends Node {
      * Concatena le informazioni di ciascun test in una String finale.
      * @return La query formattata per la predizione.
      */
-    String formulateQuery() {
+    public String formulateQuery() {
         String query = "";
         for(int i = 0; i < mapSplit.length; i++)
             query += (i + ":" + attribute + mapSplit[i].getComparator() + mapSplit[i].getSplitValue()) + "\n";
