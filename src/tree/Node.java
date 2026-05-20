@@ -1,5 +1,7 @@
 package tree;
 
+import java.io.Serializable;
+
 import data.Data;
 
 /**
@@ -8,7 +10,7 @@ import data.Data;
  * Un nodo copre un sottoinsieme contiguo di esempi del training set e mantiene
  * lo SSE calcolato sull'attributo di classe relativo a quel sottoinsieme.
  */
-public abstract class Node {
+public abstract class Node implements Serializable {
 
     /** Contatore dei nodi generati nell'albero. */
     protected static int idNodeCount = 0;
