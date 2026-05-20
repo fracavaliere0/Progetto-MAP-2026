@@ -1,5 +1,7 @@
 package data;
 
+import java.io.Serializable;
+
 /**
  * Modella un attributo generico del dataset.
  *
@@ -8,7 +10,7 @@ package data;
  * continuo.
  */
 
-public abstract class Attribute {
+public abstract class Attribute implements Serializable {
     /** Nome simbolico dell'attributo. */
     private String name;
     /** Identificativo numerico dell'attributo. */

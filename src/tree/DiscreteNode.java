@@ -1,5 +1,7 @@
 package tree;
 
+import java.util.ArrayList;
+
 import data.Attribute;
 import data.Data;
 import data.DiscreteAttribute;
@@ -34,7 +36,7 @@ public class DiscreteNode extends SplitNode {
      * @param attribute         attributo indipendente sul quale si definisce lo split
      */
     @Override
-    public void setSplitInfo(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
+    void setSplitInfo(Data trainingSet, int beginExampleIndex, int endExampleIndex, Attribute attribute) {
         int valoriDistinti = 1;
         for (int i = beginExampleIndex; i < endExampleIndex; i++) {
             Object tempVal = trainingSet.getExplanatoryValue(i, attribute.getIndex());
@@ -44,7 +46,7 @@ public class DiscreteNode extends SplitNode {
             }
         }
             
-        mapSplit = new SplitInfo[valoriDistinti];
+        mapSplit = new ArrayList<SplitInfo>(valoriDistinti);
         int splitIndex = 0;
         int currentBegin = beginExampleIndex;
 
@@ -52,7 +54,7 @@ public class DiscreteNode extends SplitNode {
             Object tempVal = trainingSet.getExplanatoryValue(i, attribute.getIndex());
             Object nextVal = trainingSet.getExplanatoryValue(i+1, attribute.getIndex());
             if (!tempVal.equals(nextVal)) {
-                mapSplit[splitIndex] = new SplitInfo(tempVal, currentBegin, i, splitIndex);
+                mapSplit.add(new SplitInfo(tempVal, currentBegin, i, splitIndex));
 
                 splitIndex++;
                 currentBegin = i + 1;
@@ -63,7 +65,7 @@ public class DiscreteNode extends SplitNode {
         Object lastVal = trainingSet.getExplanatoryValue(endExampleIndex, attribute.getIndex());
 
         // Creo lo SplitInfo finale e lo salvo
-        mapSplit[splitIndex] = new SplitInfo(lastVal, currentBegin, endExampleIndex, splitIndex);
+        mapSplit.add(new SplitInfo(lastVal, currentBegin, endExampleIndex, splitIndex));
     }
 
     /**
@@ -76,8 +78,8 @@ public class DiscreteNode extends SplitNode {
      */
     @Override
     public int testCondition(Object value) {
-        for (int i = 0; i < mapSplit.length; i++) {
-            Object tempVal = mapSplit[i].getSplitValue();
+        for (int i = 0; i < mapSplit.size(); i++) {
+            Object tempVal = mapSplit.get(i).getSplitValue();
             if (tempVal.equals(value)) {
                 return i;
             }

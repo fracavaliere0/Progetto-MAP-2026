@@ -2,7 +2,11 @@ package data;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Modella il training set usato per costruire l'albero di regressione.
@@ -20,7 +24,7 @@ public class Data {
     private int numberOfExamples;
 
     /** Insieme degli attributi indipendenti del dataset. */
-    private Attribute explanatorySet[];
+    private List<Attribute> explanatorySet = new LinkedList<Attribute>();
 
     /** Attributo di classe numerico da predire. */
     private ContinuousAttribute classAttribute;
@@ -47,7 +51,7 @@ public class Data {
             }
             String s[] = line.split(" ");
 
-            explanatorySet = new Attribute[Integer.parseInt(s[1])];
+            int numberOfAttributes = Integer.parseInt(s[1]);
             short iAttribute = 0;
             boolean foundData = false;
 
@@ -58,8 +62,16 @@ public class Data {
                 } else {
                     s = line.split(" ");
                     if (s[0].equals("@desc")) {
-                        String discreteValues[] = s[2].split(",");
-                        explanatorySet[iAttribute] = new DiscreteAttribute(s[1], iAttribute, discreteValues);
+                        if (s.length == 2) {
+                            explanatorySet.add(new ContinuousAttribute(s[1], iAttribute));
+                        } else {
+                            Set<String> values = new TreeSet<String>();
+                            String discreteValues[] = s[2].split(",");
+                            for (String value : discreteValues) {
+                                values.add(value.trim());
+                            }
+                            explanatorySet.add(new DiscreteAttribute(s[1], iAttribute, values));
+                        }
                         iAttribute++;
                     } else if (s[0].equals("@target")) {
                         classAttribute = new ContinuousAttribute(s[1], iAttribute);
@@ -76,25 +88,35 @@ public class Data {
                 throw new TrainingDataException("Training set privo di variabile target numerica");
             }
 
+            if (explanatorySet.size() != numberOfAttributes) {
+                throw new TrainingDataException("Errore nello schema");
+            }
+
             numberOfExamples = Integer.parseInt(line.split(" ")[1]);
 
             if (numberOfExamples == 0) {
                 throw new TrainingDataException("Training set vuoto");
             }
 
-            data = new Object[numberOfExamples][explanatorySet.length + 1];
+            data = new Object[numberOfExamples][explanatorySet.size() + 1];
             short iRow = 0;
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
                 s = line.split(",");
                 for (short jColumn = 0; jColumn < s.length - 1; jColumn++) {
-                    data[iRow][jColumn] = s[jColumn];
+                    if (explanatorySet.get(jColumn) instanceof DiscreteAttribute) {
+                        data[iRow][jColumn] = s[jColumn].trim();
+                    } else {
+                        data[iRow][jColumn] = Double.valueOf(s[jColumn].trim());
+                    }
                 }
-                data[iRow][s.length - 1] = Double.valueOf(s[s.length - 1]);
+                data[iRow][s.length - 1] = Double.valueOf(s[s.length - 1].trim());
                 iRow++;
             }
         } finally {
-            sc.close();
+            if (sc != null) {
+                sc.close();
+            }
         }
 
     }
@@ -115,7 +137,7 @@ public class Data {
      * @return Cardinalità dell'insieme degli attributi indipendenti.
      */
     public int getNumberOfExplanatoryAttributes() {
-        return explanatorySet.length;
+        return explanatorySet.size();
     }
 
     /**
@@ -133,7 +155,7 @@ public class Data {
                     "il valore" + exampleIndex + "di exampleIndex all' in getClassValue e' fuori indice");
         }
 
-        return (Double) data[exampleIndex][explanatorySet.length];
+        return (Double) data[exampleIndex][explanatorySet.size()];
     }
 
     /**
@@ -149,7 +171,7 @@ public class Data {
         if (exampleIndex < 0 || exampleIndex >= data.length) {
             throw new IndexOutOfBoundsException(
                     "il valore" + exampleIndex + "id exampleIndex in getExplanatoryValue e' fuori indice");
-        } else if (attributeIndex < 0 || attributeIndex >= explanatorySet.length) {
+        } else if (attributeIndex < 0 || attributeIndex >= explanatorySet.size()) {
             throw new IndexOutOfBoundsException(
                     "il valore" + attributeIndex + "di attributeIndex all' in getExplanatoryValue e' fuori indice");
         }
@@ -168,11 +190,11 @@ public class Data {
      *         dell'array explanatorySet.
      */
     public Attribute getExplanatoryAttribute(int index) {
-        if (index < 0 || index >= explanatorySet.length) {
+        if (index < 0 || index >= explanatorySet.size()) {
             throw new IndexOutOfBoundsException(
                     "il valore" + index + "di index in getExplanatoryAttribute e' fuori indice");
         }
-        return explanatorySet[index];
+        return explanatorySet.get(index);
     }
 
     /**
@@ -189,10 +211,10 @@ public class Data {
     public String toString() {
         String value = "";
         for (int i = 0; i < numberOfExamples; i++) {
-            for (int j = 0; j < explanatorySet.length; j++)
+            for (int j = 0; j < explanatorySet.size(); j++)
                 value += data[i][j] + ",";
 
-            value += data[i][explanatorySet.length] + "\n";
+            value += data[i][explanatorySet.size()] + "\n";
         }
         return value;
 
@@ -214,65 +236,106 @@ public class Data {
     }
 
     /*
-     * Partiziona il vettore rispetto all'elemento x e restiutisce il punto di
-     * separazione
+     * Partiziona il vettore rispetto all'elemento x e restiutisce il punto di separazione
      */
-    private int partition(DiscreteAttribute attribute, int inf, int sup) {
-        int i, j;
+    private  int partition(DiscreteAttribute attribute, int inf, int sup){
+		int i,j;
+	
+		i=inf; 
+		j=sup; 
+		int	med=(inf+sup)/2;
+		String x=(String)getExplanatoryValue(med, attribute.getIndex());
+		swap(inf,med);
+	
+		while (true) 
+		{
+			
+			while(i<=sup && ((String)getExplanatoryValue(i, attribute.getIndex())).compareTo(x)<=0){ 
+				i++; 
+				
+			}
+		
+			while(((String)getExplanatoryValue(j, attribute.getIndex())).compareTo(x)>0) {
+				j--;
+			
+			}
+			
+			if(i<j) { 
+				swap(i,j);
+			}
+			else break;
+		}
+		swap(inf,j);
+		return j;
 
-        i = inf;
-        j = sup;
-        int med = (inf + sup) / 2;
-        String x = (String) getExplanatoryValue(med, attribute.getIndex());
-        swap(inf, med);
+	}
 
-        while (true) {
+	
 
-            while (i <= sup && ((String) getExplanatoryValue(i, attribute.getIndex())).compareTo(x) <= 0) {
-                i++;
+	/*
+	 * Partiziona il vettore rispetto all'elemento x e restiutisce il punto di separazione
+	 */
+	private  int partition(ContinuousAttribute attribute, int inf, int sup){
+		int i,j;
+	
+		i=inf; 
+		j=sup; 
+		int	med=(inf+sup)/2;
+		Double x=(Double)getExplanatoryValue(med, attribute.getIndex());
+		swap(inf,med);
+	
+		while (true) 
+		{
+			
+			while(i<=sup && ((Double)getExplanatoryValue(i, attribute.getIndex())).compareTo(x)<=0){ 
+				i++; 
+				
+			}
+		
+			while(((Double)getExplanatoryValue(j, attribute.getIndex())).compareTo(x)>0) {
+				j--;
+			
+			}
+			
+			if(i<j) { 
+				swap(i,j);
+			}
+			else break;
+		}
+		swap(inf,j);
+		return j;
 
-            }
+	}
 
-            while (((String) getExplanatoryValue(j, attribute.getIndex())).compareTo(x) > 0) {
-                j--;
-
-            }
-
-            if (i < j) {
-                swap(i, j);
-            } else
-                break;
-        }
-        swap(inf, j);
-        return j;
-
-    }
-
-    /*
-     * Algoritmo quicksort per l'ordinamento di un array di interi A
-     * usando come relazione d'ordine totale "<="
-     * 
-     * @param A
-     */
-    private void quicksort(Attribute attribute, int inf, int sup) {
-
-        if (sup >= inf) {
-
-            int pos;
-
-            pos = partition((DiscreteAttribute) attribute, inf, sup);
-
-            if ((pos - inf) < (sup - pos + 1)) {
-                quicksort(attribute, inf, pos - 1);
-                quicksort(attribute, pos + 1, sup);
-            } else {
-                quicksort(attribute, pos + 1, sup);
-                quicksort(attribute, inf, pos - 1);
-            }
-
-        }
-
-    }
+	/*
+	 * Algoritmo quicksort per l'ordinamento di un array di interi A
+	 * usando come relazione d'ordine totale "<="
+	 * @param A
+	 */
+	private void quicksort(Attribute attribute, int inf, int sup){
+		
+		if(sup>=inf){
+			
+			int pos;
+			if(attribute instanceof DiscreteAttribute)
+				pos=partition((DiscreteAttribute)attribute, inf, sup);
+			else
+				pos=partition((ContinuousAttribute)attribute, inf, sup);
+					
+			if ((pos-inf) < (sup-pos+1)) {
+				quicksort(attribute, inf, pos-1); 
+				quicksort(attribute, pos+1,sup);
+			}
+			else
+			{
+				quicksort(attribute, pos+1, sup); 
+				quicksort(attribute, inf, pos-1);
+			}
+			
+			
+		}
+		
+	}
 
     public static void main(String args[]) throws TrainingDataException {
         Data trainingSet = new Data("prova.dat");
