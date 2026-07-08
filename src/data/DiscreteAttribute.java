@@ -2,49 +2,39 @@ package data;
 
 /**
  * Rappresenta un attributo discreto.
- *
- * L'attributo e' descritto dal suo nome, dal suo indice e dall'insieme dei
- * valori discreti che puo' assumere.
  */
 public class DiscreteAttribute extends Attribute {
-    /** Array di oggetti String per i valori discreti. */
+    /** Valori discreti dell'attributo. */
     private String[] values;
 
     /**
-     * Costruisce un attributo discreto e ne memorizza i valori ammessi.
+     * Costruisce un attributo discreto.
      *
-     * @param name Nome dell'attributo.
-     * @param index Indice dell'attributo.
-     * @param values Array di stringhe con i valori possibili.
+     * @param name Nome simbolico dell'attributo.
+     * @param index Identificativo numerico dell'attributo.
+     * @param values Valori discreti dell'attributo.
      */
     public DiscreteAttribute(String name, int index, String[] values) {
-        // Chiama il costruttore di Attribute
         super(name, index);
         this.values = values;
     }
 
     /**
-     * Restituisce la cardinalita' dell'array {@code values}.
+     * Restituisce il numero di valori discreti.
      *
-     * @return Numero di valori discreti memorizzati nell'array.
+     * @return numero di valori discreti.
      */
     public int getNumberOfDistinctValues() {
         return values.length;
     }
 
     /**
-     * Restituisce il valore in posizione i.
+     * Restituisce il valore discreto in posizione {@code i}.
      *
-     * @param i indice del valore.
-     * @return Il valore corrispondente.
-     * @throws IndexOutOfBoundsException Se {@code i} non e' compreso tra 0 e
-     *         {@code values.length - 1}.
+     * @param i Indice del valore.
+     * @return valore discreto con indice {@code i}.
      */
     public String getValue(int i) {
-        if (i >= values.length || i < 0) {
-            throw new IndexOutOfBoundsException(
-                    "Indice " + i + "non valido per la lunghezza della stringa");
-        }
         return values[i];
     }
 }

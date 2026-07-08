@@ -5,24 +5,20 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 /**
- * Modella il training set usato per costruire l'albero di regressione.
- *
- * La classe legge i dati da file, memorizza gli attributi indipendenti,
- * l'attributo di classe e la matrice degli esempi di training. Fornisce inoltre
- * metodi di accesso e ordinamento del sottoinsieme di esempi.
+ * Modella l'insieme di esempi di training.
  */
 public class Data {
 
-    /** Matrice degli esempi di training organizzata per righe e colonne. */
+    /** Matrice degli esempi di training. */
     private Object data[][];
 
-    /** Numero totale di esempi presenti nel training set. */
+    /** Numero di esempi. */
     private int numberOfExamples;
 
-    /** Insieme degli attributi indipendenti del dataset. */
+    /** Attributi indipendenti. */
     private Attribute explanatorySet[];
 
-    /** Attributo di classe numerico da predire. */
+    /** Attributo di classe. */
     private ContinuousAttribute classAttribute;
 
     public Data(String fileName) throws TrainingDataException {
@@ -107,32 +103,28 @@ public class Data {
     }
 
     /**
-     * Restituisce il numero totale di esempi (righe) presenti nel training set.
+     * Restituisce il numero di esempi.
      *
-     * @return Cardinalità dell'insieme di esempi.
+     * @return numero di esempi.
      */
     public int getNumberOfExamples() {
         return numberOfExamples;
     }
 
     /**
-     * Restituisce il numero di attributi indipendenti nel dataset.
-     * Corrisponde alla lunghezza dello spazio descrittivo.
+     * Restituisce il numero di attributi indipendenti.
      *
-     * @return Cardinalità dell'insieme degli attributi indipendenti.
+     * @return numero di attributi indipendenti.
      */
     public int getNumberOfExplanatoryAttributes() {
         return explanatorySet.length;
     }
 
     /**
-     * Restituisce il valore dell'attributo di classe (target) per uno specifico
-     * esempio.
+     * Restituisce il valore dell'attributo di classe.
      *
-     * @param exampleIndex Indice di riga dell'esempio nella matrice dei dati.
-     * @return Valore dell'attributo di classe (effettuando il cast a Double).
-     * @throws IndexOutOfBoundsException Se {@code exampleIndex} non e' un indice
-     *         valido della matrice dei dati.
+     * @param exampleIndex Indice dell'esempio.
+     * @return valore dell'attributo di classe.
      */
     public Double getClassValue(int exampleIndex) {
         if (exampleIndex < 0 || exampleIndex >= data.length) {
@@ -147,13 +139,11 @@ public class Data {
     }
 
     /**
-     * Restituisce l'Object della matrice data incrociando riga e colonna.
+     * Restituisce il valore di un attributo indipendente.
      *
-     * @param exampleIndex   Indice di riga dell'esempio nella matrice dei dati.
-     * @param attributeIndex Indice di colonna dell'attributo indipendente di cui si
-     *                       desidera estrarre il valore.
-     * @return L'oggetto (valore) associato a quell'attributo per quell'esempio.
-     * @throws IndexOutOfBoundsException Se uno degli indici non e' valido.
+     * @param exampleIndex Indice dell'esempio.
+     * @param attributeIndex Indice dell'attributo.
+     * @return valore dell'attributo indicato.
      */
     public Object getExplanatoryValue(int exampleIndex, int attributeIndex) {
         if (exampleIndex < 0 || exampleIndex >= data.length) {
@@ -176,14 +166,10 @@ public class Data {
     }
 
     /**
-     * Restituisce l'oggetto Attribute trovato in posizione index nell'array
-     * explanatorySet.
+     * Restituisce un attributo indipendente.
      *
-     * @param index Indice che individua le posizioni nell'array explanatorySet
-     * @return L'oggetto (Attribute) presente nell'array nella posizione specificata
-     *         da index
-     * @throws IndexOutOfBoundsException Se {@code index} non e' un indice valido
-     *         dell'array explanatorySet.
+     * @param index Indice dell'attributo.
+     * @return attributo indipendente con indice {@code index}.
      */
     public Attribute getExplanatoryAttribute(int index) {
         if (index < 0 || index >= explanatorySet.length) {
@@ -197,11 +183,9 @@ public class Data {
     }
 
     /**
-     * Restituisce l'attributo target, ovvero la variabile di istanza
-     * classAttribute.
+     * Restituisce l'attributo di classe.
      *
-     * @return L'oggetto (ContinuousAttribute) che, nella regressione, rappresenta
-     *         l'attributo da prevedere.
+     * @return attributo di classe.
      */
     public ContinuousAttribute getClassAttribute() {
         return classAttribute;
