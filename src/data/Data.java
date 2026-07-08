@@ -26,7 +26,6 @@ public class Data {
     private ContinuousAttribute classAttribute;
 
     public Data(String fileName) throws TrainingDataException {
-
         File inFile = new File(fileName);
         Scanner sc = null;
 
@@ -59,10 +58,17 @@ public class Data {
                     s = line.split(" ");
                     if (s[0].equals("@desc")) {
                         String discreteValues[] = s[2].split(",");
-                        explanatorySet[iAttribute] = new DiscreteAttribute(s[1], iAttribute, discreteValues);
+                        explanatorySet[iAttribute] = new DiscreteAttribute(
+                            s[1],
+                            iAttribute,
+                            discreteValues
+                        );
                         iAttribute++;
                     } else if (s[0].equals("@target")) {
-                        classAttribute = new ContinuousAttribute(s[1], iAttribute);
+                        classAttribute = new ContinuousAttribute(
+                            s[1],
+                            iAttribute
+                        );
                         iAttribute++;
                     }
                 }
@@ -73,7 +79,9 @@ public class Data {
             }
 
             if (classAttribute == null) {
-                throw new TrainingDataException("Training set privo di variabile target numerica");
+                throw new TrainingDataException(
+                    "Training set privo di variabile target numerica"
+                );
             }
 
             numberOfExamples = Integer.parseInt(line.split(" ")[1]);
@@ -96,7 +104,6 @@ public class Data {
         } finally {
             sc.close();
         }
-
     }
 
     /**
@@ -130,7 +137,10 @@ public class Data {
     public Double getClassValue(int exampleIndex) {
         if (exampleIndex < 0 || exampleIndex >= data.length) {
             throw new IndexOutOfBoundsException(
-                    "il valore" + exampleIndex + "di exampleIndex all' in getClassValue e' fuori indice");
+                "il valore" +
+                    exampleIndex +
+                    "di exampleIndex all' in getClassValue e' fuori indice"
+            );
         }
 
         return (Double) data[exampleIndex][explanatorySet.length];
@@ -148,10 +158,18 @@ public class Data {
     public Object getExplanatoryValue(int exampleIndex, int attributeIndex) {
         if (exampleIndex < 0 || exampleIndex >= data.length) {
             throw new IndexOutOfBoundsException(
-                    "il valore" + exampleIndex + "id exampleIndex in getExplanatoryValue e' fuori indice");
-        } else if (attributeIndex < 0 || attributeIndex >= explanatorySet.length) {
+                "il valore" +
+                    exampleIndex +
+                    "id exampleIndex in getExplanatoryValue e' fuori indice"
+            );
+        } else if (
+            attributeIndex < 0 || attributeIndex >= explanatorySet.length
+        ) {
             throw new IndexOutOfBoundsException(
-                    "il valore" + attributeIndex + "di attributeIndex all' in getExplanatoryValue e' fuori indice");
+                "il valore" +
+                    attributeIndex +
+                    "di attributeIndex all' in getExplanatoryValue e' fuori indice"
+            );
         }
 
         return data[exampleIndex][attributeIndex];
@@ -163,14 +181,17 @@ public class Data {
      *
      * @param index Indice che individua le posizioni nell'array explanatorySet
      * @return L'oggetto (Attribute) presente nell'array nella posizione specificata
-      *         da index
+     *         da index
      * @throws IndexOutOfBoundsException Se {@code index} non e' un indice valido
      *         dell'array explanatorySet.
      */
     public Attribute getExplanatoryAttribute(int index) {
         if (index < 0 || index >= explanatorySet.length) {
             throw new IndexOutOfBoundsException(
-                    "il valore" + index + "di index in getExplanatoryAttribute e' fuori indice");
+                "il valore" +
+                    index +
+                    "di index in getExplanatoryAttribute e' fuori indice"
+            );
         }
         return explanatorySet[index];
     }
@@ -189,16 +210,19 @@ public class Data {
     public String toString() {
         String value = "";
         for (int i = 0; i < numberOfExamples; i++) {
-            for (int j = 0; j < explanatorySet.length; j++)
-                value += data[i][j] + ",";
+            for (int j = 0; j < explanatorySet.length; j++) value +=
+                data[i][j] + ",";
 
             value += data[i][explanatorySet.length] + "\n";
         }
         return value;
-
     }
 
-    public void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex) {
+    public void sort(
+        Attribute attribute,
+        int beginExampleIndex,
+        int endExampleIndex
+    ) {
         quicksort(attribute, beginExampleIndex, endExampleIndex);
     }
 
@@ -210,7 +234,6 @@ public class Data {
             data[i][k] = data[j][k];
             data[j][k] = temp;
         }
-
     }
 
     /*
@@ -227,37 +250,39 @@ public class Data {
         swap(inf, med);
 
         while (true) {
-
-            while (i <= sup && ((String) getExplanatoryValue(i, attribute.getIndex())).compareTo(x) <= 0) {
+            while (
+                i <= sup &&
+                (
+                    (String) getExplanatoryValue(i, attribute.getIndex())
+                ).compareTo(x) <= 0
+            ) {
                 i++;
-
             }
 
-            while (((String) getExplanatoryValue(j, attribute.getIndex())).compareTo(x) > 0) {
+            while (
+                (
+                    (String) getExplanatoryValue(j, attribute.getIndex())
+                ).compareTo(x) > 0
+            ) {
                 j--;
-
             }
 
             if (i < j) {
                 swap(i, j);
-            } else
-                break;
+            } else break;
         }
         swap(inf, j);
         return j;
-
     }
 
     /*
      * Algoritmo quicksort per l'ordinamento di un array di interi A
      * usando come relazione d'ordine totale "<="
-     * 
+     *
      * @param A
      */
     private void quicksort(Attribute attribute, int inf, int sup) {
-
         if (sup >= inf) {
-
             int pos;
 
             pos = partition((DiscreteAttribute) attribute, inf, sup);
@@ -269,21 +294,27 @@ public class Data {
                 quicksort(attribute, pos + 1, sup);
                 quicksort(attribute, inf, pos - 1);
             }
-
         }
-
     }
 
-    public static void main(String args[]) throws TrainingDataException {
+    public static void main(String[] args) throws TrainingDataException {
         Data trainingSet = new Data("prova.dat");
         System.out.println(trainingSet);
 
-        for (int jColumn = 0; jColumn < trainingSet.getNumberOfExplanatoryAttributes(); jColumn++) {
-            System.out.println("ORDER BY " + trainingSet.getExplanatoryAttribute(jColumn));
-            trainingSet.quicksort(trainingSet.getExplanatoryAttribute(jColumn), 0,
-                    trainingSet.getNumberOfExamples() - 1);
+        for (
+            int jColumn = 0;
+            jColumn < trainingSet.getNumberOfExplanatoryAttributes();
+            jColumn++
+        ) {
+            System.out.println(
+                "ORDER BY " + trainingSet.getExplanatoryAttribute(jColumn)
+            );
+            trainingSet.quicksort(
+                trainingSet.getExplanatoryAttribute(jColumn),
+                0,
+                trainingSet.getNumberOfExamples() - 1
+            );
             System.out.println(trainingSet);
         }
-
     }
 }
