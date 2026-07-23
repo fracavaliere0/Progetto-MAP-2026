@@ -4,8 +4,11 @@ import data.Data;
 import data.TrainingDataException;
 import tree.RegressionTree;
 
-/** Verifica il calcolo delle statistiche dell'albero grafico. */
-public final class RegressionTreeGUIStatisticsTest {
+/** Verifica il calcolo delle statistiche dell'albero visuale. */
+public final class VisualTreeStatisticsTest {
+
+    /** Impedisce l'istanziazione della classe di test. */
+    private VisualTreeStatisticsTest() {}
 
     /**
      * Esegue la verifica sul training set di esempio.
@@ -16,7 +19,7 @@ public final class RegressionTreeGUIStatisticsTest {
     public static void main(String[] args) throws TrainingDataException {
         Data trainingSet = new Data("prova.dat");
         RegressionTree tree = new RegressionTree(trainingSet);
-        String statistics = RegressionTreeGUI.treeStatistics(tree);
+        String statistics = VisualTree.from(tree).getStatistics();
 
         assert statistics.equals("5 nodi  |  3 foglie  |  profondità 2")
             : statistics;

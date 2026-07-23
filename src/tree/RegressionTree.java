@@ -39,6 +39,24 @@ public class RegressionTree {
     }
 
     /**
+     * Restituisce la radice del sotto-albero corrente.
+     *
+     * @return radice del sotto-albero.
+     */
+    public Node getRoot() {
+        return root;
+    }
+
+    /**
+     * Restituisce una copia dell'array dei sotto-alberi figli.
+     *
+     * @return sotto-alberi figli, oppure un array vuoto se non sono presenti.
+     */
+    public RegressionTree[] getChildren() {
+        return childTree == null ? new RegressionTree[0] : childTree.clone();
+    }
+
+    /**
      * Verifica se il sottoinsieme corrente puo' essere coperto da un nodo foglia.
      *
      * Il criterio adottato confronta il numero di esempi compresi tra gli indici
