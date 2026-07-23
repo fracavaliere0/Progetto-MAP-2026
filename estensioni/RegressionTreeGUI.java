@@ -19,8 +19,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.geom.Path2D;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
@@ -28,6 +28,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -36,32 +37,52 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.basic.BasicButtonUI;
 
-/** Interfaccia grafica del Regression Tree Miner. */
+/** Interfaccia grafica di Progetto Map 2026. */
 public final class RegressionTreeGUI extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Color PAGE = new Color(0xF3F6F7);
-    private static final Color SURFACE = Color.WHITE;
-    private static final Color HEADER = new Color(0x1D3038);
-    private static final Color TEXT = new Color(0x1F2930);
-    private static final Color MUTED = new Color(0x66747C);
-    private static final Color PRIMARY = new Color(0x147D82);
-    private static final Color ACCENT = new Color(0xE36F51);
-    private static final Color SPLIT = new Color(0x243E49);
-    private static final Color LEAF = new Color(0x2E8B57);
-    private static final Color LEAF_BACKGROUND = new Color(0xEAF7EF);
-    private static final Color LINE = new Color(0xAAB5BA);
-    private static final Color CANVAS = new Color(0xF8FAFB);
+    private static final Color PAPER = Color.WHITE;
+    private static final Color INK = Color.BLACK;
+    private static final Color MUTED = new Color(0x555555);
+    private static final Color RED = new Color(0xC00020);
+    private static final BasicButtonUI BUTTON_UI = new BasicButtonUI() {
+
+        @Override
+        protected void paintButtonPressed(Graphics graphics, AbstractButton button) {
+            paintIndicator(graphics, button, 2);
+            paintIndicator(graphics, button, 3);
+        }
+
+        @Override
+        protected void paintFocus(
+            Graphics graphics,
+            AbstractButton button,
+            Rectangle view,
+            Rectangle text,
+            Rectangle icon
+        ) {
+            paintIndicator(graphics, button, 4);
+        }
+
+        private void paintIndicator(Graphics graphics, AbstractButton button, int inset) {
+            graphics.setColor(RED);
+            graphics.drawRect(
+                inset,
+                inset,
+                button.getWidth() - inset * 2 - 1,
+                button.getHeight() - inset * 2 - 1
+            );
+        }
+    };
 
     private static final DecimalFormat NUMBER_FORMAT = new DecimalFormat(
         "0.####",
@@ -70,18 +91,18 @@ public final class RegressionTreeGUI extends JFrame {
 
     private final JTextField fileField = new JTextField("prova.dat");
     private final JTextArea detailsArea = new JTextArea();
+    private final JButton detailsButton = new JButton("Dettagli");
     private final JLabel statusLabel = new JLabel("Pronto");
     private final TreeCanvas treeCanvas = new TreeCanvas();
     private final JScrollPane graphScroll = new JScrollPane(treeCanvas);
 
     public RegressionTreeGUI() {
-        super("Regression Tree Miner");
+        super("Progetto Map 2026");
 
         JPanel content = new JPanel(new BorderLayout());
-        content.setBackground(PAGE);
+        content.setBackground(PAPER);
         content.add(createTop(), BorderLayout.NORTH);
         content.add(createCenter(), BorderLayout.CENTER);
-        content.add(createStatusBar(), BorderLayout.SOUTH);
 
         setContentPane(content);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -98,22 +119,27 @@ public final class RegressionTreeGUI extends JFrame {
     }
 
     private JPanel createHeader() {
-        JLabel title = new JLabel("Regression Tree Miner");
-        title.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
-        title.setForeground(Color.WHITE);
+        JLabel title = new JLabel("Progetto Map 2026");
+        title.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 28));
+        title.setForeground(INK);
 
-        JLabel subtitle = new JLabel("Training e visualizzazione del modello");
-        subtitle.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13));
-        subtitle.setForeground(new Color(0xC7D4D8));
+        JLabel subtitle = new JLabel("REGRESSION TREE");
+        subtitle.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
+        subtitle.setForeground(RED);
 
-        JPanel labels = new JPanel(new BorderLayout(0, 3));
+        JPanel labels = new JPanel(new BorderLayout(0, 2));
         labels.setOpaque(false);
         labels.add(title, BorderLayout.NORTH);
         labels.add(subtitle, BorderLayout.SOUTH);
 
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(HEADER);
-        header.setBorder(BorderFactory.createEmptyBorder(16, 22, 16, 22));
+        header.setBackground(PAPER);
+        header.setBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 2, 0, INK),
+                BorderFactory.createEmptyBorder(12, 20, 11, 20)
+            )
+        );
         header.add(labels, BorderLayout.WEST);
         return header;
     }
@@ -121,24 +147,26 @@ public final class RegressionTreeGUI extends JFrame {
     private JPanel createControls() {
         JLabel fileLabel = new JLabel("Training set");
         fileLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
-        fileLabel.setForeground(TEXT);
+        fileLabel.setForeground(INK);
         fileLabel.setLabelFor(fileField);
 
         fileField.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+        fileField.setForeground(INK);
+        fileField.setBackground(PAPER);
         fileField.setBorder(
             BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(0xCBD4D8)),
-                BorderFactory.createEmptyBorder(8, 10, 8, 10)
+                BorderFactory.createLineBorder(INK),
+                BorderFactory.createEmptyBorder(7, 9, 7, 9)
             )
         );
 
         JButton openButton = new JButton("Scegli file");
-        styleButton(openButton, new Color(0xE7ECEE), TEXT);
+        styleButton(openButton, PAPER, INK);
         openButton.setMnemonic('S');
         openButton.addActionListener(event -> chooseFile());
 
         JButton trainButton = new JButton("Avvia training");
-        styleButton(trainButton, PRIMARY, Color.WHITE);
+        styleButton(trainButton, INK, PAPER);
         trainButton.setMnemonic('T');
         trainButton.addActionListener(event -> train());
         getRootPane().setDefaultButton(trainButton);
@@ -150,81 +178,83 @@ public final class RegressionTreeGUI extends JFrame {
         filePanel.add(openButton, BorderLayout.EAST);
 
         JPanel controls = new JPanel(new BorderLayout(12, 0));
-        controls.setBackground(SURFACE);
-        controls.setBorder(BorderFactory.createEmptyBorder(14, 22, 14, 22));
+        controls.setBackground(PAPER);
+        controls.setBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, INK),
+                BorderFactory.createEmptyBorder(10, 20, 10, 20)
+            )
+        );
         controls.add(filePanel, BorderLayout.CENTER);
         controls.add(trainButton, BorderLayout.EAST);
         return controls;
     }
 
     private JPanel createCenter() {
-        treeCanvas.setScale(0.8);
-        graphScroll.setBorder(BorderFactory.createEmptyBorder());
-        graphScroll.getViewport().setBackground(CANVAS);
+        treeCanvas.setScale(1.0);
+        graphScroll.setBorder(BorderFactory.createLineBorder(INK));
+        graphScroll.getViewport().setBackground(PAPER);
 
-        JSlider zoomSlider = new JSlider(45, 125, 80);
-        zoomSlider.setOpaque(false);
-        zoomSlider.setPreferredSize(new Dimension(170, 32));
-
-        JLabel zoomValue = new JLabel("80%");
+        JLabel zoomValue = new JLabel("100%");
         zoomValue.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
         zoomValue.setForeground(MUTED);
-        zoomSlider.addChangeListener(event -> {
-            treeCanvas.setScale(zoomSlider.getValue() / 100.0);
-            zoomValue.setText(zoomSlider.getValue() + "%");
-        });
+
+        JButton zoomOutButton = new JButton("−");
+        styleButton(zoomOutButton, PAPER, INK);
+        zoomOutButton.setToolTipText("Riduci zoom");
+        zoomOutButton.addActionListener(event -> zoomBy(-0.1, zoomValue));
+
+        JButton zoomInButton = new JButton("+");
+        styleButton(zoomInButton, PAPER, INK);
+        zoomInButton.setToolTipText("Aumenta zoom");
+        zoomInButton.addActionListener(event -> zoomBy(0.1, zoomValue));
 
         JButton centerButton = new JButton("Centra");
-        styleButton(centerButton, new Color(0xE7ECEE), TEXT);
+        styleButton(centerButton, PAPER, INK);
         centerButton.addActionListener(event -> centerTree());
 
-        JPanel graphTools = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 7));
-        graphTools.setBackground(SURFACE);
-        graphTools.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(0xDDE4E7)));
-        graphTools.add(new JLabel("Zoom"));
-        graphTools.add(zoomSlider);
-        graphTools.add(zoomValue);
-        graphTools.add(centerButton);
+        styleButton(detailsButton, PAPER, INK);
+        detailsButton.setMnemonic('D');
+        detailsButton.setEnabled(false);
+        detailsButton.addActionListener(event -> showDetails());
+
+        statusLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        statusLabel.setForeground(MUTED);
+        statusLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 8));
+
+        JPanel graphActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 7));
+        graphActions.setBackground(PAPER);
+        graphActions.add(detailsButton);
+        graphActions.add(new JLabel("Zoom"));
+        graphActions.add(zoomOutButton);
+        graphActions.add(zoomValue);
+        graphActions.add(zoomInButton);
+        graphActions.add(centerButton);
+
+        JPanel graphTools = new JPanel(new BorderLayout());
+        graphTools.setBackground(PAPER);
+        graphTools.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, INK));
+        graphTools.add(statusLabel, BorderLayout.CENTER);
+        graphTools.add(graphActions, BorderLayout.EAST);
 
         JPanel graphPanel = new JPanel(new BorderLayout());
+        graphPanel.setBackground(PAPER);
+        graphPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 0, 8));
         graphPanel.add(graphScroll, BorderLayout.CENTER);
         graphPanel.add(graphTools, BorderLayout.SOUTH);
 
         detailsArea.setEditable(false);
         detailsArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
-        detailsArea.setForeground(TEXT);
-        detailsArea.setBackground(SURFACE);
+        detailsArea.setForeground(INK);
+        detailsArea.setBackground(PAPER);
         detailsArea.setMargin(new Insets(12, 12, 12, 12));
 
-        JScrollPane detailsScroll = new JScrollPane(detailsArea);
-        detailsScroll.setBorder(BorderFactory.createEmptyBorder());
-
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
-        tabs.addTab("Albero grafico", graphPanel);
-        tabs.addTab("Dettagli", detailsScroll);
-
-        JPanel center = new JPanel(new BorderLayout());
-        center.setBackground(PAGE);
-        center.setBorder(BorderFactory.createEmptyBorder(14, 14, 0, 14));
-        center.add(tabs, BorderLayout.CENTER);
-        return center;
+        return graphPanel;
     }
 
-    private JPanel createStatusBar() {
-        statusLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-        statusLabel.setForeground(MUTED);
-
-        JPanel status = new JPanel(new BorderLayout());
-        status.setBackground(SURFACE);
-        status.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(0xDDE4E7)),
-                BorderFactory.createEmptyBorder(9, 22, 9, 22)
-            )
-        );
-        status.add(statusLabel, BorderLayout.WEST);
-        return status;
+    private void zoomBy(double amount, JLabel zoomValue) {
+        treeCanvas.setScale(treeCanvas.getScale() + amount);
+        zoomValue.setText(Math.round(treeCanvas.getScale() * 100) + "%");
     }
 
     private void chooseFile() {
@@ -236,6 +266,18 @@ public final class RegressionTreeGUI extends JFrame {
         }
     }
 
+    private void showDetails() {
+        JScrollPane scroll = new JScrollPane(detailsArea);
+        scroll.setBorder(BorderFactory.createLineBorder(INK));
+        scroll.setPreferredSize(new Dimension(640, 420));
+        JOptionPane.showMessageDialog(
+            this,
+            scroll,
+            "Dettagli albero",
+            JOptionPane.PLAIN_MESSAGE
+        );
+    }
+
     private void train() {
         String fileName = fileField.getText().trim();
         if (fileName.isEmpty()) {
@@ -244,6 +286,7 @@ public final class RegressionTreeGUI extends JFrame {
         }
 
         statusLabel.setText("Training in corso...");
+        statusLabel.setForeground(INK);
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         long start = System.nanoTime();
 
@@ -254,23 +297,30 @@ public final class RegressionTreeGUI extends JFrame {
             treeCanvas.setTree(visualTree);
             detailsArea.setText(tree.toString());
             detailsArea.setCaretPosition(0);
+            detailsButton.setEnabled(true);
 
             long elapsed = (System.nanoTime() - start) / 1_000_000;
             statusLabel.setText(
+                "<html>" +
                 trainingSet.getNumberOfExamples() +
-                " esempi  |  " +
+                " esempi &nbsp;•&nbsp; " +
                 trainingSet.getNumberOfExplanatoryAttributes() +
-                " attributi  |  " +
-                treeStatistics(visualTree) +
-                "  |  " +
+                " attributi &nbsp;•&nbsp; " +
+                treeStatistics(visualTree)
+                    .replace(" nodi  |  ", " nodi<br>")
+                    .replace("  |  ", " &nbsp;•&nbsp; ") +
+                " &nbsp;•&nbsp; " +
                 elapsed +
-                " ms"
+                " ms</html>"
             );
+            statusLabel.setForeground(RED);
             SwingUtilities.invokeLater(() -> centerTree());
         } catch (TrainingDataException | RuntimeException exception) {
             treeCanvas.setTree(null);
             detailsArea.setText("");
+            detailsButton.setEnabled(false);
             statusLabel.setText("Training non completato");
+            statusLabel.setForeground(RED);
             showError(exception.toString());
         } finally {
             setCursor(Cursor.getDefaultCursor());
@@ -292,17 +342,19 @@ public final class RegressionTreeGUI extends JFrame {
     }
 
     private static void styleButton(JButton button, Color background, Color foreground) {
+        button.setUI(BUTTON_UI);
         button.setBackground(background);
         button.setForeground(foreground);
         button.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
         button.setBorder(
             BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(background.darker()),
-                BorderFactory.createEmptyBorder(8, 14, 8, 14)
+                BorderFactory.createLineBorder(INK),
+                BorderFactory.createEmptyBorder(7, 13, 7, 13)
             )
         );
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setOpaque(true);
+        button.setContentAreaFilled(true);
     }
 
     private static VisualNode createVisualTree(RegressionTree tree) {
@@ -425,6 +477,8 @@ public final class RegressionTreeGUI extends JFrame {
 
     /** Avvia l'interfaccia sul thread grafico di Swing. */
     public static void main(String[] args) {
+        System.setProperty("awt.useSystemAAFontSettings", "on");
+        System.setProperty("swing.aatext", "true");
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {
@@ -454,19 +508,19 @@ public final class RegressionTreeGUI extends JFrame {
     private static final class TreeCanvas extends JPanel {
 
         private static final long serialVersionUID = 1L;
-        private static final int NODE_WIDTH = 174;
-        private static final int NODE_HEIGHT = 68;
-        private static final int HORIZONTAL_GAP = 38;
-        private static final int LEVEL_GAP = 86;
-        private static final int MARGIN = 56;
+        private static final int NODE_WIDTH = 200;
+        private static final int NODE_HEIGHT = 72;
+        private static final int HORIZONTAL_GAP = 48;
+        private static final int LEVEL_GAP = 90;
+        private static final int MARGIN = 36;
 
         private transient VisualNode root;
         private double scale = 1.0;
-        private int baseWidth = 1300;
-        private int baseHeight = 500;
+        private int baseWidth = 600;
+        private int baseHeight = 460;
 
         private TreeCanvas() {
-            setBackground(CANVAS);
+            setBackground(PAPER);
         }
 
         private void setTree(VisualNode root) {
@@ -477,7 +531,7 @@ public final class RegressionTreeGUI extends JFrame {
         }
 
         private void setScale(double scale) {
-            this.scale = Math.max(0.45, Math.min(1.25, scale));
+            this.scale = Math.max(0.5, Math.min(1.5, scale));
             revalidate();
             repaint();
         }
@@ -530,6 +584,7 @@ public final class RegressionTreeGUI extends JFrame {
             }
 
             g.scale(scale, scale);
+            g.translate(Math.max(0, (getWidth() / scale - baseWidth) / 2), 0);
             drawEdges(g, root);
             drawNodes(g, root);
             g.dispose();
@@ -537,17 +592,17 @@ public final class RegressionTreeGUI extends JFrame {
 
         private void layoutTree() {
             if (root == null) {
-                baseWidth = 1300;
-                baseHeight = 500;
+                baseWidth = 600;
+                baseHeight = 460;
                 return;
             }
 
             measure(root);
-            baseWidth = Math.max(1300, root.subtreeWidth + MARGIN * 2);
-            layout(root, (baseWidth - root.subtreeWidth) / 2, MARGIN);
+            baseWidth = root.subtreeWidth + MARGIN * 2;
+            layout(root, MARGIN, MARGIN);
             int levels = depth(root);
             baseHeight = Math.max(
-                500,
+                460,
                 MARGIN * 2 + levels * NODE_HEIGHT + (levels - 1) * LEVEL_GAP
             );
         }
@@ -587,13 +642,11 @@ public final class RegressionTreeGUI extends JFrame {
                 int toY = child.y;
                 int middleY = (fromY + toY) / 2;
 
-                Path2D path = new Path2D.Double();
-                path.moveTo(fromX, fromY);
-                path.curveTo(fromX, middleY, toX, middleY, toX, toY);
-
-                g.setColor(LINE);
+                g.setColor(INK);
                 g.setStroke(new BasicStroke(2f));
-                g.draw(path);
+                g.drawLine(fromX, fromY, fromX, middleY);
+                g.drawLine(fromX, middleY, toX, middleY);
+                g.drawLine(toX, middleY, toX, toY);
                 drawBranch(g, child.branch, (fromX + toX) / 2, middleY);
                 drawEdges(g, child);
             }
@@ -607,11 +660,11 @@ public final class RegressionTreeGUI extends JFrame {
             int x = centerX - width / 2;
             int y = centerY - height / 2;
 
-            g.setColor(new Color(255, 255, 255, 235));
-            g.fillRoundRect(x, y, width, height, 8, 8);
-            g.setColor(new Color(0xD7DEE1));
-            g.drawRoundRect(x, y, width, height, 8, 8);
-            g.setColor(ACCENT);
+            g.setColor(PAPER);
+            g.fillRect(x, y, width, height);
+            g.setColor(INK);
+            g.drawRect(x, y, width, height);
+            g.setColor(RED);
             g.drawString(text, x + 7, y + 15);
         }
 
@@ -626,30 +679,19 @@ public final class RegressionTreeGUI extends JFrame {
             int x = node.x;
             int y = node.y;
 
-            g.setColor(new Color(0, 0, 0, 24));
-            g.fillRoundRect(x + 3, y + 4, NODE_WIDTH, NODE_HEIGHT, 8, 8);
+            g.setColor(node.leaf ? PAPER : INK);
+            g.fillRect(x, y, NODE_WIDTH, NODE_HEIGHT);
+            g.setColor(INK);
+            g.setStroke(new BasicStroke(2f));
+            g.drawRect(x, y, NODE_WIDTH, NODE_HEIGHT);
 
-            g.setColor(node.leaf ? LEAF_BACKGROUND : SPLIT);
-            g.fillRoundRect(x, y, NODE_WIDTH, NODE_HEIGHT, 8, 8);
-            g.setColor(node.leaf ? LEAF : PRIMARY);
-            g.setStroke(new BasicStroke(1.6f));
-            g.drawRoundRect(x, y, NODE_WIDTH, NODE_HEIGHT, 8, 8);
+            g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, node.leaf ? 19 : 17));
+            g.setColor(node.leaf ? RED : PAPER);
+            drawCentered(g, fit(node.title, g.getFontMetrics(), NODE_WIDTH - 22), x, y + 36);
 
-            if (node.leaf) {
-                g.setColor(LEAF);
-                g.fillOval(x + 13, y + 12, 8, 8);
-            } else {
-                g.setColor(ACCENT);
-                g.fillRoundRect(x + 13, y + 12, 30, 4, 4, 4);
-            }
-
-            g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-            g.setColor(node.leaf ? TEXT : Color.WHITE);
-            drawCentered(g, fit(node.title, g.getFontMetrics(), NODE_WIDTH - 22), x, y + 35);
-
-            g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
-            g.setColor(node.leaf ? new Color(0x3B7654) : new Color(0xC6D4D8));
-            drawCentered(g, fit(node.meta, g.getFontMetrics(), NODE_WIDTH - 18), x, y + 55);
+            g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 11));
+            g.setColor(node.leaf ? INK : PAPER);
+            drawCentered(g, fit(node.meta, g.getFontMetrics(), NODE_WIDTH - 18), x, y + 58);
         }
 
         private void drawCentered(Graphics2D g, String text, int x, int baseline) {
