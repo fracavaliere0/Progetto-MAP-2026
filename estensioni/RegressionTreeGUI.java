@@ -1,3 +1,5 @@
+package estensioni;
+
 import data.Data;
 import data.TrainingDataException;
 import tree.LeafNode;
@@ -248,7 +250,8 @@ public final class RegressionTreeGUI extends JFrame {
         try {
             Data trainingSet = new Data(fileName);
             RegressionTree tree = new RegressionTree(trainingSet);
-            treeCanvas.setTree(createVisualTree(tree));
+            VisualNode visualTree = createVisualTree(tree);
+            treeCanvas.setTree(visualTree);
             detailsArea.setText(tree.toString());
             detailsArea.setCaretPosition(0);
 
@@ -258,6 +261,8 @@ public final class RegressionTreeGUI extends JFrame {
                 " esempi  |  " +
                 trainingSet.getNumberOfExplanatoryAttributes() +
                 " attributi  |  " +
+                treeStatistics(visualTree) +
+                "  |  " +
                 elapsed +
                 " ms"
             );
@@ -376,6 +381,46 @@ public final class RegressionTreeGUI extends JFrame {
     private static String condition(String query) {
         int colon = query.indexOf(':');
         return (colon < 0 ? query : query.substring(colon + 1)).trim();
+    }
+
+    private static String treeStatistics(VisualNode root) {
+        return countNodes(root) +
+            " nodi  |  " +
+            countLeaves(root) +
+            " foglie  |  profondità " +
+            (depth(root) - 1);
+    }
+
+    static String treeStatistics(RegressionTree tree) {
+        return treeStatistics(createVisualTree(tree));
+    }
+
+    private static int countNodes(VisualNode node) {
+        int count = 1;
+        for (VisualNode child : node.children) {
+            count += countNodes(child);
+        }
+        return count;
+    }
+
+    private static int countLeaves(VisualNode node) {
+        if (node.children.isEmpty()) {
+            return 1;
+        }
+
+        int count = 0;
+        for (VisualNode child : node.children) {
+            count += countLeaves(child);
+        }
+        return count;
+    }
+
+    private static int depth(VisualNode node) {
+        int childDepth = 0;
+        for (VisualNode child : node.children) {
+            childDepth = Math.max(childDepth, depth(child));
+        }
+        return childDepth + 1;
     }
 
     /** Avvia l'interfaccia sul thread grafico di Swing. */
@@ -531,14 +576,6 @@ public final class RegressionTreeGUI extends JFrame {
                 layout(child, childLeft, top + NODE_HEIGHT + LEVEL_GAP);
                 childLeft += child.subtreeWidth + HORIZONTAL_GAP;
             }
-        }
-
-        private int depth(VisualNode node) {
-            int childDepth = 0;
-            for (VisualNode child : node.children) {
-                childDepth = Math.max(childDepth, depth(child));
-            }
-            return childDepth + 1;
         }
 
         private void drawEdges(Graphics2D g, VisualNode node) {
