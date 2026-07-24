@@ -25,3 +25,11 @@ hs_err_pid*
 replay_pid*
 
 .idea/
+
+# Maven
+/target/
+
+# Eclipse
+.classpath
+.project
+.settings/
