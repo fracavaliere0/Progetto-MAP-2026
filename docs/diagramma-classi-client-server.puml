@@ -1,0 +1,419 @@
+@startuml
+' Diagramma delle classi contenute nei JAR finali client/server in distribution/.
+' Le collezioni Java sono rappresentate esplicitamente come template.
+
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundCorner 8
+skinparam linetype ortho
+skinparam dpi 160
+skinparam classAttributeIconSize 0
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 12
+skinparam packageStyle rectangle
+skinparam ArrowColor #343A40
+skinparam ClassBorderColor #343A40
+skinparam ClassBackgroundColor #F8F9FA
+skinparam ClassHeaderBackgroundColor #E9ECEF
+skinparam PackageBorderColor #6C757D
+skinparam PackageBackgroundColor #FFFFFF
+skinparam NoteBorderColor #C00020
+skinparam NoteBackgroundColor #FFF5F6
+skinparam wrapWidth 220
+skinparam maxMessageSize 180
+hide empty members
+
+title Diagramma UML delle classi — modalità client/server\n<size:12>Classi distribuite in <b>mapClient.jar</b> e <b>mapServer.jar</b></size>
+
+package "map7Client" #EAF4FF {
+  class ClientMain as "MainTest" {
+    +MainTest()
+    {static} +main(args: String[]): void
+  }
+}
+
+package "utility (client)" #F5F0FF {
+  class Keyboard {
+    {static} -printErrors: boolean
+    {static} -errorCount: int
+    {static} -current_token: String
+    {static} -reader: StringTokenizer
+    {static} -in: BufferedReader
+    +Keyboard()
+    {static} +getErrorCount(): int
+    {static} +resetErrorCount(count: int): void
+    {static} +getPrintErrors(): boolean
+    {static} +setPrintErrors(flag: boolean): void
+    {static} -error(str: String): void
+    {static} -getNextToken(): String
+    {static} -getNextToken(skip: boolean): String
+    {static} -getNextInputToken(skip: boolean): String
+    {static} +endOfLine(): boolean
+    {static} +readString(): String
+    {static} +readWord(): String
+    {static} +readBoolean(): boolean
+    {static} +readChar(): char
+    {static} +readInt(): int
+    {static} +readLong(): long
+    {static} +readFloat(): float
+    {static} +readDouble(): double
+  }
+}
+
+package "server" #FFF4E6 {
+  class Server {
+    +Server()
+    {static} +main(args: String[]): void
+  }
+
+  class MultiServer {
+    -PORT: int
+    +MultiServer(port: int)
+    -run(): void
+  }
+
+  class ServerOneClient {
+    -socket: Socket
+    -in: ObjectInputStream
+    -out: ObjectOutputStream
+    -trainingSet: Data
+    -tree: RegressionTree
+    -fileName: String
+    +ServerOneClient(socket: Socket) throws IOException
+    +run(): void
+    -loadData(): void throws IOException, ClassNotFoundException
+    -learnTree(): void throws IOException
+    -loadTree(): void throws IOException, ClassNotFoundException
+    -predict(): void throws IOException, ClassNotFoundException
+    -predictClass(tree: RegressionTree): Double throws IOException, ClassNotFoundException, UnknownValueException
+  }
+
+  class ServerUnknownValueException as "UnknownValueException" <<exception>> {
+    +UnknownValueException(message: String)
+  }
+}
+
+package "data (server)" #EAF4FF {
+  abstract class Attribute {
+    -name: String
+    -index: int
+    +Attribute(name: String, index: int)
+    +getName(): String
+    +getIndex(): int
+    +toString(): String
+  }
+
+  class ContinuousAttribute {
+    +ContinuousAttribute(name: String, index: int)
+  }
+
+  class DiscreteAttribute {
+    -values: Set<String> = new TreeSet<String>()
+    +DiscreteAttribute(name: String, index: int, values: Set<String>)
+    +getNumberOfDistinctValues(): int
+    +iterator(): Iterator<String>
+  }
+
+  class Data {
+    -data: List<Example> = new ArrayList<Example>()
+    -numberOfExamples: int
+    -explanatorySet: List<Attribute> = new LinkedList<Attribute>()
+    -classAttribute: ContinuousAttribute
+    +Data(tableName: String) throws TrainingDataException
+    +getNumberOfExamples(): int
+    +getNumberOfExplanatoryAttributes(): int
+    +getClassValue(exampleIndex: int): Double
+    +getExplanatoryValue(exampleIndex: int, attributeIndex: int): Object
+    +getExplanatoryAttribute(index: int): Attribute
+    +getClassAttribute(): ContinuousAttribute
+    +toString(): String
+    +sort(attribute: Attribute, begin: int, end: int): void
+    -swap(i: int, j: int): void
+    -partition(attribute: DiscreteAttribute, inf: int, sup: int): int
+    -partition(attribute: ContinuousAttribute, inf: int, sup: int): int
+    -quicksort(attribute: Attribute, inf: int, sup: int): void
+  }
+
+  class TrainingDataException <<exception>> {
+    +TrainingDataException(message: String)
+    +TrainingDataException(cause: Exception)
+  }
+}
+
+package "database (server)" #FFF9DB {
+  class Column {
+    -name: String
+    -type: String
+    ~Column(name: String, type: String)
+    +getColumnName(): String
+    +isNumber(): boolean
+    +toString(): String
+  }
+
+  class DbAccess {
+    -DRIVER_CLASS_NAME: String {readOnly}
+    -DBMS: String {readOnly}
+    -SERVER: String
+    -DATABASE: String
+    -PORT: String {readOnly}
+    -USER_ID: String
+    -PASSWORD: String
+    -conn: Connection
+    +DbAccess()
+    +initConnection(): void throws DatabaseConnectionException
+    +getConnection(): Connection
+    +closeConnection(): void
+  }
+
+  class Example {
+    -example: List<Object> = new ArrayList<Object>()
+    +Example()
+    +add(value: Object): void
+    +get(index: int): Object
+    +compareTo(other: Example): int
+    +toString(): String
+    +iterator(): Iterator<Object>
+  }
+
+  class TableData {
+    -db: DbAccess
+    +TableData(db: DbAccess)
+    +getTransazioni(table: String): List<Example> throws SQLException, EmptySetException
+    +getDistinctColumnValues(table: String, column: Column): Set<Object> throws SQLException
+  }
+
+  enum QueryType as "TableData.QUERY_TYPE" {
+    MIN
+    MAX
+  }
+
+  class TableSchema {
+    -tableSchema: List<Column> = new ArrayList<Column>()
+    +TableSchema(db: DbAccess, tableName: String) throws SQLException
+    +getNumberOfAttributes(): int
+    +getColumn(index: int): Column
+    +iterator(): Iterator<Column>
+  }
+
+  class DatabaseConnectionException <<exception>> {
+    +DatabaseConnectionException(message: String)
+    +DatabaseConnectionException(cause: Exception)
+  }
+
+  class EmptySetException <<exception>> {
+    +EmptySetException()
+    +EmptySetException(message: String)
+  }
+}
+
+package "tree (server)" #EFFAF1 {
+  abstract class Node {
+    {static} #idNodeCount: int = 0
+    #idNode: int
+    #beginExampleIndex: int
+    #endExampleIndex: int
+    #variance: double
+    +Node(trainingSet: Data, begin: int, end: int)
+    +getIdNode(): int
+    +getBeginExampleIndex(): int
+    +getEndExampleIndex(): int
+    +getVariance(): double
+    {abstract} +getNumberOfChildren(): int
+    +toString(): String
+  }
+
+  abstract class SplitNode {
+    #attribute: Attribute
+    #mapSplit: List<SplitInfo> = new ArrayList<SplitInfo>()
+    #splitVariance: double
+    +SplitNode(trainingSet: Data, begin: int, end: int, attribute: Attribute)
+    {abstract} ~setSplitInfo(trainingSet: Data, begin: int, end: int, attribute: Attribute): void
+    {abstract} +testCondition(value: Object): int
+    ~getAttribute(): Attribute
+    +getVariance(): double
+    +getNumberOfChildren(): int
+    ~getSplitInfo(child: int): SplitInfo
+    +formulateQuery(): String
+    +toString(): String
+    +compareTo(other: SplitNode): int
+  }
+
+  class SplitInfo <<static inner>> {
+    ~splitValue: Object
+    ~beginIndex: int
+    ~endIndex: int
+    ~numberChild: int
+    ~comparator: String = "="
+    ~SplitInfo(value: Object, begin: int, end: int, child: int)
+    ~SplitInfo(value: Object, begin: int, end: int, child: int, comparator: String)
+    ~getBeginindex(): int
+    ~getEndIndex(): int
+    ~getSplitValue(): Object
+    ~getComparator(): String
+    +toString(): String
+  }
+
+  class ContinuousNode {
+    +ContinuousNode(trainingSet: Data, begin: int, end: int, attribute: ContinuousAttribute)
+    ~setSplitInfo(trainingSet: Data, begin: int, end: int, attribute: Attribute): void
+    +testCondition(value: Object): int
+    +toString(): String
+  }
+
+  class DiscreteNode {
+    +DiscreteNode(trainingSet: Data, begin: int, end: int, attribute: DiscreteAttribute)
+    ~setSplitInfo(trainingSet: Data, begin: int, end: int, attribute: Attribute): void
+    +testCondition(value: Object): int
+    +toString(): String
+  }
+
+  class LeafNode {
+    -predictedClassValue: Double
+    +LeafNode(trainingSet: Data, begin: int, end: int)
+    +getPredictedClassValue(): Double
+    +getNumberOfChildren(): int
+    +toString(): String
+  }
+
+  class RegressionTree {
+    -root: Node
+    -childTree: RegressionTree[]
+    +RegressionTree()
+    +RegressionTree(trainingSet: Data)
+    ~isLeaf(trainingSet: Data, begin: int, end: int, maxPerLeaf: int): boolean
+    ~determineBestSplitNode(trainingSet: Data, begin: int, end: int): SplitNode
+    -hasDistinctContinuousValues(trainingSet: Data, begin: int, end: int, attribute: Attribute): boolean
+    ~learnTree(trainingSet: Data, begin: int, end: int, maxPerLeaf: int): void
+    +isLeaf(): boolean
+    +getPredictedClassValue(): Double
+    +formulateQuery(): String
+    +getNumberOfChildren(): int
+    +getChild(index: int): RegressionTree
+    +printTree(): void
+    +printRules(): void
+    ~printRules(current: String): void
+    +toString(): String
+    +salva(fileName: String): void throws FileNotFoundException, IOException
+    {static} +carica(fileName: String): RegressionTree throws FileNotFoundException, IOException, ClassNotFoundException
+  }
+}
+
+package "java.util — classi e interfacce template" #FFF3BF {
+  interface "Collection<E>" as JavaCollection <<template>>
+  interface "List<E>" as JavaList <<template>>
+  interface "Set<E>" as JavaSet <<template>>
+  interface "Map<K,V>" as JavaMap <<template>>
+  interface "Iterable<E>" as JavaIterable <<template>>
+  interface "Comparable<E>" as JavaComparable <<template>>
+
+  class "ArrayList<E>" as JavaArrayList <<template>>
+  class "LinkedList<E>" as JavaLinkedList <<template>>
+  class "TreeSet<E>" as JavaTreeSet <<template>>
+  class "HashMap<K,V>" as JavaHashMap <<template>>
+}
+
+package "tipi Java esterni" #F1F3F5 {
+  interface Serializable <<external>>
+  class Exception <<external>>
+  class Thread <<external>>
+}
+
+' Gerarchie del modello.
+ContinuousAttribute --|> Attribute
+DiscreteAttribute --|> Attribute
+SplitNode --|> Node
+ContinuousNode --|> SplitNode
+DiscreteNode --|> SplitNode
+LeafNode --|> Node
+ServerOneClient --|> Thread
+
+' Interfacce Java implementate dalle classi del progetto.
+Attribute ..|> Serializable
+Node ..|> Serializable
+RegressionTree ..|> Serializable
+SplitInfo ..|> Serializable
+DiscreteAttribute ..|> JavaIterable : «bind» E = String
+Example ..|> JavaComparable : «bind» E = Example
+Example ..|> JavaIterable : «bind» E = Object
+TableSchema ..|> JavaIterable : «bind» E = Column
+SplitNode ..|> JavaComparable : «bind» E = SplitNode
+
+' Gerarchia delle collezioni template Java.
+JavaList --|> JavaCollection
+JavaSet --|> JavaCollection
+JavaArrayList ..|> JavaList
+JavaLinkedList ..|> JavaList
+JavaTreeSet ..|> JavaSet
+JavaHashMap ..|> JavaMap
+
+' Aggregazioni con le collezioni concrete: il binding identifica il tipo contenuto.
+Data "1" o-- "1 initial data" JavaArrayList : «bind» E = Example
+Data "1" o-- "1 loaded data" JavaLinkedList : «bind» E = Example
+Data "1" o-- "1 explanatorySet" JavaLinkedList : «bind» E = Attribute
+DiscreteAttribute "1" o-- "1 values" JavaTreeSet : «bind» E = String
+Example "1" o-- "1 example" JavaArrayList : «bind» E = Object
+TableSchema "1" o-- "1 tableSchema" JavaArrayList : «bind» E = Column
+SplitNode "1" o-- "1 mapSplit" JavaArrayList : «bind» E = SplitInfo
+
+note left of Data
+  <b>data</b> è dichiarato List con parametro Example:
+  nasce come ArrayList e viene sostituito dal
+  LinkedList restituito da TableData.
+end note
+note bottom of JavaArrayList
+  <b>Template Java ArrayList</b>, parametro formale E.
+  Binding: E = Example, Object, Column o SplitInfo.
+end note
+note bottom of JavaLinkedList
+  <b>Template Java LinkedList</b>, parametro formale E.
+  Binding: E = Attribute (e Example nei risultati DB).
+end note
+
+' Le collezioni locali sono dipendenze, non aggregazioni di stato.
+TableData ..> JavaLinkedList : «create local» E = Example
+TableData ..> JavaTreeSet : «create local» E = Object
+TableSchema ..> JavaHashMap : «create local» K = String, V = String
+RegressionTree ..> JavaTreeSet : «create local» E = SplitNode
+
+' Composizioni e aggregazioni del dominio.
+Data "1" *-- "0..*" Example : data
+Data "1" *-- "0..*" Attribute : explanatorySet
+Data "1" *-- "1" ContinuousAttribute : classAttribute
+TableSchema "1" *-- "0..*" Column : tableSchema
+TableData "0..*" o-- "1" DbAccess : db
+SplitNode "1" *-- "0..*" SplitInfo : mapSplit elements
+SplitNode "0..*" o-- "1" Attribute : attribute
+RegressionTree "1" *-- "0..1" Node : root
+RegressionTree "parent 1" *-- "0..* children" RegressionTree : childTree
+SplitNode .. SplitInfo : «static inner»
+TableData .. QueryType : «inner enum»
+
+' Server e persistenza.
+Server ..> MultiServer : crea
+MultiServer ..> ServerOneClient : crea per ogni Socket
+ServerOneClient "1" o-- "0..1" Data : trainingSet
+ServerOneClient "1" o-- "0..1" RegressionTree : tree
+Data ..> DbAccess : crea/chiude
+Data ..> TableSchema : legge schema
+Data ..> TableData : legge tuple
+DbAccess ..> DatabaseConnectionException : solleva
+Data ..> TrainingDataException : solleva
+ServerOneClient ..> ServerUnknownValueException : solleva
+TrainingDataException --|> Exception
+DatabaseConnectionException --|> Exception
+EmptySetException --|> Exception
+ServerUnknownValueException --|> Exception
+
+' Dipendenze del client.
+ClientMain ..> Keyboard : usa
+ClientMain ..> ServerOneClient : protocollo via Socket
+
+note right of JavaCollection
+  Le classi <b>ArrayList</b>, <b>LinkedList</b>, <b>TreeSet</b> e
+  <b>HashMap</b> sono mostrate esplicitamente con i
+  parametri formali E oppure K,V. Le etichette «bind»
+  riportano i parametri effettivi usati dal progetto.
+end note
+
+@enduml
