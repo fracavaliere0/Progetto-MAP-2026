@@ -6,7 +6,11 @@ left to right direction
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundCorner 8
-skinparam linetype ortho
+' Le linee poligonali permettono a Graphviz di posizionare correttamente
+' le etichette; con le linee ortogonali alcuni testi si sovrapponevano.
+skinparam linetype polyline
+skinparam nodesep 80
+skinparam ranksep 100
 skinparam dpi 160
 skinparam classAttributeIconSize 0
 skinparam defaultFontName SansSerif
@@ -348,13 +352,13 @@ JavaTreeSet ..|> JavaSet
 JavaHashMap ..|> JavaMap
 
 ' Aggregazioni con le collezioni concrete: il binding identifica il tipo contenuto.
-Data "1" o-- "1 initial data" JavaArrayList : «bind» E = Example
-Data "1" o-- "1 loaded data" JavaLinkedList : «bind» E = Example
-Data "1" o-- "1 explanatorySet" JavaLinkedList : «bind» E = Attribute
-DiscreteAttribute "1" o-- "1 values" JavaTreeSet : «bind» E = String
-Example "1" o-- "1 example" JavaArrayList : «bind» E = Object
-TableSchema "1" o-- "1 tableSchema" JavaArrayList : «bind» E = Column
-SplitNode "1" o-- "1 mapSplit" JavaArrayList : «bind» E = SplitInfo
+Data "1" o-- "1" JavaArrayList : initial data\n«bind» E = Example
+Data "1" o-- "1" JavaLinkedList : loaded data\n«bind» E = Example
+Data "1" o-- "1" JavaLinkedList : explanatorySet\n«bind» E = Attribute
+DiscreteAttribute "1" o-- "1" JavaTreeSet : values\n«bind» E = String
+Example "1" o-- "1" JavaArrayList : example\n«bind» E = Object
+TableSchema "1" o-- "1" JavaArrayList : tableSchema\n«bind» E = Column
+SplitNode "1" o-- "1" JavaArrayList : mapSplit\n«bind» E = SplitInfo
 
 note left of Data
   <b>data</b> è dichiarato List con parametro Example:
@@ -385,7 +389,7 @@ TableData "0..*" o-- "1" DbAccess : db
 SplitNode "1" *-- "0..*" SplitInfo : mapSplit elements
 SplitNode "0..*" o-- "1" Attribute : attribute
 RegressionTree "1" *-- "0..1" Node : root
-RegressionTree "parent 1" *-- "0..* children" RegressionTree : childTree
+RegressionTree "1" *-- "0..*" RegressionTree : childTree
 SplitNode .. SplitInfo : «static inner»
 TableData .. QueryType : «inner enum»
 

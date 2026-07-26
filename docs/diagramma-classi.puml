@@ -6,7 +6,11 @@ left to right direction
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundCorner 8
-skinparam linetype ortho
+' Le linee poligonali permettono a Graphviz di posizionare correttamente
+' le etichette; con le linee ortogonali alcuni testi si sovrapponevano.
+skinparam linetype polyline
+skinparam nodesep 80
+skinparam ranksep 100
 skinparam dpi 160
 skinparam classAttributeIconSize 0
 skinparam defaultFontName SansSerif
@@ -341,15 +345,15 @@ Data "1" *-- "0..1" ContinuousAttribute : classAttribute
 SplitNode "1" *-- "0..*" SplitInfo : mapSplit
 SplitNode "0..*" o-- "1" Attribute : attribute
 RegressionTree "1" *-- "0..1" Node : root
-RegressionTree "parent 1" *-- "0..* children" RegressionTree : childTree
+RegressionTree "1" *-- "0..*" RegressionTree : childTree
 VisualTree "1" *-- "1" VisualNode : root
 RegressionTreeGUI "1" *-- "1" RegressionTreeCanvas : treeCanvas
 RegressionTreeCanvas "1" o-- "0..1" VisualTree : tree
 
 ' Collezione Java esplicitata come template, come richiesto nella revisione UML.
 JavaArrayList ..|> JavaList : implements
-VisualNode "owner 1" o-- "1 collection" JavaArrayList : children\n«bind» E = VisualNode
-JavaArrayList "container 1" o-- "0..* elements" VisualNode : E = VisualNode
+VisualNode "1" o-- "1" JavaArrayList : children\n«bind» E = VisualNode
+JavaArrayList "1" o-- "0..*" VisualNode : elements\nE = VisualNode
 
 note on link
   Il campo usa <b>List</b> con parametro VisualNode
