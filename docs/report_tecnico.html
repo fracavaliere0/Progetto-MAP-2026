@@ -367,7 +367,7 @@
     <thead><tr><th>Area</th><th>Tecnologia</th><th>Artefatto principale</th></tr></thead>
     <tbody>
       <tr><td>Dominio</td><td>Java SE</td><td><code>src/data</code>, <code>src/tree</code></td></tr>
-      <tr><td>Interfaccia</td><td>Swing/AWT, rendering custom</td><td><code>estensioni/*.java</code></td></tr>
+      <tr><td>Interfaccia</td><td>Swing/AWT, rendering custom</td><td><code>estensioni/gui/*.java</code></td></tr>
       <tr><td>Distribuzione</td><td>JAR, Socket, Object Streams</td><td><code>distribution/client</code>, <code>distribution/server</code></td></tr>
       <tr><td>Persistenza dati</td><td>JDBC + Connector/J 8.0.17</td><td><code>map6_setup.sql</code></td></tr>
       <tr><td>Verifica</td><td>JUnit 4.12</td><td><code>tests/</code></td></tr>
@@ -415,7 +415,7 @@
       <tr><td><code>tree.Node</code></td><td>Definisce intervallo di esempi e SSE comune ai nodi.</td><td><code>SplitNode</code>, <code>LeafNode</code></td></tr>
       <tr><td><code>tree.SplitNode</code></td><td>Descrive attributo, rami e costo dello split.</td><td><code>SplitInfo</code>, nodi discreti/continui</td></tr>
       <tr><td><code>tree.RegressionTree</code></td><td>Coordina selezione dello split, ricorsione, regole e predizione.</td><td><code>Data</code>, gerarchia <code>Node</code></td></tr>
-      <tr><td><code>estensioni.VisualTree</code></td><td>Adatta il modello ai soli dati richiesti dalla vista.</td><td><code>RegressionTreeCanvas</code></td></tr>
+      <tr><td><code>estensioni.gui.VisualTree</code></td><td>Adatta il modello ai soli dati richiesti dalla vista.</td><td><code>RegressionTreeCanvas</code></td></tr>
       <tr><td><code>server.ServerOneClient</code></td><td>Gestisce il protocollo e lo stato della singola sessione.</td><td>Socket, <code>Data</code>, <code>RegressionTree</code></td></tr>
     </tbody>
   </table>
@@ -599,8 +599,8 @@ OK (81 tests)</pre>
       <pre class="code-block" style="font-size:7.6pt">mkdir -p build/gui
 javac -d build/gui \
   src/data/*.java src/tree/*.java \
-  src/utility/*.java estensioni/*.java
-java -cp build/gui estensioni.RegressionTreeGUI</pre>
+  src/utility/*.java estensioni/gui/*.java
+java -cp build/gui estensioni.gui.RegressionTreeGUI</pre>
       <p class="small muted" style="margin-bottom:0">Avviare dalla radice per usare direttamente <code>prova.dat</code>.</p>
     </div>
     <div class="card">

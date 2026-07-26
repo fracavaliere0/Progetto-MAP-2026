@@ -1,4 +1,4 @@
-package estensioni;
+package estensioni.gui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,7 +8,6 @@ import data.Data;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Constructor;
 import org.junit.Before;
 import org.junit.Test;
 import support.TestData;
@@ -19,11 +18,16 @@ public class RegressionTreeCanvasTest {
 
     private RegressionTreeCanvas canvas;
 
+    /** Crea il test del pannello. */
+    public RegressionTreeCanvasTest() {}
+
+    /** Crea il pannello da verificare. */
     @Before
     public void setUp() {
         canvas = new RegressionTreeCanvas();
     }
 
+    /** Verifica lo stato vuoto. */
     @Test
     public void emptyCanvasUsesDefaultBoundsAndRendering() {
         assertFalse(canvas.hasTree());
@@ -33,6 +37,7 @@ public class RegressionTreeCanvasTest {
         paint(canvas);
     }
 
+    /** Verifica i limiti dello zoom. */
     @Test
     public void setScaleClampsLowerMiddleAndUpperValues() {
         canvas.setScale(Double.NEGATIVE_INFINITY);
@@ -43,8 +48,16 @@ public class RegressionTreeCanvasTest {
 
         canvas.setScale(Double.POSITIVE_INFINITY);
         assertEquals(1.5, canvas.getScale(), 0.0);
+
+        canvas.setScale(Double.NaN);
+        assertEquals(1.0, canvas.getScale(), 0.0);
     }
 
+    /**
+     * Verifica disposizione e rendering.
+     *
+     * @throws Exception se i dati di test non sono validi
+     */
     @Test
     public void setTreeLaysOutAndPaintsLeafAndSplitTrees() throws Exception {
         VisualTree leaf = VisualTree.from(
@@ -71,16 +84,21 @@ public class RegressionTreeCanvasTest {
         assertEquals(new Dimension(600, 460), canvas.getPreferredSize());
     }
 
+    /**
+     * Verifica il taglio delle etichette.
+     *
+     * @throws Exception se la verifica fallisce
+     */
     @Test
     public void paintShortensLongLowerMiddleAndUpperLabels() throws Exception {
-        VisualTree.VisualNode root = new VisualTree.VisualNode(
+        VisualNode root = new VisualNode(
             "an attribute name that is much wider than the node",
             "metadata that is also much wider than the available node",
             "",
             false
         );
         root.children.add(
-            new VisualTree.VisualNode(
+            new VisualNode(
                 "lower prediction with a very long title",
                 "lower metadata with a very long description",
                 "= a very long lower branch value",
@@ -88,21 +106,17 @@ public class RegressionTreeCanvasTest {
             )
         );
         root.children.add(
-            new VisualTree.VisualNode("middle", "middle metadata", "= M", true)
+            new VisualNode("middle", "middle metadata", "= M", true)
         );
         root.children.add(
-            new VisualTree.VisualNode(
+            new VisualNode(
                 "upper prediction with a very long title",
                 "upper metadata with a very long description",
                 "= a very long upper branch value",
                 true
             )
         );
-        Constructor<VisualTree> constructor = VisualTree.class.getDeclaredConstructor(
-            VisualTree.VisualNode.class
-        );
-        constructor.setAccessible(true);
-        canvas.setTree(constructor.newInstance(root));
+        canvas.setTree(new VisualTree(root));
 
         paint(canvas);
 
@@ -111,6 +125,11 @@ public class RegressionTreeCanvasTest {
         assertTrue(root.children.get(1).x < root.children.get(2).x);
     }
 
+    /**
+     * Disegna il pannello su un'immagine.
+     *
+     * @param component pannello da disegnare
+     */
     private void paint(RegressionTreeCanvas component) {
         Dimension size = component.getPreferredSize();
         component.setSize(Math.max(1, size.width), Math.max(1, size.height));

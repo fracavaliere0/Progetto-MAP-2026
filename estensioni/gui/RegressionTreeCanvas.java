@@ -1,4 +1,4 @@
-package estensioni;
+package estensioni.gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -10,7 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import javax.swing.JPanel;
 
-/** Componente Swing che dispone e disegna un {@link VisualTree}. */
+/** Disegna un {@link VisualTree}. */
 final class RegressionTreeCanvas extends JPanel {
 
     private static final long serialVersionUID = 1L;
@@ -29,15 +29,15 @@ final class RegressionTreeCanvas extends JPanel {
     private int baseWidth = 600;
     private int baseHeight = 460;
 
-    /** Costruisce il pannello usato per disegnare l'albero. */
+    /** Crea il pannello dell'albero. */
     RegressionTreeCanvas() {
         setBackground(PAPER);
     }
 
     /**
-     * Imposta l'albero da visualizzare e ne ricalcola la disposizione.
+     * Imposta l'albero.
      *
-     * @param tree albero visuale da mostrare, oppure {@code null} per svuotare il pannello.
+     * @param tree albero, oppure {@code null}
      */
     void setTree(VisualTree tree) {
         this.tree = tree;
@@ -47,47 +47,47 @@ final class RegressionTreeCanvas extends JPanel {
     }
 
     /**
-     * Imposta il fattore di scala entro l'intervallo supportato.
+     * Imposta lo zoom tra 0,5 e 1,5.
      *
-     * @param scale fattore di scala richiesto.
+     * @param scale zoom richiesto
      */
     void setScale(double scale) {
-        this.scale = Math.max(0.5, Math.min(1.5, scale));
+        this.scale = Double.isNaN(scale) ? 1.0 : Math.max(0.5, Math.min(1.5, scale));
         revalidate();
         repaint();
     }
 
     /**
-     * Verifica se è presente un albero da visualizzare.
+     * Verifica la presenza dell'albero.
      *
-     * @return {@code true} se il pannello contiene un albero.
+     * @return {@code true} se presente
      */
     boolean hasTree() {
         return tree != null;
     }
 
     /**
-     * Restituisce il fattore di scala corrente.
+     * Restituisce lo zoom.
      *
-     * @return fattore di scala applicato al disegno.
+     * @return zoom corrente
      */
     double getScale() {
         return scale;
     }
 
     /**
-     * Restituisce la coordinata orizzontale del centro della radice.
+     * Restituisce il centro della radice.
      *
-     * @return coordinata del centro della radice, oppure {@code 0} se l'albero è assente.
+     * @return coordinata orizzontale, oppure {@code 0}
      */
     double getRootCenterX() {
         return tree == null ? 0 : tree.getRoot().x + NODE_WIDTH / 2.0;
     }
 
     /**
-     * Calcola la dimensione preferita in base all'albero e allo zoom.
+     * Calcola la dimensione richiesta.
      *
-     * @return dimensione necessaria per mostrare il contenuto.
+     * @return dimensione dell'albero
      */
     @Override
     public Dimension getPreferredSize() {
@@ -98,45 +98,48 @@ final class RegressionTreeCanvas extends JPanel {
     }
 
     /**
-     * Disegna lo stato vuoto oppure l'albero corrente.
+     * Disegna il contenuto.
      *
-     * @param graphics contesto grafico fornito da Swing.
+     * @param graphics contesto grafico
      */
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
         Graphics2D g = (Graphics2D) graphics.create();
-        g.setRenderingHint(
-            RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON
-        );
-        g.setRenderingHint(
-            RenderingHints.KEY_TEXT_ANTIALIASING,
-            RenderingHints.VALUE_TEXT_ANTIALIAS_ON
-        );
-
-        if (tree == null) {
-            g.setColor(MUTED);
-            g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
-            String text = "In attesa del training";
-            FontMetrics metrics = g.getFontMetrics();
-            g.drawString(
-                text,
-                (getWidth() - metrics.stringWidth(text)) / 2,
-                getHeight() / 2
+        try {
+            g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
             );
-            g.dispose();
-            return;
-        }
+            g.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+            );
 
-        g.scale(scale, scale);
-        g.translate(Math.max(0, (getWidth() / scale - baseWidth) / 2), 0);
-        drawEdges(g, tree.getRoot());
-        drawNodes(g, tree.getRoot());
-        g.dispose();
+            if (tree == null) {
+                g.setColor(MUTED);
+                g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
+                String text = "In attesa del training";
+                FontMetrics metrics = g.getFontMetrics();
+                g.drawString(
+                    text,
+                    (getWidth() - metrics.stringWidth(text)) / 2,
+                    getHeight() / 2
+                );
+                return;
+            }
+
+            g.scale(scale, scale);
+            g.translate(Math.max(0, (getWidth() / scale - baseWidth) / 2), 0);
+            g.setStroke(new BasicStroke(2f));
+            drawEdges(g, tree.getRoot());
+            drawNodes(g, tree.getRoot());
+        } finally {
+            g.dispose();
+        }
     }
 
-    /** Calcola dimensioni e coordinate di tutti i nodi dell'albero. */
+    /** Calcola dimensioni e coordinate dell'albero. */
     private void layoutTree() {
         if (tree == null) {
             baseWidth = 600;
@@ -144,7 +147,7 @@ final class RegressionTreeCanvas extends JPanel {
             return;
         }
 
-        VisualTree.VisualNode root = tree.getRoot();
+        VisualNode root = tree.getRoot();
         measure(root);
         baseWidth = root.subtreeWidth + MARGIN * 2;
         layout(root, MARGIN, MARGIN);
@@ -156,61 +159,59 @@ final class RegressionTreeCanvas extends JPanel {
     }
 
     /**
-     * Calcola ricorsivamente la larghezza occupata da un sotto-albero.
+     * Calcola la larghezza di un sotto-albero.
      *
-     * @param node radice del sotto-albero da misurare.
-     * @return larghezza necessaria per il sotto-albero.
+     * @param node radice del sotto-albero
+     * @return larghezza richiesta
      */
-    private int measure(VisualTree.VisualNode node) {
+    private int measure(VisualNode node) {
         if (node.children.isEmpty()) {
             node.subtreeWidth = NODE_WIDTH;
-            return node.subtreeWidth;
+            return NODE_WIDTH;
         }
 
-        int width = 0;
-        for (VisualTree.VisualNode child : node.children) {
+        int width = HORIZONTAL_GAP * (node.children.size() - 1);
+        for (VisualNode child : node.children) {
             width += measure(child);
         }
-        width += HORIZONTAL_GAP * (node.children.size() - 1);
         node.subtreeWidth = Math.max(NODE_WIDTH, width);
         return node.subtreeWidth;
     }
 
     /**
-     * Assegna ricorsivamente le coordinate ai nodi di un sotto-albero.
+     * Posiziona un sotto-albero.
      *
-     * @param node radice del sotto-albero da posizionare.
-     * @param left coordinata sinistra disponibile.
-     * @param top coordinata superiore del livello corrente.
+     * @param node radice del sotto-albero
+     * @param left margine sinistro
+     * @param top margine superiore
      */
-    private void layout(VisualTree.VisualNode node, int left, int top) {
+    private void layout(VisualNode node, int left, int top) {
         node.x = left + (node.subtreeWidth - NODE_WIDTH) / 2;
         node.y = top;
 
         int childLeft = left;
-        for (VisualTree.VisualNode child : node.children) {
+        for (VisualNode child : node.children) {
             layout(child, childLeft, top + NODE_HEIGHT + LEVEL_GAP);
             childLeft += child.subtreeWidth + HORIZONTAL_GAP;
         }
     }
 
     /**
-     * Disegna ricorsivamente i collegamenti tra i nodi.
+     * Disegna i collegamenti.
      *
-     * @param g contesto grafico bidimensionale.
-     * @param node nodo dal quale iniziare il disegno.
+     * @param g contesto grafico
+     * @param node radice del sotto-albero
      */
-    private void drawEdges(Graphics2D g, VisualTree.VisualNode node) {
+    private void drawEdges(Graphics2D g, VisualNode node) {
         int fromX = node.x + NODE_WIDTH / 2;
         int fromY = node.y + NODE_HEIGHT;
 
-        for (VisualTree.VisualNode child : node.children) {
+        for (VisualNode child : node.children) {
             int toX = child.x + NODE_WIDTH / 2;
             int toY = child.y;
             int middleY = (fromY + toY) / 2;
 
             g.setColor(INK);
-            g.setStroke(new BasicStroke(2f));
             g.drawLine(fromX, fromY, fromX, middleY);
             g.drawLine(fromX, middleY, toX, middleY);
             g.drawLine(toX, middleY, toX, toY);
@@ -220,12 +221,12 @@ final class RegressionTreeCanvas extends JPanel {
     }
 
     /**
-     * Disegna l'etichetta associata a un ramo.
+     * Disegna l'etichetta di un ramo.
      *
-     * @param g contesto grafico bidimensionale.
-     * @param text testo del ramo.
-     * @param centerX coordinata orizzontale del centro dell'etichetta.
-     * @param centerY coordinata verticale del centro dell'etichetta.
+     * @param g contesto grafico
+     * @param text etichetta
+     * @param centerX centro orizzontale
+     * @param centerY centro verticale
      */
     private void drawBranch(Graphics2D g, String text, int centerX, int centerY) {
         g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
@@ -244,32 +245,31 @@ final class RegressionTreeCanvas extends JPanel {
     }
 
     /**
-     * Disegna ricorsivamente tutti i nodi di un sotto-albero.
+     * Disegna i nodi.
      *
-     * @param g contesto grafico bidimensionale.
-     * @param node radice del sotto-albero da disegnare.
+     * @param g contesto grafico
+     * @param node radice del sotto-albero
      */
-    private void drawNodes(Graphics2D g, VisualTree.VisualNode node) {
+    private void drawNodes(Graphics2D g, VisualNode node) {
         drawNode(g, node);
-        for (VisualTree.VisualNode child : node.children) {
+        for (VisualNode child : node.children) {
             drawNodes(g, child);
         }
     }
 
     /**
-     * Disegna un singolo nodo.
+     * Disegna un nodo.
      *
-     * @param g contesto grafico bidimensionale.
-     * @param node nodo da disegnare.
+     * @param g contesto grafico
+     * @param node nodo da disegnare
      */
-    private void drawNode(Graphics2D g, VisualTree.VisualNode node) {
+    private void drawNode(Graphics2D g, VisualNode node) {
         int x = node.x;
         int y = node.y;
 
         g.setColor(node.leaf ? PAPER : INK);
         g.fillRect(x, y, NODE_WIDTH, NODE_HEIGHT);
         g.setColor(INK);
-        g.setStroke(new BasicStroke(2f));
         g.drawRect(x, y, NODE_WIDTH, NODE_HEIGHT);
 
         g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, node.leaf ? 19 : 17));
@@ -282,25 +282,25 @@ final class RegressionTreeCanvas extends JPanel {
     }
 
     /**
-     * Disegna una stringa centrata rispetto alla larghezza del nodo.
+     * Centra un testo nel nodo.
      *
-     * @param g contesto grafico bidimensionale.
-     * @param text testo da disegnare.
-     * @param x coordinata sinistra del nodo.
-     * @param baseline coordinata verticale della linea di base.
+     * @param g contesto grafico
+     * @param text testo
+     * @param x coordinata del nodo
+     * @param baseline linea di base
      */
     private void drawCentered(Graphics2D g, String text, int x, int baseline) {
-        int textWidth = g.getFontMetrics().stringWidth(text);
-        g.drawString(text, x + (NODE_WIDTH - textWidth) / 2, baseline);
+        int width = g.getFontMetrics().stringWidth(text);
+        g.drawString(text, x + (NODE_WIDTH - width) / 2, baseline);
     }
 
     /**
-     * Accorcia un testo con puntini di sospensione quando supera lo spazio disponibile.
+     * Accorcia un testo troppo largo.
      *
-     * @param text testo originale.
-     * @param metrics metriche del carattere usato.
-     * @param maxWidth larghezza massima disponibile.
-     * @return testo originale o versione accorciata.
+     * @param text testo
+     * @param metrics metriche del font
+     * @param maxWidth larghezza massima
+     * @return testo adattato
      */
     private String fit(String text, FontMetrics metrics, int maxWidth) {
         if (metrics.stringWidth(text) <= maxWidth) {

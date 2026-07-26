@@ -4,7 +4,7 @@ Il progetto offre due modalità separate, quindi il modello è diviso in due dia
 
 1. **GUI locale** — [`SVG`](diagramma-classi.svg) · [`PDF`](diagramma-classi.pdf)  
    Sorgente: [`diagramma-classi.puml`](diagramma-classi.puml).  
-   Comprende le classi di produzione in `src/` ed `estensioni/`.
+   Comprende le classi di produzione in `src/` ed `estensioni/gui/`.
 2. **Client/server con database** — [`SVG`](diagramma-classi-client-server.svg) · [`PDF`](diagramma-classi-client-server.pdf)  
    Sorgente: [`diagramma-classi-client-server.puml`](diagramma-classi-client-server.puml).  
    Comprende le classi distribuite in `distribution/client/mapClient.jar` e `distribution/server/mapServer.jar`.

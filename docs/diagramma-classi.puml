@@ -1,5 +1,5 @@
 @startuml
-' Diagramma delle classi di produzione presenti in src/ ed estensioni/.
+' Diagramma delle classi di produzione presenti in src/ ed estensioni/gui/.
 ' Sono esclusi i test e la copia storica project/mapServer/src/.
 
 left to right direction
@@ -45,7 +45,7 @@ classDiagram {
 }
 </style>
 
-title Diagramma UML delle classi — Progetto MAP 2026\n<size:12>Codice di produzione in <b>src/</b> ed <b>estensioni/</b></size>
+title Diagramma UML delle classi — Progetto MAP 2026\n<size:12>Codice di produzione in <b>src/</b> ed <b>estensioni/gui/</b></size>
 
 package "data" #EAF4FF {
   abstract class Attribute {
@@ -175,7 +175,7 @@ package "tree" #EFFAF1 {
   }
 }
 
-package "estensioni" #FFF4E6 {
+package "estensioni.gui" #FFF4E6 {
   class VisualTree <<final>> {
     {static} -NUMBER_FORMAT: DecimalFormat
     -root: VisualNode
@@ -193,7 +193,7 @@ package "estensioni" #FFF4E6 {
     {static} -depth(node: VisualNode): int
   }
 
-  class VisualNode <<static inner, final>> {
+  class VisualNode <<final>> {
     ~title: String {readOnly}
     ~meta: String {readOnly}
     ~branch: String {readOnly}
@@ -361,9 +361,8 @@ note on link
   ArrayList e List sono mostrate come template Java.
 end note
 
-' Relazione fra classi interne e contenitrici.
+' Relazione fra classe interna e contenitrice.
 SplitNode .. SplitInfo : «inner»
-VisualTree .. VisualNode : «static inner»
 
 ' Dipendenze principali (parametri, creazione e invocazioni).
 Node ..> Data : calcola SSE da

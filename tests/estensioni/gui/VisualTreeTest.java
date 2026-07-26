@@ -1,4 +1,4 @@
-package estensioni;
+package estensioni.gui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -15,6 +15,14 @@ import tree.RegressionTree;
 /** Verifica la conversione dell'albero nella rappresentazione della GUI. */
 public class VisualTreeTest {
 
+    /** Crea il test dell'albero visuale. */
+    public VisualTreeTest() {}
+
+    /**
+     * Verifica la conversione di una foglia.
+     *
+     * @throws Exception se i dati di test non sono validi
+     */
     @Test
     public void fromConvertsALeafTree() throws Exception {
         RegressionTree tree = new RegressionTree(
@@ -31,12 +39,17 @@ public class VisualTreeTest {
         assertEquals("1 nodi  |  1 foglie  |  profondità 0", visual.getStatistics());
     }
 
+    /**
+     * Verifica la conversione dei rami.
+     *
+     * @throws Exception se i dati di test non sono validi
+     */
     @Test
     public void fromConvertsLowerMiddleAndUpperBranches() throws Exception {
         RegressionTree tree = new RegressionTree(new Data(TestData.createTreeData()));
 
         VisualTree visual = VisualTree.from(tree);
-        VisualTree.VisualNode root = visual.getRoot();
+        VisualNode root = visual.getRoot();
 
         assertEquals("first", root.title);
         assertFalse(root.leaf);
@@ -48,11 +61,17 @@ public class VisualTreeTest {
         assertEquals("10 nodi  |  6 foglie  |  profondità 2", visual.getStatistics());
     }
 
+    /** Verifica il rifiuto di un albero vuoto. */
     @Test(expected = IllegalStateException.class)
     public void fromRejectsATreeWithoutRoot() {
         VisualTree.from(new RegressionTree());
     }
 
+    /**
+     * Verifica il rifiuto di uno split senza figli.
+     *
+     * @throws Exception se la preparazione fallisce
+     */
     @Test(expected = IllegalStateException.class)
     public void fromRejectsASplitWithoutChildren() throws Exception {
         Data data = new Data(TestData.createTreeData());
@@ -70,21 +89,27 @@ public class VisualTreeTest {
         VisualTree.from(incomplete);
     }
 
+    /**
+     * Esegue la verifica autonoma delle statistiche.
+     *
+     * @throws Exception se la verifica fallisce
+     */
     @Test
     public void existingStatisticsCheckRunsOnTheSampleData() throws Exception {
         VisualTreeStatisticsTest.main(new String[] {"lower", "middle", "upper"});
     }
 
+    /** Verifica i valori di un nodo visuale. */
     @Test
     public void visualNodeStoresBoundaryValues() {
-        VisualTree.VisualNode lower = new VisualTree.VisualNode("", "", "", true);
-        VisualTree.VisualNode middle = new VisualTree.VisualNode(
+        VisualNode lower = new VisualNode("", "", "", true);
+        VisualNode middle = new VisualNode(
             "middle",
             "metadata",
             "= M",
             false
         );
-        VisualTree.VisualNode upper = new VisualTree.VisualNode(
+        VisualNode upper = new VisualNode(
             "a very long title",
             "a very long metadata value",
             "= Z",
