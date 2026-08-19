@@ -55,6 +55,6 @@ public abstract class Node implements Serializable {
 
 	@Override
 	public String toString() {
-		return "[Examples:" + beginExampleIndex + "-" + endExampleIndex + "] variance: " + variance;
+		return "Nodo: [Examples:" + beginExampleIndex + "-" + endExampleIndex + "] variance:" + variance;
 	}
 }

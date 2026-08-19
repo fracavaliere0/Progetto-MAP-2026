@@ -32,6 +32,6 @@ public class LeafNode extends Node {
 
 	@Override
 	public String toString() {
-		return "LEAF : class=" + predictedClassValue + " Nodo: " + super.toString();
+		return "LEAF : class=" + predictedClassValue + " " + super.toString();
 	}
 }
