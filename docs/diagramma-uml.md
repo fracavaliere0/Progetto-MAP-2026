@@ -15,7 +15,7 @@ I test e la copia storica in `project/mapServer/src/` non sono inclusi.
 
 Seguendo l'indicazione ricevuta, i diagrammi non collegano direttamente il proprietario ai soli elementi: mostrano anche la struttura dati Java aggregata.
 
-- Nella GUI, `VisualNode.children` aggrega `ArrayList<E>` con binding `E = VisualNode`; sono mostrate sia `List<E>` sia `ArrayList<E>` come template.
+- Nella GUI locale, `DiscreteAttribute.values`, `Data.explanatorySet` e `SplitNode.mapSplit` usano rispettivamente `TreeSet<E>`, `LinkedList<E>` e `ArrayList<E>`; `VisualNode.children` aggrega inoltre `ArrayList<E>` con binding `E = VisualNode`.
 - Nel client/server sono mostrate esplicitamente `ArrayList<E>`, `LinkedList<E>`, `TreeSet<E>` e `HashMap<K,V>`, insieme alle interfacce template implementate.
 - Ogni relazione riporta il binding effettivo, per esempio `E = Attribute` o `E = SplitInfo`.
 - Le collezioni conservate nei campi sono aggregazioni; quelle create soltanto come variabili locali sono dipendenze `«create local»`.

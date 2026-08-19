@@ -92,7 +92,18 @@ public class DiscreteNodeTest {
         );
     }
 
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test
+    public void compareToOrdersNodesBySplitVariance() {
+        DiscreteNode lowerVariance = new DiscreteNode(data, 0, 0, attribute);
+        DiscreteNode higherVariance = new DiscreteNode(data, 0, 5, attribute);
+        DiscreteNode equalVariance = new DiscreteNode(data, 0, 5, attribute);
+
+        assertEquals(-1, lowerVariance.compareTo(higherVariance));
+        assertEquals(1, higherVariance.compareTo(lowerVariance));
+        assertEquals(0, higherVariance.compareTo(equalVariance));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
     public void getSplitInfoRejectsIndexAboveUpperLimit() {
         DiscreteNode node = new DiscreteNode(data, 0, 5, attribute);
 

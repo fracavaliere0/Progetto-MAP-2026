@@ -1,9 +1,12 @@
 package data;
 
+import java.io.Serializable;
+
 /**
  * Modella un attributo generico.
  */
-public abstract class Attribute {
+public abstract class Attribute implements Serializable {
+    private static final long serialVersionUID = 1L;
     /** Nome simbolico dell'attributo. */
     private String name;
 

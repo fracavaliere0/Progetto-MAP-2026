@@ -59,8 +59,9 @@ public class LeafNodeTest {
         LeafNode node = new LeafNode(data, 0, 1);
         String value = node.toString();
 
-        assertTrue(value.startsWith("LEAF : class=2.0 Nodo: "));
-        assertTrue(value.contains("[Examples:0-1]"));
-        assertTrue(value.contains("variance: 2.0"));
+        assertEquals(
+            "LEAF : class=2.0 Nodo: [Examples:0-1] variance:2.0",
+            value
+        );
     }
 }

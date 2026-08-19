@@ -10,7 +10,7 @@ import support.KeyboardInput;
 import support.TestData;
 import utility.Keyboard;
 
-/** Verifica i flussi principali dell'applicazione a riga di comando. */
+/** Verifica i flussi MAP3 dell'applicazione a riga di comando. */
 public class MainTestTest {
 
     private InputStream originalInput;
@@ -37,8 +37,8 @@ public class MainTestTest {
 
     @Test
     public void mainReportsAnInvalidTrainingSet() {
-        String missing = "missing-" + System.nanoTime() + ".dat";
-        KeyboardInput.set(missing + "\n");
+        String missing = "missing-" + System.nanoTime();
+        KeyboardInput.set("1\n" + missing + "\n");
 
         String output = captureMain(new String[0]);
 
@@ -49,7 +49,7 @@ public class MainTestTest {
     @Test
     public void mainLoadsTrainsAndPredictsTheMinimumTrainingSet() throws Exception {
         String file = TestData.createSingleExampleData();
-        KeyboardInput.set(file + "\nn\n");
+        KeyboardInput.set("1\n" + withoutDatExtension(file) + "\nn\n");
 
         String output = captureMain(null);
 
@@ -62,13 +62,17 @@ public class MainTestTest {
     @Test
     public void mainReportsAnUnknownPredictionValue() throws Exception {
         String file = TestData.createTreeData();
-        KeyboardInput.set(file + "\n-1\nn\n");
+        KeyboardInput.set("1\n" + withoutDatExtension(file) + "\n-1\nn\n");
 
         String output = captureMain(new String[] {"ignored"});
 
         assertTrue(output.contains("Starting prediction phase!"));
         assertTrue(output.contains("UnknownValueException"));
         assertTrue(output.contains("between 0 and 2"));
+    }
+
+    private String withoutDatExtension(String file) {
+        return file.substring(0, file.length() - ".dat".length());
     }
 
     private String captureMain(String[] arguments) {

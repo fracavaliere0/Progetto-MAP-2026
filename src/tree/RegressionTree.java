@@ -1,7 +1,17 @@
 package tree;
 
+import data.Attribute;
+import data.ContinuousAttribute;
 import data.Data;
 import data.DiscreteAttribute;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.TreeSet;
 import utility.Keyboard;
 
 /**
@@ -10,7 +20,9 @@ import utility.Keyboard;
  * Ogni istanza mantiene il nodo radice del sotto-albero corrente ed eventuali
  * sotto-alberi figli generati da uno split.
  */
-public class RegressionTree {
+public class RegressionTree implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /** Radice del sotto-albero corrente. */
     private Node root;
@@ -94,36 +106,40 @@ public class RegressionTree {
      * @return il miglior nodo di split per il sotto-insieme corrente
      */
     SplitNode determineBestSplitNode(Data trainingSet, int begin, int end) {
-        SplitNode bestNode = null;
-        double minVariance = Double.MAX_VALUE;
+        TreeSet<SplitNode> splitNodes = new TreeSet<SplitNode>();
 
         for (
             int i = 0;
             i < trainingSet.getNumberOfExplanatoryAttributes();
             i++
         ) {
-            DiscreteAttribute currentAttribute =
-                (DiscreteAttribute) trainingSet.getExplanatoryAttribute(i);
-            DiscreteNode tempNode = new DiscreteNode(
-                trainingSet,
-                begin,
-                end,
-                currentAttribute
-            );
+            Attribute attribute = trainingSet.getExplanatoryAttribute(i);
+            SplitNode currentNode;
 
-            double currentVariance = tempNode.getVariance();
-
-            // Se è la varianza più bassa trovata finora (o se è il primo giro), assegno proprio tempNode a bestNode
-            if (bestNode == null || currentVariance < minVariance) {
-                minVariance = currentVariance;
-                bestNode = tempNode;
+            if (attribute instanceof DiscreteAttribute) {
+                currentNode = new DiscreteNode(
+                    trainingSet,
+                    begin,
+                    end,
+                    (DiscreteAttribute) attribute
+                );
+            } else {
+                currentNode = new ContinuousNode(
+                    trainingSet,
+                    begin,
+                    end,
+                    (ContinuousAttribute) attribute
+                );
             }
+            splitNodes.add(currentNode);
         }
 
-        // Una volta trovato il bestNode, ordino i dati del dataset in base a quell'attributo
-        if (bestNode != null) {
-            trainingSet.sort(bestNode.getAttribute(), begin, end);
+        if (splitNodes.isEmpty()) {
+            return null;
         }
+
+        SplitNode bestNode = splitNodes.first();
+        trainingSet.sort(bestNode.getAttribute(), begin, end);
         return bestNode;
     }
 
@@ -178,9 +194,9 @@ public class RegressionTree {
      * Stampa le regole dell'albero dalla radice alle foglie.
      */
     public void printRules() {
-        System.out.println("********* RULES **********");
+        System.out.println("********* RULES **********\n");
         printRules("");
-        System.out.println("*************************");
+        System.out.println("*************************\n");
     }
 
     /**
@@ -242,6 +258,23 @@ public class RegressionTree {
             for (int i = 0; i < childTree.length; i++) tree += childTree[i];
         }
         return tree;
+    }
+
+    /** Serializza l'albero nel file indicato. */
+    public void salva(String nomeFile) throws FileNotFoundException, IOException {
+        try (ObjectOutputStream output = new ObjectOutputStream(
+                new FileOutputStream(nomeFile))) {
+            output.writeObject(this);
+        }
+    }
+
+    /** Carica dal file indicato un albero precedentemente serializzato. */
+    public static RegressionTree carica(String nomeFile)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        try (ObjectInputStream input = new ObjectInputStream(
+                new FileInputStream(nomeFile))) {
+            return (RegressionTree) input.readObject();
+        }
     }
 
     public Double predictClass() throws UnknownValueException {

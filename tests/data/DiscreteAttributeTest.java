@@ -1,46 +1,36 @@
 package data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 import org.junit.Test;
 
-/** Verifica l'accesso ai valori di un attributo discreto. */
+/** Verifica l'iterazione sui valori di un attributo discreto. */
 public class DiscreteAttributeTest {
 
     @Test
-    public void getValueReturnsLowerMiddleAndUpperValues() {
+    public void iteratorReturnsValuesInAscendingOrder() {
+        Set<String> values = new TreeSet<String>(
+            Arrays.asList("low", "middle", "high")
+        );
         DiscreteAttribute attribute = new DiscreteAttribute(
             "level",
             1,
-            new String[] {"low", "middle", "high"}
+            values
         );
 
         assertEquals(3, attribute.getNumberOfDistinctValues());
-        assertEquals("low", attribute.getValue(0));
-        assertEquals("middle", attribute.getValue(1));
-        assertEquals("high", attribute.getValue(2));
-    }
 
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
-    public void getValueRejectsIndexBelowLowerLimit() {
-        DiscreteAttribute attribute = new DiscreteAttribute(
-            "level",
-            0,
-            new String[] {"low", "middle", "high"}
-        );
-
-        attribute.getValue(-1);
-    }
-
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
-    public void getValueRejectsIndexAboveUpperLimit() {
-        DiscreteAttribute attribute = new DiscreteAttribute(
-            "level",
-            0,
-            new String[] {"low", "middle", "high"}
-        );
-
-        attribute.getValue(3);
+        Iterator<String> iterator = attribute.iterator();
+        assertEquals("high", iterator.next());
+        assertEquals("low", iterator.next());
+        assertEquals("middle", iterator.next());
+        assertFalse(iterator.hasNext());
     }
 
     @Test
@@ -48,9 +38,11 @@ public class DiscreteAttributeTest {
         DiscreteAttribute attribute = new DiscreteAttribute(
             "empty",
             0,
-            new String[0]
+            new TreeSet<String>()
         );
 
         assertEquals(0, attribute.getNumberOfDistinctValues());
+        assertTrue(attribute instanceof Iterable<?>);
+        assertFalse(attribute.iterator().hasNext());
     }
 }

@@ -1,6 +1,7 @@
 package tree;
 
 import data.Data;
+import java.io.Serializable;
 
 /**
  * Modella un nodo dell'albero di regressione.
@@ -8,7 +9,9 @@ import data.Data;
  * Un nodo copre un sottoinsieme contiguo di esempi del training set e mantiene
  * lo SSE calcolato sull'attributo di classe relativo a quel sottoinsieme.
  */
-public abstract class Node {
+public abstract class Node implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /** Contatore dei nodi generati nell'albero. */
     protected static int idNodeCount = 0;
@@ -43,17 +46,16 @@ public abstract class Node {
             return;
         }
 
-        double sum = 0.0;
+        double squaredValuesSum = 0.0;
+        double valuesSum = 0.0;
         for (int i = beginExampleIndex; i <= endExampleIndex; i++) {
-            sum += trainingSet.getClassValue(i);
+            double classValue = trainingSet.getClassValue(i);
+            squaredValuesSum += Math.pow(classValue, 2);
+            valuesSum += classValue;
         }
 
-        double average = sum / numberOfExamples;
-        this.variance = 0.0;
-        for (int i = beginExampleIndex; i <= endExampleIndex; i++) {
-            double difference = trainingSet.getClassValue(i) - average;
-            this.variance += difference * difference;
-        }
+        this.variance =
+            squaredValuesSum - Math.pow(valuesSum, 2) / numberOfExamples;
     }
 
     /**
@@ -107,7 +109,7 @@ public abstract class Node {
      */
     @Override
     public String toString() {
-        return "[Examples:" + beginExampleIndex + "-" + endExampleIndex + "] variance: " + variance;
+        return "Nodo: [Examples:" + beginExampleIndex + "-" + endExampleIndex + "] variance:" + variance;
     }
 
 }
