@@ -2,288 +2,288 @@ package data;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeSet;
 
-/**
- * Modella il training set usato per costruire l'albero di regressione.
- *
- * La classe legge i dati da file, memorizza gli attributi indipendenti,
- * l'attributo di classe e la matrice degli esempi di training. Fornisce inoltre
- * metodi di accesso e ordinamento del sottoinsieme di esempi.
- */
+
+
 public class Data {
 
-    /** Matrice degli esempi di training organizzata per righe e colonne. */
-    private Object data[][];
+	private Object data [][];
+	private int numberOfExamples;
+	private List<Attribute> explanatorySet = new LinkedList<Attribute>();
+	private ContinuousAttribute classAttribute;
 
-    /** Numero totale di esempi presenti nel training set. */
-    private int numberOfExamples;
+	public Data(String fileName)throws TrainingDataException{
+		try (Scanner sc = new Scanner(new File(fileName))) {
+			readSchema(sc);
+			readData(sc);
+		} catch (FileNotFoundException | NumberFormatException e) {
+			throw new TrainingDataException(e);
+		}
+	}
 
-    /** Insieme degli attributi indipendenti del dataset. */
-    private Attribute explanatorySet[];
+	public int getNumberOfExamples() {
+		return numberOfExamples;
+	}
 
-    /** Attributo di classe numerico da predire. */
-    private ContinuousAttribute classAttribute;
+	public int getNumberOfExplanatoryAttributes() {
+		return explanatorySet.size();
+	}
 
-    public Data(String fileName) throws TrainingDataException {
+	public Double getClassValue(int exampleIndex) {
+		return (Double) data[exampleIndex][explanatorySet.size()];
+	}
 
-        File inFile = new File(fileName);
-        Scanner sc = null;
+	public Object getExplanatoryValue(int exampleIndex, int attributeIndex) {
+		return data[exampleIndex][attributeIndex];
+	}
 
-        try {
-            sc = new Scanner(inFile);
-        } catch (FileNotFoundException e) {
-            throw new TrainingDataException(e);
-        }
+	public Attribute getExplanatoryAttribute(int index) {
+		return explanatorySet.get(index);
+	}
 
-        try {
-            if (!sc.hasNextLine()) {
-                throw new TrainingDataException("Errore nello schema");
-            }
+	public ContinuousAttribute getClassAttribute() {
+		return classAttribute;
+	}
 
-            String line = sc.nextLine();
-            if (!line.contains("@schema")) {
-                throw new TrainingDataException("Errore nello schema");
-            }
-            String s[] = line.split(" ");
+	public String toString(){
+		String value="";
+		for(int i=0;i<numberOfExamples;i++){
+			for(int j=0;j<explanatorySet.size();j++)
+				value+=data[i][j]+",";
 
-            explanatorySet = new Attribute[Integer.parseInt(s[1])];
-            short iAttribute = 0;
-            boolean foundData = false;
+			value+=data[i][explanatorySet.size()]+"\n";
+		}
+		return value;
 
-            while (sc.hasNextLine() && !foundData) {
-                line = sc.nextLine();
-                if (line.contains("@data")) {
-                    foundData = true;
-                } else {
-                    s = line.split(" ");
-                    if (s[0].equals("@desc")) {
-                        String discreteValues[] = s[2].split(",");
-                        explanatorySet[iAttribute] = new DiscreteAttribute(s[1], iAttribute, discreteValues);
-                        iAttribute++;
-                    } else if (s[0].equals("@target")) {
-                        classAttribute = new ContinuousAttribute(s[1], iAttribute);
-                        iAttribute++;
-                    }
-                }
-            }
 
-            if (!foundData) {
-                throw new TrainingDataException("Errore nello schema");
-            }
+	}
 
-            if (classAttribute == null) {
-                throw new TrainingDataException("Training set privo di variabile target numerica");
-            }
 
-            numberOfExamples = Integer.parseInt(line.split(" ")[1]);
+	public void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex){
 
-            if (numberOfExamples == 0) {
-                throw new TrainingDataException("Training set vuoto");
-            }
+			quicksort(attribute, beginExampleIndex, endExampleIndex);
+	}
 
-            data = new Object[numberOfExamples][explanatorySet.length + 1];
-            short iRow = 0;
-            while (sc.hasNextLine()) {
-                line = sc.nextLine();
-                s = line.split(",");
-                for (short jColumn = 0; jColumn < s.length - 1; jColumn++) {
-                    data[iRow][jColumn] = s[jColumn];
-                }
-                data[iRow][s.length - 1] = Double.valueOf(s[s.length - 1]);
-                iRow++;
-            }
-        } finally {
-            sc.close();
-        }
+	// scambio esempio i con esempi oj
+	private void swap(int i,int j){
+		Object temp;
+		for (int k=0;k<getNumberOfExplanatoryAttributes()+1;k++){
+			temp=data[i][k];
+			data[i][k]=data[j][k];
+			data[j][k]=temp;
+		}
 
-    }
+	}
 
-    /**
-     * Restituisce il numero totale di esempi (righe) presenti nel training set.
-     *
-     * @return Cardinalità dell'insieme di esempi.
-     */
-    public int getNumberOfExamples() {
-        return numberOfExamples;
-    }
 
-    /**
-     * Restituisce il numero di attributi indipendenti nel dataset.
-     * Corrisponde alla lunghezza dello spazio descrittivo.
-     *
-     * @return Cardinalità dell'insieme degli attributi indipendenti.
-     */
-    public int getNumberOfExplanatoryAttributes() {
-        return explanatorySet.length;
-    }
 
-    /**
-     * Restituisce il valore dell'attributo di classe (target) per uno specifico
-     * esempio.
-     *
-     * @param exampleIndex Indice di riga dell'esempio nella matrice dei dati.
-     * @return Valore dell'attributo di classe (effettuando il cast a Double).
-     * @throws IndexOutOfBoundsException Se {@code exampleIndex} non e' un indice
-     *         valido della matrice dei dati.
-     */
-    public Double getClassValue(int exampleIndex) {
-        if (exampleIndex < 0 || exampleIndex >= data.length) {
-            throw new IndexOutOfBoundsException(
-                    "il valore" + exampleIndex + "di exampleIndex all' in getClassValue e' fuori indice");
-        }
 
-        return (Double) data[exampleIndex][explanatorySet.length];
-    }
+	/*
+	 * Partiziona il vettore rispetto all'elemento x e restiutisce il punto di separazione
+	 */
+	private  int partition(DiscreteAttribute attribute, int inf, int sup){
+		int i,j;
 
-    /**
-     * Restituisce l'Object della matrice data incrociando riga e colonna.
-     *
-     * @param exampleIndex   Indice di riga dell'esempio nella matrice dei dati.
-     * @param attributeIndex Indice di colonna dell'attributo indipendente di cui si
-     *                       desidera estrarre il valore.
-     * @return L'oggetto (valore) associato a quell'attributo per quell'esempio.
-     * @throws IndexOutOfBoundsException Se uno degli indici non e' valido.
-     */
-    public Object getExplanatoryValue(int exampleIndex, int attributeIndex) {
-        if (exampleIndex < 0 || exampleIndex >= data.length) {
-            throw new IndexOutOfBoundsException(
-                    "il valore" + exampleIndex + "id exampleIndex in getExplanatoryValue e' fuori indice");
-        } else if (attributeIndex < 0 || attributeIndex >= explanatorySet.length) {
-            throw new IndexOutOfBoundsException(
-                    "il valore" + attributeIndex + "di attributeIndex all' in getExplanatoryValue e' fuori indice");
-        }
+		i=inf;
+		j=sup;
+		int	med=(inf+sup)/2;
+		String x=(String)getExplanatoryValue(med, attribute.getIndex());
+		swap(inf,med);
 
-        return data[exampleIndex][attributeIndex];
-    }
+		while (true)
+		{
 
-    /**
-     * Restituisce l'oggetto Attribute trovato in posizione index nell'array
-     * explanatorySet.
-     *
-     * @param index Indice che individua le posizioni nell'array explanatorySet
-     * @return L'oggetto (Attribute) presente nell'array nella posizione specificata
-      *         da index
-     * @throws IndexOutOfBoundsException Se {@code index} non e' un indice valido
-     *         dell'array explanatorySet.
-     */
-    public Attribute getExplanatoryAttribute(int index) {
-        if (index < 0 || index >= explanatorySet.length) {
-            throw new IndexOutOfBoundsException(
-                    "il valore" + index + "di index in getExplanatoryAttribute e' fuori indice");
-        }
-        return explanatorySet[index];
-    }
+			while(i<=sup && ((String)getExplanatoryValue(i, attribute.getIndex())).compareTo(x)<=0){
+				i++;
 
-    /**
-     * Restituisce l'attributo target, ovvero la variabile di istanza
-     * classAttribute.
-     *
-     * @return L'oggetto (ContinuousAttribute) che, nella regressione, rappresenta
-     *         l'attributo da prevedere.
-     */
-    public ContinuousAttribute getClassAttribute() {
-        return classAttribute;
-    }
+			}
 
-    public String toString() {
-        String value = "";
-        for (int i = 0; i < numberOfExamples; i++) {
-            for (int j = 0; j < explanatorySet.length; j++)
-                value += data[i][j] + ",";
+			while(((String)getExplanatoryValue(j, attribute.getIndex())).compareTo(x)>0) {
+				j--;
 
-            value += data[i][explanatorySet.length] + "\n";
-        }
-        return value;
+			}
 
-    }
+			if(i<j) {
+				swap(i,j);
+			}
+			else break;
+		}
+		swap(inf,j);
+		return j;
 
-    public void sort(Attribute attribute, int beginExampleIndex, int endExampleIndex) {
-        quicksort(attribute, beginExampleIndex, endExampleIndex);
-    }
+	}
 
-    // scambio esempio i con esempi oj
-    private void swap(int i, int j) {
-        Object temp;
-        for (int k = 0; k < getNumberOfExplanatoryAttributes() + 1; k++) {
-            temp = data[i][k];
-            data[i][k] = data[j][k];
-            data[j][k] = temp;
-        }
+	/*
+	 * Partiziona il vettore rispetto all'elemento x e restiutisce il punto di separazione
+	 */
+	private  int partition(ContinuousAttribute attribute, int inf, int sup){
+		int i,j;
 
-    }
+		i=inf;
+		j=sup;
+		int	med=(inf+sup)/2;
+		Double x=(Double)getExplanatoryValue(med, attribute.getIndex());
+		swap(inf,med);
 
-    /*
-     * Partiziona il vettore rispetto all'elemento x e restiutisce il punto di
-     * separazione
-     */
-    private int partition(DiscreteAttribute attribute, int inf, int sup) {
-        int i, j;
+		while (true)
+		{
 
-        i = inf;
-        j = sup;
-        int med = (inf + sup) / 2;
-        String x = (String) getExplanatoryValue(med, attribute.getIndex());
-        swap(inf, med);
+			while(i<=sup && ((Double)getExplanatoryValue(i, attribute.getIndex())).compareTo(x)<=0){
+				i++;
 
-        while (true) {
+			}
 
-            while (i <= sup && ((String) getExplanatoryValue(i, attribute.getIndex())).compareTo(x) <= 0) {
-                i++;
+			while(((Double)getExplanatoryValue(j, attribute.getIndex())).compareTo(x)>0) {
+				j--;
 
-            }
+			}
 
-            while (((String) getExplanatoryValue(j, attribute.getIndex())).compareTo(x) > 0) {
-                j--;
+			if(i<j) {
+				swap(i,j);
+			}
+			else break;
+		}
+		swap(inf,j);
+		return j;
 
-            }
+	}
 
-            if (i < j) {
-                swap(i, j);
-            } else
-                break;
-        }
-        swap(inf, j);
-        return j;
+	/*
+	 * Algoritmo quicksort per l'ordinamento di un array di interi A
+	 * usando come relazione d'ordine totale "<="
+	 * @param A
+	 */
+	private void quicksort(Attribute attribute, int inf, int sup){
 
-    }
+		if(sup>=inf){
 
-    /*
-     * Algoritmo quicksort per l'ordinamento di un array di interi A
-     * usando come relazione d'ordine totale "<="
-     * 
-     * @param A
-     */
-    private void quicksort(Attribute attribute, int inf, int sup) {
+			int pos;
+			if(attribute instanceof DiscreteAttribute)
+				pos=partition((DiscreteAttribute)attribute, inf, sup);
+			else
+				pos=partition((ContinuousAttribute)attribute, inf, sup);
 
-        if (sup >= inf) {
+			if ((pos-inf) < (sup-pos+1)) {
+				quicksort(attribute, inf, pos-1);
+				quicksort(attribute, pos+1,sup);
+			}
+			else
+			{
+				quicksort(attribute, pos+1, sup);
+				quicksort(attribute, inf, pos-1);
+			}
 
-            int pos;
 
-            pos = partition((DiscreteAttribute) attribute, inf, sup);
+		}
 
-            if ((pos - inf) < (sup - pos + 1)) {
-                quicksort(attribute, inf, pos - 1);
-                quicksort(attribute, pos + 1, sup);
-            } else {
-                quicksort(attribute, pos + 1, sup);
-                quicksort(attribute, inf, pos - 1);
-            }
+	}
 
-        }
+	private void readSchema(Scanner sc) throws TrainingDataException {
+		if (!sc.hasNextLine())
+			throw new TrainingDataException("Errore nello schema");
 
-    }
+		String[] schema = sc.nextLine().trim().split("\\s+");
+		if (schema.length != 2 || !schema[0].equals("@schema"))
+			throw new TrainingDataException("Errore nello schema");
 
-    public static void main(String args[]) throws TrainingDataException {
-        Data trainingSet = new Data("prova.dat");
-        System.out.println(trainingSet);
+		int numberOfAttributes = Integer.parseInt(schema[1]);
+		if (numberOfAttributes < 0)
+			throw new TrainingDataException("Errore nello schema");
 
-        for (int jColumn = 0; jColumn < trainingSet.getNumberOfExplanatoryAttributes(); jColumn++) {
-            System.out.println("ORDER BY " + trainingSet.getExplanatoryAttribute(jColumn));
-            trainingSet.quicksort(trainingSet.getExplanatoryAttribute(jColumn), 0,
-                    trainingSet.getNumberOfExamples() - 1);
-            System.out.println(trainingSet);
-        }
+		explanatorySet = new LinkedList<Attribute>();
+		int iAttribute = 0;
 
-    }
+		while (sc.hasNextLine()) {
+			String line = sc.nextLine().trim();
+			if (line.isEmpty())
+				throw new TrainingDataException("Errore nello schema");
+
+			String[] parts = line.split("\\s+");
+
+			if (parts[0].equals("@data")) {
+				if (parts.length != 2 || iAttribute != explanatorySet.size() || classAttribute == null)
+					throw new TrainingDataException("Errore nello schema");
+
+				numberOfExamples = Integer.parseInt(parts[1]);
+				if (numberOfExamples <= 0)
+					throw new TrainingDataException("Errore nello schema");
+				return;
+			}
+
+			if (parts[0].equals("@desc")) {
+				if ((parts.length != 2 && parts.length != 3) || iAttribute >= numberOfAttributes || classAttribute != null)
+					throw new TrainingDataException("Errore nello schema");
+
+				if (parts.length == 2) {
+					explanatorySet.add(new ContinuousAttribute(parts[1], iAttribute));
+				} else {
+					String[] discreteValues = parts[2].split(",");
+					Set<String> values = new TreeSet<String>(Arrays.asList(discreteValues));
+					explanatorySet.add(new DiscreteAttribute(
+						parts[1],
+						iAttribute,
+						values
+					));
+				}
+				iAttribute++;
+			} else if (parts[0].equals("@target")) {
+				if (parts.length != 2 || iAttribute != numberOfAttributes || classAttribute != null)
+					throw new TrainingDataException("Errore nello schema");
+				classAttribute = new ContinuousAttribute(parts[1], iAttribute);
+			} else {
+				throw new TrainingDataException("Errore nello schema");
+			}
+		}
+
+		throw new TrainingDataException("Errore nello schema");
+	}
+
+	private void readData(Scanner sc) throws TrainingDataException {
+		data = new Object[numberOfExamples][explanatorySet.size() + 1];
+		int iRow = 0;
+
+		while (sc.hasNextLine() && iRow < numberOfExamples) {
+			String[] values = sc.nextLine().split(",");
+			if (values.length != explanatorySet.size() + 1)
+				throw new TrainingDataException("Errore nei dati");
+
+			for (int j = 0; j < explanatorySet.size(); j++) {
+				if (explanatorySet.get(j) instanceof DiscreteAttribute)
+					data[iRow][j] = values[j].trim();
+				else
+					data[iRow][j] = Double.valueOf(values[j].trim());
+			}
+			data[iRow][explanatorySet.size()] = Double.valueOf(values[explanatorySet.size()].trim());
+			iRow++;
+		}
+
+		if (iRow != numberOfExamples)
+			throw new TrainingDataException("Errore nei dati");
+	}
+
+	public static void main(String args[])throws TrainingDataException{
+		Data trainingSet=new Data("servo.dat");
+		System.out.println(trainingSet);
+
+
+
+		for(int jColumn=0;jColumn<trainingSet.getNumberOfExplanatoryAttributes();jColumn++)
+		{
+			System.out.println("ORDER BY "+trainingSet.getExplanatoryAttribute(jColumn));
+			trainingSet.quicksort(trainingSet.getExplanatoryAttribute(jColumn),0 , trainingSet.getNumberOfExamples()-1);
+			System.out.println(trainingSet);
+		}
+
+
+
+
+
+	}
+
 }

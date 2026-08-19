@@ -1,7 +1,17 @@
 package tree;
 
+import data.Attribute;
+import data.ContinuousAttribute;
 import data.Data;
 import data.DiscreteAttribute;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.TreeSet;
 import utility.Keyboard;
 
 /**
@@ -10,29 +20,52 @@ import utility.Keyboard;
  * Ogni istanza mantiene il nodo radice del sotto-albero corrente ed eventuali
  * sotto-alberi figli generati da uno split.
  */
-public class RegressionTree {
+public class RegressionTree implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /** Radice del sotto-albero corrente. */
     private Node root;
-    
+
     /** Array dei sotto-alberi originanti dalla radice corrente. */
     private RegressionTree[] childTree;
 
     /**
      * Istanzia un sotto-albero vuoto dell'intero albero.
      */
-    public RegressionTree() {
+    public RegressionTree() {}
 
-    }
-    
     /**
-     * Istanzia un sotto-albero dell'intero albero e avvia l'induzione dell'albero 
+     * Istanzia un sotto-albero dell'intero albero e avvia l'induzione dell'albero
      * dagli esempi di training in input.
      *
      * @param trainingSet training set complessivo
      */
-    public RegressionTree(Data trainingSet){
-        learnTree(trainingSet,0,trainingSet.getNumberOfExamples()-1,trainingSet.getNumberOfExamples()*10/100);
+    public RegressionTree(Data trainingSet) {
+        learnTree(
+            trainingSet,
+            0,
+            trainingSet.getNumberOfExamples() - 1,
+            (trainingSet.getNumberOfExamples() * 10) / 100
+        );
+    }
+
+    /**
+     * Restituisce la radice del sotto-albero corrente.
+     *
+     * @return radice del sotto-albero.
+     */
+    public Node getRoot() {
+        return root;
+    }
+
+    /**
+     * Restituisce una copia dell'array dei sotto-alberi figli.
+     *
+     * @return sotto-alberi figli, oppure un array vuoto se non sono presenti.
+     */
+    public RegressionTree[] getChildren() {
+        return childTree == null ? new RegressionTree[0] : childTree.clone();
     }
 
     /**
@@ -47,7 +80,12 @@ public class RegressionTree {
      * @param numberOfExamplesPerLeaf numero massimo di esempi che una foglia può contenere
      * @return true se il nodo deve diventare una foglia, false altrimenti
      */
-    boolean isLeaf(Data trainingSet, int begin, int end, int numberOfExamplesPerLeaf) {
+    boolean isLeaf(
+        Data trainingSet,
+        int begin,
+        int end,
+        int numberOfExamplesPerLeaf
+    ) {
         int numberOfExamples = end - begin + 1;
         if (numberOfExamples <= numberOfExamplesPerLeaf) {
             return true;
@@ -68,32 +106,45 @@ public class RegressionTree {
      * @return il miglior nodo di split per il sotto-insieme corrente
      */
     SplitNode determineBestSplitNode(Data trainingSet, int begin, int end) {
-        SplitNode bestNode = null;
-        double minVariance = Double.MAX_VALUE;
+        TreeSet<SplitNode> splitNodes = new TreeSet<SplitNode>();
 
-        for (int i = 0; i < trainingSet.getNumberOfExplanatoryAttributes(); i++) {
-            DiscreteAttribute currentAttribute = (DiscreteAttribute) trainingSet.getExplanatoryAttribute(i);
-            DiscreteNode tempNode = new DiscreteNode(trainingSet, begin, end, currentAttribute);
-        
-            double currentVariance = tempNode.getVariance();
-        
-            // Se è la varianza più bassa trovata finora (o se è il primo giro), assegno proprio tempNode a bestNode
-            if (bestNode == null || currentVariance < minVariance) {
-                minVariance = currentVariance;
-                bestNode = tempNode;
+        for (
+            int i = 0;
+            i < trainingSet.getNumberOfExplanatoryAttributes();
+            i++
+        ) {
+            Attribute attribute = trainingSet.getExplanatoryAttribute(i);
+            SplitNode currentNode;
+
+            if (attribute instanceof DiscreteAttribute) {
+                currentNode = new DiscreteNode(
+                    trainingSet,
+                    begin,
+                    end,
+                    (DiscreteAttribute) attribute
+                );
+            } else {
+                currentNode = new ContinuousNode(
+                    trainingSet,
+                    begin,
+                    end,
+                    (ContinuousAttribute) attribute
+                );
             }
+            splitNodes.add(currentNode);
         }
 
-        // Una volta trovato il bestNode, ordino i dati del dataset in base a quell'attributo
-        if (bestNode != null) {
-            trainingSet.sort(bestNode.getAttribute(), begin, end);
+        if (splitNodes.isEmpty()) {
+            return null;
         }
+
+        SplitNode bestNode = splitNodes.first();
+        trainingSet.sort(bestNode.getAttribute(), begin, end);
         return bestNode;
     }
 
-        
     /**
-     * Genera un sotto-albero con il sotto-insieme di input istanziando un nodo 
+     * Genera un sotto-albero con il sotto-insieme di input istanziando un nodo
      * fogliare o un nodo di split. Richiama se stesso ricorsivamente sui figli.
      *
      * @param trainingSet             training set complessivo
@@ -101,32 +152,39 @@ public class RegressionTree {
      * @param end                     indice finale del sotto-insieme di training
      * @param numberOfExamplesPerLeaf soglia limite di esempi per istanziare una foglia
      */
-    void learnTree(Data trainingSet,int begin, int end,int numberOfExamplesPerLeaf){
-        if (isLeaf(trainingSet, begin, end, numberOfExamplesPerLeaf)){
+    void learnTree(
+        Data trainingSet,
+        int begin,
+        int end,
+        int numberOfExamplesPerLeaf
+    ) {
+        if (isLeaf(trainingSet, begin, end, numberOfExamplesPerLeaf)) {
             //determina la classe che compare più frequentemente nella partizione corrente
-            root=new LeafNode(trainingSet,begin,end);
+            root = new LeafNode(trainingSet, begin, end);
         }
-        else //split node
-        {
-            root=determineBestSplitNode(trainingSet, begin, end);
-            
-            if (root.getNumberOfChildren()>1){
-                childTree=new RegressionTree[root.getNumberOfChildren()];
-                for(int i=0;i<root.getNumberOfChildren();i++){
-                    childTree[i]=new RegressionTree();
-                    childTree[i].learnTree(trainingSet, ((SplitNode)root).getSplitInfo(i).beginIndex, ((SplitNode)root).getSplitInfo(i).endIndex, numberOfExamplesPerLeaf);
+        //split node
+        else {
+            root = determineBestSplitNode(trainingSet, begin, end);
+
+            if (root.getNumberOfChildren() > 1) {
+                childTree = new RegressionTree[root.getNumberOfChildren()];
+                for (int i = 0; i < root.getNumberOfChildren(); i++) {
+                    childTree[i] = new RegressionTree();
+                    childTree[i].learnTree(
+                        trainingSet,
+                        ((SplitNode) root).getSplitInfo(i).beginIndex,
+                        ((SplitNode) root).getSplitInfo(i).endIndex,
+                        numberOfExamplesPerLeaf
+                    );
                 }
-            }
-            else
-                root=new LeafNode(trainingSet,begin,end);   
+            } else root = new LeafNode(trainingSet, begin, end);
         }
     }
-            
 
     /**
      * Stampa a console le informazioni dell'intero albero avvolte in un'intestazione.
      */
-    public void printTree(){
+    public void printTree() {
         System.out.println("********* TREE **********\n");
         System.out.println(toString());
         System.out.println("*************************\n");
@@ -136,9 +194,9 @@ public class RegressionTree {
      * Stampa le regole dell'albero dalla radice alle foglie.
      */
     public void printRules() {
-        System.out.println("********* RULES **********");
+        System.out.println("********* RULES **********\n");
         printRules("");
-        System.out.println("*************************");
+        System.out.println("*************************\n");
     }
 
     /**
@@ -153,18 +211,25 @@ public class RegressionTree {
 
         if (root instanceof LeafNode) {
             if (current.equals("")) {
-                System.out.println("Class=" + ((LeafNode) root).getPredictedClassValue());
+                System.out.println(
+                    "Class=" + ((LeafNode) root).getPredictedClassValue()
+                );
             } else {
-                System.out.println(current + " ==> Class=" + ((LeafNode) root).getPredictedClassValue());
+                System.out.println(
+                    current +
+                        " ==> Class=" +
+                        ((LeafNode) root).getPredictedClassValue()
+                );
             }
             return;
         }
 
         SplitNode splitRoot = (SplitNode) root;
         for (int i = 0; i < childTree.length; i++) {
-            String condition = splitRoot.getAttribute().getName()
-                    + splitRoot.getSplitInfo(i).getComparator()
-                    + splitRoot.getSplitInfo(i).getSplitValue();
+            String condition =
+                splitRoot.getAttribute().getName() +
+                splitRoot.getSplitInfo(i).getComparator() +
+                splitRoot.getSplitInfo(i).getSplitValue();
 
             String nextCurrent;
             if (current.equals("")) {
@@ -176,40 +241,58 @@ public class RegressionTree {
             childTree[i].printRules(nextCurrent);
         }
     }
-        
+
     /**
-     * Concatena in una stringa tutte le informazioni della radice (root) e dei 
+     * Concatena in una stringa tutte le informazioni della radice (root) e dei
      * sotto-alberi figli (childTree) invocando ricorsivamente i loro metodi toString().
      *
      * @return stringa testuale con la struttura dell'albero
      */
-    public String toString(){
-        String tree=root.toString()+"\n";
-            
-        if( root instanceof LeafNode){
-            
+    public String toString() {
+        String tree = root.toString() + "\n";
+
+        if (root instanceof LeafNode) {
         }
-        else //split node
-        {
-            for(int i=0;i<childTree.length;i++)
-                tree +=childTree[i];
-            }
-            return tree;
+        //split node
+        else {
+            for (int i = 0; i < childTree.length; i++) tree += childTree[i];
+        }
+        return tree;
     }
 
-    public Double predictClass()throws UnknownValueException {
-        if(root instanceof LeafNode)
-            return ((LeafNode) root).getPredictedClassValue();
-        else {
-            int risp;
-            System.out.println(((SplitNode)root).formulateQuery());
-            risp=Keyboard.readInt();
-            if(risp==-1 || risp>=root.getNumberOfChildren())
-                throw new UnknownValueException("The answer should be an integer between 0 and " +(root.getNumberOfChildren()-1)+"!");
-            else
-                return childTree[risp].predictClass();
+    /** Serializza l'albero nel file indicato. */
+    public void salva(String nomeFile) throws FileNotFoundException, IOException {
+        try (ObjectOutputStream output = new ObjectOutputStream(
+                new FileOutputStream(nomeFile))) {
+            output.writeObject(this);
         }
     }
-        
+
+    /** Carica dal file indicato un albero precedentemente serializzato. */
+    public static RegressionTree carica(String nomeFile)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        try (ObjectInputStream input = new ObjectInputStream(
+                new FileInputStream(nomeFile))) {
+            return (RegressionTree) input.readObject();
+        }
+    }
+
+    public Double predictClass() throws UnknownValueException {
+        if (root instanceof LeafNode) return (
+            (LeafNode) root
+        ).getPredictedClassValue();
+        else {
+            int risp;
+            System.out.println(((SplitNode) root).formulateQuery());
+            risp = Keyboard.readInt();
+            if (
+                risp == -1 || risp >= root.getNumberOfChildren()
+            ) throw new UnknownValueException(
+                "The answer should be an integer between 0 and " +
+                    (root.getNumberOfChildren() - 1) +
+                    "!"
+            );
+            else return childTree[risp].predictClass();
+        }
+    }
 }
-		

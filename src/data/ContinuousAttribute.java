@@ -2,9 +2,6 @@ package data;
 
 /**
  * Rappresenta un attributo continuo.
- *
- * Questa classe estende {@link Attribute} senza introdurre nuovi campi, perche'
- * per un attributo continuo sono sufficienti nome e indice.
  */
 public class ContinuousAttribute extends Attribute {
 

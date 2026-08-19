@@ -1,21 +1,20 @@
 package data;
 
-/**
- * Modella un attributo generico del dataset.
- *
- * La classe memorizza il nome simbolico e l'indice numerico di un attributo,
- * lasciando alle sottoclassi la specializzazione per il caso discreto o
- * continuo.
- */
+import java.io.Serializable;
 
-public abstract class Attribute {
+/**
+ * Modella un attributo generico.
+ */
+public abstract class Attribute implements Serializable {
+    private static final long serialVersionUID = 1L;
     /** Nome simbolico dell'attributo. */
     private String name;
+
     /** Identificativo numerico dell'attributo. */
     private int index;
 
     /**
-     * Inizializza il nome e l'indice dell'attributo.
+     * Costruisce un attributo.
      *
      * @param name Nome simbolico dell'attributo.
      * @param index Identificativo numerico dell'attributo.
@@ -26,27 +25,27 @@ public abstract class Attribute {
     }
 
     /**
-     * Restituisce il nome dell'attributo.
+     * Restituisce il nome simbolico.
      *
-     * @return Il nome simbolico dell'attributo.
+     * @return nome simbolico dell'attributo.
      */
     public String getName() {
         return this.name;
     }
 
     /**
-     * Restituisce l'indice dell'attributo.
+     * Restituisce l'identificativo numerico.
      *
-     * @return L'identificativo numerico dell'attributo.
+     * @return identificativo numerico dell'attributo.
      */
     public int getIndex() {
         return this.index;
     }
 
     /**
-     * Restituisce il nome dell'attributo in forma testuale.
+     * Restituisce il nome simbolico.
      *
-     * @return Il nome simbolico dell'attributo.
+     * @return nome simbolico dell'attributo.
      */
     @Override
     public String toString() {
