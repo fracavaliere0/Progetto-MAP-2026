@@ -2,26 +2,22 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<title>Report tecnico — Progetto MAP 2026</title>
+<title>Rapporto tecnico — Progetto MAP 2026</title>
 <style>
   @page { size: A4; margin: 0; }
   * { box-sizing: border-box; }
   :root {
     --ink: #111318;
-    --muted: #5d626d;
-    --line: #d8dbe2;
+    --muted: #61656e;
+    --line: #d8dbe0;
+    --soft: #f4f5f6;
     --paper: #ffffff;
-    --soft: #f4f5f7;
     --red: #c00020;
-    --red-soft: #fff1f3;
-    --blue-soft: #edf5ff;
-    --green-soft: #eef9f1;
-    --amber-soft: #fff7e5;
   }
   html, body {
     margin: 0;
     padding: 0;
-    background: #eceef2;
+    background: #e9eaed;
     color: var(--ink);
     font-family: Arial, Helvetica, sans-serif;
     font-size: 10pt;
@@ -34,435 +30,253 @@
     width: 210mm;
     height: 297mm;
     margin: 0 auto 8mm;
-    padding: 16mm 17mm 16mm;
+    padding: 16mm 17mm;
     overflow: hidden;
     background: var(--paper);
     page-break-after: always;
   }
   .page:last-child { page-break-after: auto; }
-  .page-number {
+  .footer {
     position: absolute;
     right: 17mm;
     bottom: 8mm;
-    color: #747985;
-    font-size: 8.3pt;
-  }
-  .footer-label {
-    position: absolute;
     left: 17mm;
-    bottom: 8mm;
-    color: #747985;
-    font-size: 8.3pt;
+    display: flex;
+    justify-content: space-between;
+    color: #777b83;
+    font-size: 8.2pt;
   }
   h1, h2, h3, p { margin-top: 0; }
-  h1 { font-size: 28pt; line-height: 1.02; margin-bottom: 5mm; letter-spacing: -0.7pt; }
-  h2 { font-size: 19pt; line-height: 1.08; margin-bottom: 3.5mm; letter-spacing: -0.3pt; }
-  h3 { font-size: 11.4pt; line-height: 1.2; margin: 0 0 1.5mm; }
+  h1 { margin-bottom: 5mm; font-size: 38pt; line-height: 1.02; letter-spacing: -1pt; }
+  h2 { margin: 0; font-size: 20pt; line-height: 1.1; letter-spacing: -.3pt; }
+  h3 { margin-bottom: 1.7mm; font-size: 11.5pt; line-height: 1.25; }
   p { margin-bottom: 3mm; }
   ul, ol { margin: 1.2mm 0 3mm 5mm; padding-left: 4mm; }
-  li { margin-bottom: 1.2mm; }
-  strong { font-weight: 700; }
+  li { margin-bottom: 1.1mm; }
   code, pre { font-family: "DejaVu Sans Mono", Consolas, monospace; }
-  code { font-size: 0.92em; }
+  code { font-size: .92em; }
+  pre {
+    margin: 2mm 0 0;
+    padding: 3mm 3.5mm;
+    overflow: hidden;
+    border-radius: 1.5mm;
+    background: #151922;
+    color: #f7f7f4;
+    font-size: 8pt;
+    line-height: 1.42;
+    white-space: pre-wrap;
+  }
+  table { width: 100%; margin: 2mm 0 4mm; border-collapse: collapse; }
+  th, td { padding: 2mm; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { color: var(--muted); font-size: 8.2pt; letter-spacing: .4pt; text-transform: uppercase; }
+  td { font-size: 9.1pt; }
+  tr:last-child td { border-bottom: 0; }
+  .small { font-size: 8.8pt; }
+  .muted { color: var(--muted); }
+  .lead { color: #30343b; font-size: 11.8pt; line-height: 1.45; }
   .eyebrow {
-    color: var(--red);
-    font-weight: 800;
-    font-size: 8.5pt;
-    letter-spacing: 1.4pt;
-    text-transform: uppercase;
     margin-bottom: 2.5mm;
+    color: var(--red);
+    font-size: 8.4pt;
+    font-weight: 800;
+    letter-spacing: 1.3pt;
+    text-transform: uppercase;
   }
   .section-head {
     display: flex;
     align-items: baseline;
     gap: 3mm;
-    padding-bottom: 2.5mm;
     margin-bottom: 5mm;
+    padding-bottom: 2.7mm;
     border-bottom: 1.5px solid var(--ink);
   }
-  .section-no { color: var(--red); font-size: 11pt; font-weight: 800; }
-  .section-head h2 { margin: 0; }
-  .lead { font-size: 12pt; line-height: 1.43; color: #2f333b; }
-  .muted { color: var(--muted); }
-  .small { font-size: 8.8pt; }
-  .tiny { font-size: 8pt; }
-  .red { color: var(--red); }
-  .rule { height: 1px; background: var(--line); margin: 4mm 0; }
+  .section-no { color: var(--red); font-size: 10.5pt; font-weight: 800; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
   .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
-  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; }
-  .span-2 { grid-column: span 2; }
-  .card {
-    border: 1px solid var(--line);
-    border-radius: 2.5mm;
-    padding: 4mm;
-    background: var(--paper);
-  }
-  .card.soft { background: var(--soft); border-color: transparent; }
-  .card.red-soft { background: var(--red-soft); border-color: #f0cbd1; }
-  .card.blue-soft { background: var(--blue-soft); border-color: #cbdff5; }
-  .card.green-soft { background: var(--green-soft); border-color: #cfe9d6; }
-  .card.amber-soft { background: var(--amber-soft); border-color: #ead9af; }
-  .callout {
-    border-left: 3px solid var(--red);
-    background: var(--red-soft);
-    padding: 3.2mm 4mm;
+  .panel { padding: 3.5mm; border: 1px solid var(--line); background: var(--paper); }
+  .soft { background: var(--soft); }
+  .note {
     margin: 3.5mm 0;
-  }
-  .tag-row { display: flex; flex-wrap: wrap; gap: 2mm; }
-  .tag {
-    padding: 1.2mm 2.5mm;
-    border: 1px solid var(--line);
-    border-radius: 10mm;
-    background: var(--paper);
-    font-size: 8.3pt;
-    font-weight: 700;
-  }
-  .metric {
-    border-top: 3px solid var(--red);
-    padding-top: 2.5mm;
-  }
-  .metric .value { font-size: 23pt; font-weight: 800; line-height: 1; }
-  .metric .label { margin-top: 1.5mm; color: var(--muted); font-size: 8.7pt; }
-  table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; }
-  th, td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: 2.2mm 2mm; }
-  th { font-size: 8.3pt; text-transform: uppercase; letter-spacing: .4pt; color: var(--muted); }
-  td { font-size: 9.2pt; }
-  tr:last-child td { border-bottom: 0; }
-  .compact td, .compact th { padding-top: 1.5mm; padding-bottom: 1.5mm; }
-  .mode {
-    border: 1px solid var(--ink);
-    border-radius: 3mm;
-    overflow: hidden;
-  }
-  .mode-title { background: var(--ink); color: white; padding: 3mm 4mm; }
-  .mode-title .kicker { color: #ffb3c0; font-size: 8pt; font-weight: 800; letter-spacing: 1px; }
-  .mode-body { padding: 4mm; }
-  .flow {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 3mm;
-    align-items: stretch;
-    margin: 4mm 0;
-  }
-  .flow.four { grid-template-columns: repeat(4, 1fr); }
-  .flow .step {
-    position: relative;
-    min-height: 26mm;
-    padding: 3.2mm;
-    border: 1px solid var(--line);
-    border-radius: 2mm;
+    padding: 3mm 3.8mm;
+    border-left: 3px solid var(--red);
     background: var(--soft);
   }
-  .flow .step:not(:last-child)::after {
-    content: "→";
-    position: absolute;
-    right: -4.2mm;
-    top: 9mm;
-    z-index: 2;
-    color: var(--red);
-    font-size: 14pt;
-    font-weight: 800;
-  }
-  .step-n { color: var(--red); font-weight: 800; font-size: 8pt; letter-spacing: .5pt; }
-  .formula {
-    padding: 4mm;
-    text-align: center;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 12pt;
-    background: var(--soft);
-    border-radius: 2mm;
-  }
-  .diagram {
-    display: grid;
-    grid-template-columns: 1fr 9mm 1.1fr 9mm 1fr;
-    align-items: center;
-    gap: 1mm;
-    margin: 4mm 0;
-  }
-  .diagram .box {
-    min-height: 28mm;
-    border: 1.5px solid var(--ink);
-    border-radius: 2.5mm;
-    padding: 3mm;
-    text-align: center;
-    background: white;
-  }
-  .diagram .arrow { text-align: center; color: var(--red); font-size: 18pt; font-weight: 800; }
-  .code-block {
-    margin: 2mm 0 4mm;
-    padding: 3.5mm 4mm;
-    color: #f7f3e8;
-    background: #101827;
-    border-radius: 2.5mm;
-    font-size: 8.4pt;
-    line-height: 1.45;
-    white-space: pre-wrap;
-  }
-  .figure { margin: 3mm 0 4mm; break-inside: avoid; }
-  .figure img {
-    display: block;
-    width: 100%;
-    border: 1px solid #bfc3cb;
-    background: white;
-  }
-  .figure figcaption { margin-top: 1.5mm; color: var(--muted); font-size: 8.2pt; }
-  .hero-shot img { height: 104mm; object-fit: contain; }
-  .detail-shot img { height: 53mm; object-fit: contain; }
-  .terminal-shot img { height: 83mm; object-fit: cover; object-position: top; background: #101827; }
-  .check { color: #11703a; font-weight: 800; }
-  .warn { color: #9a5a00; font-weight: 800; }
-  .cover {
-    padding: 0;
-    background: var(--ink);
-    color: white;
-  }
+  .path { font-family: "DejaVu Sans Mono", monospace; font-size: 8.1pt; word-break: break-all; }
+
+  .cover { padding: 0; background: var(--ink); color: white; }
   .cover::before {
-    content: "";
     position: absolute;
     top: 0;
+    bottom: 0;
     left: 0;
-    width: 8mm;
-    height: 100%;
+    width: 7mm;
     background: var(--red);
+    content: "";
   }
-  .cover-inner { padding: 26mm 22mm 18mm 27mm; height: 100%; display: flex; flex-direction: column; }
-  .cover .eyebrow { color: #ff6b84; margin-top: 2mm; }
-  .cover h1 { font-size: 39pt; max-width: 155mm; margin-top: 17mm; margin-bottom: 4mm; }
-  .cover .subtitle { max-width: 145mm; color: #d1d4db; font-size: 14pt; line-height: 1.42; }
-  .cover .tag { color: white; background: transparent; border-color: #555c68; }
-  .cover-summary {
-    margin-top: auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4mm;
-  }
-  .cover-card { border-top: 1px solid #555c68; padding-top: 3mm; color: #d1d4db; }
-  .cover-card strong { display: block; color: white; font-size: 11pt; margin-bottom: 1mm; }
-  .cover-meta { margin-top: 8mm; color: #aeb3bd; font-size: 8.8pt; display: flex; justify-content: space-between; }
-  .toc { counter-reset: item; }
-  .toc-row { display: grid; grid-template-columns: 8mm 1fr 9mm; gap: 2mm; padding: 1.7mm 0; border-bottom: 1px solid #333943; }
-  .toc-row .n { color: #ff6b84; font-weight: 800; }
-  .toc-row .p { text-align: right; color: #aeb3bd; }
-  .bar {
+  .cover-inner {
     display: flex;
-    height: 8mm;
-    overflow: hidden;
-    border-radius: 1.5mm;
-    margin: 2mm 0 3mm;
-    color: white;
-    font-size: 7.8pt;
-    font-weight: 700;
+    flex-direction: column;
+    height: 100%;
+    padding: 25mm 23mm 18mm 27mm;
   }
-  .bar > div { display: flex; align-items: center; justify-content: center; min-width: 8mm; }
-  .b-data { background: #3577b8; }
-  .b-tree { background: #278653; }
-  .b-utility { background: #7256b7; }
-  .b-main { background: #7a7f88; }
-  .b-ui { background: var(--red); }
-  .risk-list { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
-  .risk { border-left: 2px solid #d19a2a; padding: 2mm 3mm; background: var(--amber-soft); }
-  .path { word-break: break-all; font-family: "DejaVu Sans Mono", monospace; font-size: 8.2pt; }
+  .cover .eyebrow { color: #ff6c84; }
+  .cover h1 { margin-top: 20mm; }
+  .cover .subtitle { max-width: 150mm; color: #d2d5db; font-size: 14pt; line-height: 1.45; }
+  .cover-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5mm;
+    margin-top: 18mm;
+    padding-top: 5mm;
+    border-top: 1px solid #4f5560;
+  }
+  .cover-summary strong { display: block; margin-bottom: 1mm; font-size: 18pt; }
+  .cover-summary span { color: #c7cad1; font-size: 9pt; }
+  .contents { margin-top: auto; }
+  .contents-row {
+    display: grid;
+    grid-template-columns: 8mm 1fr 8mm;
+    padding: 2mm 0;
+    border-bottom: 1px solid #353b45;
+  }
+  .contents-row .n { color: #ff6c84; font-weight: 800; }
+  .contents-row .p { color: #aeb3bd; text-align: right; }
+  .cover-meta { display: flex; justify-content: space-between; margin-top: 8mm; color: #9fa4ae; font-size: 8.5pt; }
+
+  .lane {
+    display: grid;
+    grid-template-columns: 1fr 9mm 1.2fr 9mm 1.2fr;
+    align-items: center;
+    margin-bottom: 3mm;
+  }
+  .lane .box { min-height: 22mm; padding: 3mm; border: 1px solid var(--ink); text-align: center; }
+  .lane .arrow { color: var(--red); font-size: 16pt; font-weight: 800; text-align: center; }
+  .lane .end { background: var(--soft); }
+  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 4mm 0; }
+  .step { min-height: 25mm; padding: 3mm; border-top: 2px solid var(--red); background: var(--soft); }
+  .step b { display: block; margin-bottom: 1mm; }
+  .step span { color: var(--muted); font-size: 8.5pt; }
+  .formula { padding: 3.5mm; background: var(--soft); font-family: Georgia, serif; font-size: 12pt; text-align: center; }
+  .figure { margin: 3mm 0 4mm; }
+  .figure img { display: block; width: 100%; height: 91mm; border: 1px solid #bfc3c9; object-fit: contain; background: white; }
+  .figure figcaption { margin-top: 1.5mm; color: var(--muted); font-size: 8.2pt; }
+  .legend { margin-bottom: 5mm; }
+  .legend div { padding-top: 2.5mm; border-top: 2px solid var(--ink); }
+  .legend strong { display: block; margin-bottom: .8mm; }
+  .metric-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm; margin: 5mm 0; }
+  .metric { padding-top: 2.5mm; border-top: 3px solid var(--red); }
+  .metric strong { display: block; font-size: 22pt; line-height: 1; }
+  .metric span { color: var(--muted); font-size: 8.5pt; }
+  .limits { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 5mm; }
+  .limit { padding: 2.5mm 0 2.5mm 3mm; border-left: 2px solid var(--red); }
+  .limit strong { display: block; margin-bottom: .8mm; }
 </style>
 </head>
 <body>
 
 <section class="page cover">
   <div class="cover-inner">
-    <div class="eyebrow">Report tecnico · A.A. 2025/2026</div>
+    <div class="eyebrow">Rapporto tecnico · A.A. 2025/2026</div>
     <h1>Regression Tree<br>Progetto MAP 2026</h1>
-    <p class="subtitle">Progettazione, implementazione e verifica di un sistema Java per apprendere, visualizzare e usare alberi di regressione.</p>
-
-    <div class="tag-row" style="margin-top:8mm">
-      <span class="tag">Java 8+</span>
-      <span class="tag">Swing</span>
-      <span class="tag">TCP/IP</span>
-      <span class="tag">JDBC · MySQL</span>
-      <span class="tag">JUnit 4</span>
-    </div>
-
-    <div style="margin-top:18mm">
-      <div class="eyebrow">Indice</div>
-      <div class="toc">
-        <div class="toc-row"><span class="n">1</span><span>Obiettivo e architettura</span><span class="p">2</span></div>
-        <div class="toc-row"><span class="n">2</span><span>Algoritmo e modello software</span><span class="p">3</span></div>
-        <div class="toc-row"><span class="n">3</span><span>Interfaccia grafica</span><span class="p">4</span></div>
-        <div class="toc-row"><span class="n">4</span><span>Modalità client/server</span><span class="p">5</span></div>
-        <div class="toc-row"><span class="n">5</span><span>Verifica e qualità</span><span class="p">6</span></div>
-        <div class="toc-row"><span class="n">6</span><span>Esecuzione, limiti e conclusioni</span><span class="p">7</span></div>
-      </div>
-    </div>
+    <p class="subtitle">Un’applicazione Java per addestrare e visualizzare alberi di regressione. Il server gestisce i dati MySQL; il client testuale esegue le predizioni.</p>
 
     <div class="cover-summary">
-      <div class="cover-card">
-        <strong>Due modalità, ben separate</strong>
-        GUI locale su file <code>.dat</code> e sistema JAR client/server su database.
-      </div>
-      <div class="cover-card">
-        <strong>Risultato verificato</strong>
-        81 test JUnit, 0 errori e 0 fallimenti nella verifica locale.
-      </div>
+      <div><strong>3</strong><span>JAR: interfaccia, client e server</span></div>
+      <div><strong>2</strong><span>origini dati: file <code>.dat</code> o database</span></div>
+      <div><strong>81</strong><span>test JUnit superati</span></div>
     </div>
-    <div class="cover-meta"><span>Versione 1.0 · luglio 2026</span><span>Documento tecnico sintetico</span></div>
+
+    <div class="contents">
+      <div class="eyebrow">Contenuto</div>
+      <div class="contents-row"><span class="n">1</span><span>Struttura del sistema</span><span class="p">2</span></div>
+      <div class="contents-row"><span class="n">2</span><span>Apprendimento</span><span class="p">3</span></div>
+      <div class="contents-row"><span class="n">3</span><span>Uso essenziale</span><span class="p">4</span></div>
+      <div class="contents-row"><span class="n">4</span><span>Verifica e limiti</span><span class="p">5</span></div>
+    </div>
+    <div class="cover-meta"><span>Versione 2.0 · luglio 2026</span><span>Baseline <code>bccb20e</code></span></div>
   </div>
 </section>
 
 <section class="page">
-  <header class="section-head"><span class="section-no">01</span><h2>Obiettivo e architettura</h2></header>
-  <p class="lead">Il progetto stima un <strong>target numerico</strong> tramite un albero di regressione. Il repository espone due modalità autonome: condividono i concetti di dominio, ma non comunicano tra loro.</p>
+  <header class="section-head"><span class="section-no">01</span><h2>Struttura del sistema</h2></header>
+  <p class="lead">Il progetto ha un solo obiettivo: ottenere un valore numerico da un albero di regressione. La GUI mostra il modello; il client testuale lo usa per predire.</p>
 
-  <div class="grid-2" style="margin-top:5mm">
-    <article class="mode">
-      <div class="mode-title"><div class="kicker">MODALITÀ A</div><h3 style="margin-top:1mm">GUI locale Swing</h3></div>
-      <div class="mode-body">
-        <ul>
-          <li>Input da training set <code>.dat</code>.</li>
-          <li>Attributi esplicativi discreti; target continuo.</li>
-          <li>Training in memoria e visualizzazione dell’albero.</li>
-          <li>Statistiche, zoom, centratura e dettagli testuali.</li>
-        </ul>
-        <div class="tag-row"><span class="tag">nessun database</span><span class="tag">nessuna rete</span></div>
-      </div>
-    </article>
-    <article class="mode">
-      <div class="mode-title"><div class="kicker">MODALITÀ B</div><h3 style="margin-top:1mm">JAR client/server</h3></div>
-      <div class="mode-body">
-        <ul>
-          <li>Input da tabella MySQL/MariaDB.</li>
-          <li>Attributi discreti e continui; target continuo.</li>
-          <li>Training o caricamento di un archivio serializzato.</li>
-          <li>Predizione interattiva dal client testuale.</li>
-        </ul>
-        <div class="tag-row"><span class="tag">TCP</span><span class="tag">JDBC</span><span class="tag">multi-client</span></div>
-      </div>
-    </article>
+  <h3>Due flussi</h3>
+  <div class="lane">
+    <div class="box"><strong>File <code>.dat</code></strong><br><span class="small muted">dati locali</span></div>
+    <div class="arrow">→</div>
+    <div class="box"><strong><code>mapGUI.jar</code></strong><br><span class="small muted">training nella JVM</span></div>
+    <div class="arrow">→</div>
+    <div class="box end"><strong>Albero visuale</strong><br><span class="small muted">grafico e dettagli</span></div>
+  </div>
+  <div class="lane">
+    <div class="box"><strong>MySQL / MariaDB</strong><br><span class="small muted"><code>MapDB</code></span></div>
+    <div class="arrow">⇄</div>
+    <div class="box"><strong><code>mapServer.jar</code></strong><br><span class="small muted">JDBC, training, archivio</span></div>
+    <div class="arrow">⇄</div>
+    <div class="box end"><strong>GUI o client CLI</strong><br><span class="small muted">vista o predizione</span></div>
   </div>
 
-  <div class="callout"><strong>Confine essenziale.</strong> La GUI non effettua predizioni e non interroga il database. I JAR non leggono file <code>.dat</code> e non mostrano un’interfaccia grafica.</div>
+  <div class="note"><strong>Confine funzionale.</strong> La GUI accetta sia file locali sia tabelle remote. La predizione interattiva resta nel client testuale. Senza server e database, la GUI può comunque lavorare sui file <code>.dat</code>.</div>
 
-  <h3 style="margin-top:5mm">Vista a componenti</h3>
-  <div class="grid-2">
-    <div class="card blue-soft">
-      <div class="diagram" style="grid-template-columns:1fr 8mm 1fr">
-        <div class="box"><strong>File .dat</strong><br><span class="small">schema + esempi</span></div>
-        <div class="arrow">→</div>
-        <div class="box"><strong>GUI Swing</strong><br><span class="small">Data · RegressionTree<br>VisualTree · Canvas</span></div>
-      </div>
-      <p class="small muted" style="margin-bottom:0">Flusso monoprocesso: parsing, apprendimento e rendering avvengono nella JVM locale.</p>
-    </div>
-    <div class="card green-soft">
-      <div class="diagram" style="grid-template-columns:1fr 8mm 1fr 8mm 1fr">
-        <div class="box"><strong>Client CLI</strong></div>
-        <div class="arrow">⇄</div>
-        <div class="box"><strong>Server</strong><br><span class="small">un thread per client</span></div>
-        <div class="arrow">⇄</div>
-        <div class="box"><strong>MySQL</strong><br><span class="small">MapDB</span></div>
-      </div>
-      <p class="small muted" style="margin-bottom:0">Comunicazione TCP tramite stream di oggetti; accesso ai dati tramite JDBC.</p>
-    </div>
-  </div>
-
-  <h3 style="margin-top:5mm">Tecnologie e artefatti</h3>
-  <table class="compact">
-    <thead><tr><th>Area</th><th>Tecnologia</th><th>Artefatto principale</th></tr></thead>
+  <h3>Responsabilità</h3>
+  <table>
+    <thead><tr><th>Componente</th><th>Fa</th><th>Non fa</th></tr></thead>
     <tbody>
-      <tr><td>Dominio</td><td>Java SE</td><td><code>src/data</code>, <code>src/tree</code></td></tr>
-      <tr><td>Interfaccia</td><td>Swing/AWT, rendering custom</td><td><code>estensioni/gui/*.java</code></td></tr>
-      <tr><td>Distribuzione</td><td>JAR, Socket, Object Streams</td><td><code>distribution/client</code>, <code>distribution/server</code></td></tr>
-      <tr><td>Persistenza dati</td><td>JDBC + Connector/J 8.0.17</td><td><code>map6_setup.sql</code></td></tr>
-      <tr><td>Verifica</td><td>JUnit 4.12</td><td><code>tests/</code></td></tr>
+      <tr><td><code>mapGUI.jar</code></td><td>sceglie l’origine, avvia il training, disegna l’albero, mostra statistiche e dettagli</td><td>non offre una predizione guidata all’utente</td></tr>
+      <tr><td><code>mapServer.jar</code></td><td>legge il database, apprende o carica un albero, salva l’archivio e serve più sessioni</td><td>non presenta un’interfaccia utente</td></tr>
+      <tr><td><code>mapClient.jar</code></td><td>comanda il server da terminale e guida la scelta dei rami fino alla predizione</td><td>non disegna il modello</td></tr>
     </tbody>
   </table>
 
-  <div class="footer-label">Report tecnico · Progetto MAP 2026</div><div class="page-number">2 / 7</div>
+  <div class="grid-2">
+    <div>
+      <h3>Comunicazione remota</h3>
+      <p class="small">Il server apre un thread per client e usa stream di oggetti su TCP. I comandi principali sono: carica dati, apprendi, carica archivio e predici.</p>
+      <p class="small">Per visualizzare un albero remoto, la GUI percorre il protocollo di predizione e ricostruisce un <code>VisualTree</code>.</p>
+    </div>
+    <div>
+      <h3>Tecnologie</h3>
+      <p class="small"><strong>Java 8+</strong> · Swing/AWT · Socket TCP · Object Streams · JDBC · MySQL Connector/J 8.0.17 · JUnit 4.12.</p>
+      <p class="small muted">Codice principale: <span class="path">src/data</span>, <span class="path">src/tree</span>, <span class="path">estensioni/gui</span>.</p>
+    </div>
+  </div>
+
+  <div class="footer"><span>Rapporto tecnico · Progetto MAP 2026</span><span>2 / 5</span></div>
 </section>
 
 <section class="page">
-  <header class="section-head"><span class="section-no">02</span><h2>Algoritmo e modello software</h2></header>
+  <header class="section-head"><span class="section-no">02</span><h2>Apprendimento</h2></header>
+  <p class="lead">Ogni foglia restituisce la media del target nella propria partizione. Gli split sono scelti minimizzando l’errore quadratico.</p>
 
-  <h3>Criterio di apprendimento</h3>
-  <p>Ogni nodo copre una partizione di esempi. L’errore memorizzato come <code>variance</code> è, in realtà, la <strong>somma degli errori quadratici</strong> (SSE) rispetto alla media del target.</p>
   <div class="grid-2">
     <div class="formula">ŷ<sub>S</sub> = (1 / |S|) · Σ<sub>i∈S</sub> y<sub>i</sub></div>
     <div class="formula">SSE(S) = Σ<sub>i∈S</sub> (y<sub>i</sub> − ŷ<sub>S</sub>)²</div>
   </div>
-  <p style="margin-top:3mm">Per ogni attributo candidato si costruiscono le partizioni e si sceglie lo split che minimizza <strong>Σ SSE(figlio)</strong>. Una foglia restituisce la media <strong>ŷ</strong> della propria partizione.</p>
+  <p class="small muted" style="margin-top:2mm">Nel codice il campo si chiama <code>variance</code>, ma contiene la somma degli errori quadratici (SSE), non la varianza normalizzata.</p>
 
   <div class="flow">
-    <div class="step"><div class="step-n">01 · INPUT</div><strong>Carica dati</strong><br><span class="small muted">Schema, feature e target.</span></div>
-    <div class="step"><div class="step-n">02 · CANDIDATI</div><strong>Prova gli split</strong><br><span class="small muted">Uno per attributo valido.</span></div>
-    <div class="step"><div class="step-n">03 · SCELTA</div><strong>Minimizza SSE</strong><br><span class="small muted">Somma degli errori dei figli.</span></div>
-    <div class="step"><div class="step-n">04 · RICORSIONE</div><strong>Genera figli</strong><br><span class="small muted">Ripete sulla partizione.</span></div>
-    <div class="step"><div class="step-n">05 · OUTPUT</div><strong>Crea foglia</strong><br><span class="small muted">Predizione = media target.</span></div>
+    <div class="step"><b>1. Carica</b><span>Legge schema, attributi e target.</span></div>
+    <div class="step"><b>2. Confronta</b><span>Calcola il costo degli split validi.</span></div>
+    <div class="step"><b>3. Sceglie</b><span>Minimizza la somma delle SSE dei figli.</span></div>
+    <div class="step"><b>4. Ripete</b><span>Crea sotto-alberi o una foglia con la media.</span></div>
   </div>
 
-  <div class="grid-2">
-    <div class="card red-soft">
-      <h3>Arresto</h3>
-      <p class="small">La soglia è il <strong>10% del training set</strong>, con divisione intera. Il nodo diventa foglia quando la partizione non supera la soglia oppure quando non produce più di un ramo valido.</p>
-    </div>
-    <div class="card amber-soft">
-      <h3>Differenza tra le modalità</h3>
-      <p class="small">Il codice locale valuta split <strong>discreti</strong>. Il server distribuito include anche <code>ContinuousNode</code> e scarta feature continue senza valori distinti.</p>
-    </div>
-  </div>
+  <div class="note"><strong>Arresto.</strong> Una partizione diventa foglia se contiene al massimo il 10% degli esempi iniziali, calcolato con divisione intera, oppure se lo split non genera più di un ramo utile.</div>
 
-  <h3 style="margin-top:5mm">Responsabilità delle classi</h3>
+  <h3>Dati accettati</h3>
   <table>
-    <thead><tr><th>Package / classe</th><th>Responsabilità</th><th>Collaborazioni</th></tr></thead>
+    <thead><tr><th>Origine</th><th>Attributi esplicativi</th><th>Target</th></tr></thead>
     <tbody>
-      <tr><td><code>data.Data</code></td><td>Carica e valida il training set; espone feature e target; ordina partizioni.</td><td><code>Attribute</code>, <code>DiscreteAttribute</code>, <code>ContinuousAttribute</code></td></tr>
-      <tr><td><code>tree.Node</code></td><td>Definisce intervallo di esempi e SSE comune ai nodi.</td><td><code>SplitNode</code>, <code>LeafNode</code></td></tr>
-      <tr><td><code>tree.SplitNode</code></td><td>Descrive attributo, rami e costo dello split.</td><td><code>SplitInfo</code>, nodi discreti/continui</td></tr>
-      <tr><td><code>tree.RegressionTree</code></td><td>Coordina selezione dello split, ricorsione, regole e predizione.</td><td><code>Data</code>, gerarchia <code>Node</code></td></tr>
-      <tr><td><code>estensioni.gui.VisualTree</code></td><td>Adatta il modello ai soli dati richiesti dalla vista.</td><td><code>RegressionTreeCanvas</code></td></tr>
-      <tr><td><code>server.ServerOneClient</code></td><td>Gestisce il protocollo e lo stato della singola sessione.</td><td>Socket, <code>Data</code>, <code>RegressionTree</code></td></tr>
+      <tr><td>file <code>.dat</code></td><td>discreti, dichiarati con <code>@desc</code></td><td>numerico, dichiarato con <code>@target</code></td></tr>
+      <tr><td>tabella SQL</td><td>discreti o continui, ricavati dallo schema</td><td>ultima colonna, numerica</td></tr>
     </tbody>
   </table>
 
-  <h3>Scelte progettuali</h3>
-  <div class="grid-3">
-    <div class="card soft"><strong>Ricorsione</strong><br><span class="small muted">Albero composto da sotto-alberi omogenei.</span></div>
-    <div class="card soft"><strong>Polimorfismo</strong><br><span class="small muted"><code>Node</code> e <code>SplitNode</code> astraggono foglie e split.</span></div>
-    <div class="card soft"><strong>Adapter visuale</strong><br><span class="small muted">La GUI non modifica le classi del dominio.</span></div>
-  </div>
-  <p class="small muted" style="margin-top:4mm">Diagrammi UML completi e vettoriali: <span class="path">docs/diagramma-classi.svg</span> e <span class="path">docs/diagramma-classi-client-server.svg</span>.</p>
-
-  <div class="footer-label">Report tecnico · Progetto MAP 2026</div><div class="page-number">3 / 7</div>
-</section>
-
-<section class="page">
-  <header class="section-head"><span class="section-no">03</span><h2>Interfaccia grafica</h2></header>
-  <p class="lead">L’estensione Swing rende leggibile la struttura appresa senza introdurre dipendenze esterne. Il training parte da un file locale e il risultato viene disegnato su un canvas navigabile.</p>
-
-  <figure class="figure hero-shot">
-    <img src="screenshots/gui-training-completato.png" alt="GUI dopo il training del file prova.dat">
-    <figcaption><strong>Figura 1.</strong> Training di <code>prova.dat</code>: nodi di split neri, condizioni sui rami e predizioni in rosso nelle foglie.</figcaption>
-  </figure>
-
   <div class="grid-2">
     <div>
-      <h3>Flusso utente</h3>
-      <ol class="small">
-        <li>Inserimento o selezione del file <code>.dat</code>.</li>
-        <li>Parsing e validazione tramite <code>Data</code>.</li>
-        <li>Costruzione di <code>RegressionTree</code>.</li>
-        <li>Conversione in <code>VisualTree</code> e rendering.</li>
-      </ol>
-      <h3>Rendering</h3>
-      <ul class="small">
-        <li>layout ricorsivo basato sulla larghezza dei sotto-alberi;</li>
-        <li>zoom limitato al 50–150% e centratura della radice;</li>
-        <li>scroll per alberi più grandi del viewport;</li>
-        <li>conteggio di nodi, foglie, profondità e tempo.</li>
-      </ul>
-      <div class="callout small"><strong>Threading.</strong> Finestra e azioni sono create sull’Event Dispatch Thread di Swing.</div>
-    </div>
-    <figure class="figure detail-shot" style="margin-top:0">
-      <img src="screenshots/gui-dettagli.png" alt="Finestra dei dettagli testuali dell'albero">
-      <figcaption><strong>Figura 2.</strong> Vista testuale con partizioni, SSE e valore predetto.</figcaption>
-      <h3 style="margin-top:4mm">Formato minimo</h3>
-      <pre class="code-block" style="font-size:7.7pt; margin-bottom:0">@schema 2
+      <h3>Esempio minimo <code>.dat</code></h3>
+      <pre>@schema 2
 @desc X A,B
 @desc Y A,B
 @target class
@@ -471,180 +285,116 @@ A,A,1.0
 A,B,1.5
 B,A,10.0
 B,B,10.0</pre>
-    </figure>
+    </div>
+    <div>
+      <h3>Classi chiave</h3>
+      <table style="margin-top:0">
+        <tbody>
+          <tr><td><code>Data</code></td><td>carica, valida e ordina gli esempi</td></tr>
+          <tr><td><code>Node</code></td><td>raccoglie stato e SSE comuni</td></tr>
+          <tr><td><code>SplitNode</code></td><td>descrive attributo e rami</td></tr>
+          <tr><td><code>LeafNode</code></td><td>conserva la media predetta</td></tr>
+          <tr><td><code>RegressionTree</code></td><td>coordina scelta e ricorsione</td></tr>
+          <tr><td><code>VisualTree</code></td><td>adatta il modello al canvas</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <div class="footer-label">Report tecnico · Progetto MAP 2026</div><div class="page-number">4 / 7</div>
+  <p class="small muted" style="margin-top:4mm">UML: <span class="path">docs/diagramma-classi.svg</span> e <span class="path">docs/diagramma-classi-client-server.svg</span>.</p>
+
+  <div class="footer"><span>Rapporto tecnico · Progetto MAP 2026</span><span>3 / 5</span></div>
 </section>
 
 <section class="page">
-  <header class="section-head"><span class="section-no">04</span><h2>Modalità client/server</h2></header>
+  <header class="section-head"><span class="section-no">03</span><h2>Uso essenziale</h2></header>
+  <p class="lead">L’interfaccia mostra la struttura appresa e mantiene visibili solo i comandi necessari: origine dati, training, dettagli, zoom e centratura.</p>
 
-  <div class="diagram">
-    <div class="box"><strong>mapClient.jar</strong><br><span class="small">input testuale<br>host + porta</span></div>
-    <div class="arrow">⇄</div>
-    <div class="box" style="background:var(--green-soft)"><strong>mapServer.jar</strong><br><span class="small">MultiServer<br>ServerOneClient</span></div>
-    <div class="arrow">⇄</div>
-    <div class="box"><strong>MapDB</strong><br><span class="small">JDBC<br>localhost:3306</span></div>
-  </div>
-
-  <div class="grid-2">
-    <div>
-      <h3>Concorrenza e sessione</h3>
-      <p class="small"><code>MultiServer</code> accetta connessioni in ciclo. Per ogni socket crea un <code>ServerOneClient</code>, sottoclasse di <code>Thread</code>, che conserva training set, albero e nome archivio della sessione.</p>
-    </div>
-    <div>
-      <h3>Persistenza</h3>
-      <p class="small">Dopo il training il server serializza automaticamente l’albero in un file con il nome della tabella. Un’esecuzione successiva può caricarlo senza interrogare il database.</p>
-    </div>
-  </div>
-
-  <h3>Protocollo applicativo</h3>
-  <table class="compact">
-    <thead><tr><th>Codice</th><th>Operazione</th><th>Scambio principale</th></tr></thead>
-    <tbody>
-      <tr><td><strong>0</strong></td><td>Carica dati</td><td>nome tabella → <code>OK</code> / messaggio di errore</td></tr>
-      <tr><td><strong>1</strong></td><td>Apprendi e salva</td><td>costruzione albero → <code>OK</code> / errore I/O</td></tr>
-      <tr><td><strong>2</strong></td><td>Carica archivio</td><td>nome file → <code>OK</code> / errore</td></tr>
-      <tr><td><strong>3</strong></td><td>Predici</td><td><code>QUERY</code> + rami ⇄ indice; infine <code>OK</code> + valore</td></tr>
-    </tbody>
-  </table>
-
-  <figure class="figure terminal-shot">
-    <img src="screenshots/jar-client.png" alt="Esecuzione del client JAR e predizione">
-    <figcaption><strong>Figura 3.</strong> Sessione reale: training dalla tabella <code>provaC</code>, scelta dei rami e predizione finale pari a 1.0.</figcaption>
+  <figure class="figure">
+    <img src="screenshots/gui-training-completato.png" alt="Albero di regressione visualizzato nella GUI">
+    <figcaption><strong>Figura 1.</strong> Albero ottenuto da <code>prova.dat</code>: split su X e Y, tre foglie e relative predizioni.</figcaption>
   </figure>
 
-  <div class="grid-3">
-    <div class="card soft"><strong>Database</strong><br><span class="small muted"><code>MapDB</code>, utente <code>MapUser</code>, porta 3306.</span></div>
-    <div class="card soft"><strong>Dataset inclusi</strong><br><span class="small muted"><code>provaC</code> (15 righe) e <code>servo</code> (167 righe).</span></div>
-    <div class="card soft"><strong>Porta MAP</strong><br><span class="small muted">8080 predefinita, configurabile all’avvio.</span></div>
+  <div class="grid-3 legend">
+    <div><strong>Nodo nero</strong><span class="small muted">attributo usato per lo split</span></div>
+    <div><strong>Etichetta sul ramo</strong><span class="small muted">condizione da seguire</span></div>
+    <div><strong>Valore rosso</strong><span class="small muted">predizione della foglia</span></div>
   </div>
-
-  <div class="footer-label">Report tecnico · Progetto MAP 2026</div><div class="page-number">5 / 7</div>
-</section>
-
-<section class="page">
-  <header class="section-head"><span class="section-no">05</span><h2>Verifica e qualità</h2></header>
-  <p class="lead">La suite è stata ricompilata ed eseguita sul contenuto corrente del repository. Il risultato è ripetibile con JUnit 4 e non richiede il database per i test locali.</p>
-
-  <div class="grid-4" style="margin:5mm 0 6mm">
-    <div class="metric"><div class="value">81</div><div class="label">test eseguiti</div></div>
-    <div class="metric"><div class="value">0</div><div class="label">fallimenti</div></div>
-    <div class="metric"><div class="value">0</div><div class="label">errori</div></div>
-    <div class="metric"><div class="value">13</div><div class="label">classi di test</div></div>
-  </div>
-
-  <h3>Distribuzione dei casi</h3>
-  <div class="bar">
-    <div class="b-data" style="width:20.99%">data · 17</div>
-    <div class="b-tree" style="width:32.10%">tree · 26</div>
-    <div class="b-utility" style="width:18.52%">utility · 15</div>
-    <div class="b-main" style="width:4.94%">4</div>
-    <div class="b-ui" style="width:23.45%">estensioni · 19</div>
-  </div>
-  <table class="compact">
-    <thead><tr><th>Area</th><th>Casi</th><th>Comportamenti verificati</th></tr></thead>
-    <tbody>
-      <tr><td><code>data</code></td><td>17</td><td>schema, parsing, accesso ai valori, ordinamento, input errati</td></tr>
-      <tr><td><code>tree</code></td><td>26</td><td>SSE, split discreti, foglie, ricorsione, regole, predizione ed errori</td></tr>
-      <tr><td><code>utility</code></td><td>15</td><td>lettura di tipi, limiti numerici, EOF e conteggio errori</td></tr>
-      <tr><td><code>MainTest</code></td><td>4</td><td>flussi console validi e gestione eccezioni</td></tr>
-      <tr><td><code>estensioni</code></td><td>19</td><td>adapter visuale, layout canvas, zoom, training e stati GUI</td></tr>
-    </tbody>
-  </table>
-
-  <h3>Evidenza di esecuzione</h3>
-  <pre class="code-block">$ javac -cp junit-4.12.jar:hamcrest-core-1.3.jar ...
-$ java -cp build/report-tests:... org.junit.runner.JUnitCore [13 classi]
-JUnit version 4.12
-.................................................................................
-Time: 0.953
-
-OK (81 tests)</pre>
 
   <div class="grid-2">
-    <div class="card green-soft">
-      <h3><span class="check">✓</span> Punti coperti bene</h3>
-      <ul class="small">
-        <li>casi nominali e valori limite;</li>
-        <li>file mancanti e formati non validi;</li>
-        <li>split senza ramificazione utile;</li>
-        <li>rendering e interazioni Swing sull’EDT.</li>
-      </ul>
+    <div class="panel">
+      <div class="eyebrow">GUI</div>
+      <pre style="margin-top:0">java -jar distribution/gui/mapGUI.jar</pre>
+      <ol class="small">
+        <li>Scegliere <strong>File locale</strong> o <strong>Database</strong>.</li>
+        <li>Indicare file oppure server e tabella.</li>
+        <li>Premere <strong>Avvia training</strong>.</li>
+      </ol>
+      <p class="small muted" style="margin-bottom:0">La modalità locale non richiede rete né database.</p>
     </div>
-    <div class="card amber-soft">
-      <h3><span class="warn">△</span> Perimetro non coperto</h3>
-      <ul class="small">
-        <li>integrazione JDBC con un DB reale;</li>
-        <li>protocollo socket end-to-end e concorrenza;</li>
-        <li>compatibilità degli archivi tra versioni;</li>
-        <li>misure automatiche di code coverage.</li>
-      </ul>
-    </div>
-  </div>
-
-  <p class="small muted" style="margin-top:4mm"><strong>Ambiente di verifica:</strong> OpenJDK 26.0.2 su Linux, display grafico disponibile. I JAR distribuiti hanno bytecode Java 8 (major version 52).</p>
-
-  <div class="footer-label">Report tecnico · Progetto MAP 2026</div><div class="page-number">6 / 7</div>
-</section>
-
-<section class="page">
-  <header class="section-head"><span class="section-no">06</span><h2>Esecuzione, limiti e conclusioni</h2></header>
-
-  <h3>Avvio rapido</h3>
-  <div class="grid-2">
-    <div class="card">
-      <div class="eyebrow" style="margin-bottom:2mm">GUI locale</div>
-      <pre class="code-block" style="font-size:7.6pt">mkdir -p build/gui
-javac -d build/gui \
-  src/data/*.java src/tree/*.java \
-  src/utility/*.java estensioni/gui/*.java
-java -cp build/gui estensioni.gui.RegressionTreeGUI</pre>
-      <p class="small muted" style="margin-bottom:0">Avviare dalla radice per usare direttamente <code>prova.dat</code>.</p>
-    </div>
-    <div class="card">
-      <div class="eyebrow" style="margin-bottom:2mm">Client/server</div>
-      <pre class="code-block" style="font-size:7.6pt">mysql -u root -p \
+    <div class="panel">
+      <div class="eyebrow">Server e client</div>
+      <pre style="margin-top:0">mysql -u root -p \
   &lt; distribution/server/sql_file/map6_setup.sql
 cd distribution/server
 java -jar mapServer.jar 8080
-# secondo terminale, dalla radice:
+
+# da un secondo terminale
 java -jar distribution/client/mapClient.jar \
   localhost 8080</pre>
-      <p class="small muted" style="margin-bottom:0">Il Connector/J deve restare accanto a <code>mapServer.jar</code>.</p>
     </div>
   </div>
 
-  <h3 style="margin-top:5mm">Limiti tecnici e mitigazioni</h3>
-  <div class="risk-list">
-    <div class="risk"><strong>Separazione funzionale</strong><br><span class="small">GUI solo locale; predizione solo client/server. Mitigazione: presentare le due modalità come strumenti distinti.</span></div>
-    <div class="risk"><strong>Sicurezza di rete</strong><br><span class="small">Protocollo senza TLS o autenticazione. Mitigazione: uso esclusivo su rete locale o fidata.</span></div>
-    <div class="risk"><strong>Configurazione fissa</strong><br><span class="small">Database e credenziali sono incorporati. Mitigazione: centralizzare la configurazione in variabili d’ambiente o file esterno.</span></div>
-    <div class="risk"><strong>Serializzazione Java</strong><br><span class="small">Archivi sensibili alla versione e non adatti a input non fidati. Mitigazione: validare i percorsi e usare un formato esplicito.</span></div>
-    <div class="risk"><strong>Training sincrono nella GUI</strong><br><span class="small">Dataset grandi possono bloccare l’EDT. Mitigazione: spostare il training in uno <code>SwingWorker</code>.</span></div>
-    <div class="risk"><strong>Riproducibilità server</strong><br><span class="small">Nel repository analizzato il client/server è disponibile solo come JAR; il relativo sorgente non è presente. Mitigazione: versionare anche i sorgenti della build distribuita.</span></div>
+  <div class="note small"><strong>Attenzione.</strong> Lo script SQL ricrea il database <code>MapDB</code>. Il Connector/J deve restare accanto a <code>mapServer.jar</code>. Il server usa per impostazione corrente <code>localhost:3306</code>, utente <code>MapUser</code>.</div>
+
+  <div class="footer"><span>Rapporto tecnico · Progetto MAP 2026</span><span>4 / 5</span></div>
+</section>
+
+<section class="page">
+  <header class="section-head"><span class="section-no">04</span><h2>Verifica e limiti</h2></header>
+  <p class="lead">La baseline corrente è stata compilata e verificata su OpenJDK 26.0.2. La compilazione usa il livello Java 8.</p>
+
+  <div class="metric-row">
+    <div class="metric"><strong>81</strong><span>test JUnit</span></div>
+    <div class="metric"><strong>13</strong><span>classi di test</span></div>
+    <div class="metric"><strong>0</strong><span>fallimenti</span></div>
+    <div class="metric"><strong>0</strong><span>errori</span></div>
   </div>
 
-  <h3 style="margin-top:5mm">Valutazione finale</h3>
-  <div class="callout">
-    <strong>Esito.</strong> L’implementazione separa correttamente dominio, visualizzazione e distribuzione. L’algoritmo è verificabile, la GUI rende l’albero comprensibile e il server supporta più client, persistenza e predizione. Le priorità successive sono test end-to-end, configurazione esterna e training asincrono.
-  </div>
-
-  <h3 style="margin-top:5mm">Tracciabilità documentale</h3>
-  <table class="compact">
+  <table>
+    <thead><tr><th>Area</th><th>Casi</th><th>Cosa verifica</th></tr></thead>
     <tbody>
-      <tr><td><strong>Manuale operativo</strong></td><td class="path">docs/manuale_utente.pdf</td></tr>
-      <tr><td><strong>UML GUI / locale</strong></td><td class="path">docs/diagramma-classi.svg · docs/diagramma-classi.pdf</td></tr>
-      <tr><td><strong>UML client/server</strong></td><td class="path">docs/diagramma-classi-client-server.svg · docs/diagramma-classi-client-server.pdf</td></tr>
-      <tr><td><strong>Dataset di esempio</strong></td><td class="path">prova.dat · servo.dat · distribution/server/sql_file/map6_setup.sql</td></tr>
-      <tr><td><strong>Baseline analizzata</strong></td><td><code>david @ a016b53</code></td></tr>
+      <tr><td><code>data</code></td><td>17</td><td>schema, parsing, valori, ordinamento e input errati</td></tr>
+      <tr><td><code>tree</code></td><td>26</td><td>SSE, split, foglie, ricorsione, regole e predizione</td></tr>
+      <tr><td><code>utility</code> + <code>MainTest</code></td><td>19</td><td>lettura da console, limiti, EOF e flussi principali</td></tr>
+      <tr><td><code>estensioni.gui</code></td><td>19</td><td>adapter, canvas, zoom, training e stati della GUI</td></tr>
     </tbody>
   </table>
+  <p class="small muted">Due controlli eseguibili aggiuntivi verificano le statistiche visuali e il protocollo database con un server simulato.</p>
 
-  <p class="tiny muted" style="margin-top:5mm">Il report descrive gli artefatti presenti nel repository alla baseline indicata. I dati quantitativi dei test derivano da una nuova esecuzione locale; non è dichiarata una percentuale di coverage non misurata.</p>
+  <pre>$ java ... org.junit.runner.JUnitCore [13 classi]
+JUnit version 4.12
+.................................................................................
+Time: 0.996
 
-  <div class="footer-label">Report tecnico · Progetto MAP 2026</div><div class="page-number">7 / 7</div>
+OK (81 tests)</pre>
+
+  <h3 style="margin-top:5mm">Limiti principali</h3>
+  <div class="limits">
+    <div class="limit"><strong>Integrazione</strong><span class="small">Mancano test automatici con database reale, socket end-to-end e più client concorrenti.</span></div>
+    <div class="limit"><strong>Configurazione e rete</strong><span class="small">Credenziali e database sono fissi; il protocollo non usa TLS né autenticazione.</span></div>
+    <div class="limit"><strong>GUI sincrona</strong><span class="small">Training e rete lavorano sull’EDT. Dataset o alberi grandi possono bloccare la finestra.</span></div>
+    <div class="limit"><strong>Distribuzione</strong><span class="small">Gli archivi usano la serializzazione Java e il sorgente del server non è incluso nel repository.</span></div>
+  </div>
+
+  <div class="note" style="margin-top:5mm"><strong>Valutazione.</strong> Il progetto realizza il flusso completo: acquisizione dei dati, apprendimento, visualizzazione e predizione. Le priorità successive sono test end-to-end, configurazione esterna e lavoro asincrono nella GUI.</div>
+
+  <h3>Documenti collegati</h3>
+  <p class="small"><strong>Manuale utente:</strong> <span class="path">docs/manuale_utente.pdf</span><br>
+  <strong>Diagrammi UML:</strong> <span class="path">docs/diagramma-classi.pdf</span> · <span class="path">docs/diagramma-classi-client-server.pdf</span></p>
+  <p class="small muted">Non è dichiarata una percentuale di coverage: non è stata misurata.</p>
+
+  <div class="footer"><span>Rapporto tecnico · Progetto MAP 2026</span><span>5 / 5</span></div>
 </section>
 
 </body>
