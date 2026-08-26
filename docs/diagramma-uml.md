@@ -1,45 +1,31 @@
 # Diagrammi UML delle classi
 
-Il progetto offre due modalità separate, quindi il modello è diviso in due diagrammi leggibili:
+Il progetto contiene due varianti eseguibili, rappresentate in due diagrammi per mantenere la lettura chiara:
 
-1. **GUI locale** — [`SVG`](diagramma-classi.svg) · [`PDF`](diagramma-classi.pdf)  
-   Sorgente: [`diagramma-classi.puml`](diagramma-classi.puml).  
-   Comprende le classi di produzione in `src/` ed `estensioni/gui/`.
-2. **Client/server con database** — [`SVG`](diagramma-classi-client-server.svg) · [`PDF`](diagramma-classi-client-server.pdf)  
-   Sorgente: [`diagramma-classi-client-server.puml`](diagramma-classi-client-server.puml).  
-   Comprende le classi distribuite in `distribution/client/mapClient.jar` e `distribution/server/mapServer.jar`.
+1. **Versione locale e GUI** — [`SVG`](diagramma-classi.svg) · [`PDF`](diagramma-classi.pdf)<br>
+   Sorgente: [`diagramma-classi.puml`](diagramma-classi.puml). Include tutte le classi di produzione in `src/`, `estensioni/gui/` e le dipendenze Java significative.<br>
+2. **Client/server** — [`SVG`](diagramma-classi-client-server.svg) · [`PDF`](diagramma-classi-client-server.pdf)<br>
+   Sorgente: [`diagramma-classi-client-server.puml`](diagramma-classi-client-server.puml). Include tutte le classi di produzione in `mapClient/src/` e `mapServer/src/`, compreso `TableData.QUERY_TYPE`.
 
-I test e la copia storica in `project/mapServer/src/` non sono inclusi.
-
-## Collezioni Java e template
-
-Seguendo l'indicazione ricevuta, i diagrammi non collegano direttamente il proprietario ai soli elementi: mostrano anche la struttura dati Java aggregata.
-
-- Nella GUI locale, `DiscreteAttribute.values`, `Data.explanatorySet` e `SplitNode.mapSplit` usano rispettivamente `TreeSet<E>`, `LinkedList<E>` e `ArrayList<E>`; `VisualNode.children` aggrega inoltre `ArrayList<E>` con binding `E = VisualNode`.
-- Nel client/server sono mostrate esplicitamente `ArrayList<E>`, `LinkedList<E>`, `TreeSet<E>` e `HashMap<K,V>`, insieme alle interfacce template implementate.
-- Ogni relazione riporta il binding effettivo, per esempio `E = Attribute` o `E = SplitInfo`.
-- Le collezioni conservate nei campi sono aggregazioni; quelle create soltanto come variabili locali sono dipendenze `«create local»`.
+Sono esclusi soltanto i test e le copie compilate/storiche. Le classi Java/SQL/Swing usate ma non definite nel progetto sono raggruppate nel package `Java API — tipi utilizzati`. I tipi primitivi e `String`/`Object` restano nelle firme per evitare nodi inutili.
 
 ## Notazione
 
-- `+`: public
-- `#`: protected
-- `~`: visibilità di package
-- `-`: private
+- `+`, `#`, `~`, `-`: public, protected, package-private, private
+- elemento sottolineato: attributo/metodo statico
 - triangolo vuoto: generalizzazione o realizzazione
 - rombo pieno: composizione
 - rombo vuoto: aggregazione
 - freccia tratteggiata: dipendenza
+- `{leaf}`: classe finale; `⊕`: classe interna secondo Allen Holub
+- `{frozen}`: attributo non modificabile dopo l'inizializzazione
+- `<<interface>>`: interfaccia/template; `<<bind>> (Tipo)`: istanziazione esplicita di un template
 
 ## Rigenerazione
 
 Con PlantUML e Graphviz installati:
 
 ```bash
-plantuml -tsvg docs/diagramma-classi.puml \
-  docs/diagramma-classi-client-server.puml
-plantuml -tpdf docs/diagramma-classi.puml \
-  docs/diagramma-classi-client-server.puml
+plantuml -tsvg docs/diagramma-classi.puml docs/diagramma-classi-client-server.puml
+plantuml -tpdf docs/diagramma-classi.puml docs/diagramma-classi-client-server.puml
 ```
-
-SVG e PDF sono vettoriali e possono essere ingranditi senza perdere qualità.

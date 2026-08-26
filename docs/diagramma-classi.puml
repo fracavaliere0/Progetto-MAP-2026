@@ -1,392 +1,383 @@
 @startuml
-' Diagramma delle classi di produzione presenti in src/ ed estensioni/gui/.
-' Sono esclusi i test e la copia storica project/mapServer/src/.
+' UML della versione locale e della GUI.
+' Sono incluse tutte le classi di produzione in src/ ed estensioni/gui/.
+' I test e le copie compilate/storiche non fanno parte del modello.
 
 left to right direction
-skinparam backgroundColor #FFFFFF
+skinparam backgroundColor white
 skinparam shadowing false
-skinparam roundCorner 8
-' Le linee poligonali permettono a Graphviz di posizionare correttamente
-' le etichette; con le linee ortogonali alcuni testi si sovrapponevano.
-skinparam linetype polyline
-skinparam nodesep 80
-skinparam ranksep 100
-skinparam dpi 160
+skinparam linetype ortho
+skinparam packageStyle rectangle
 skinparam classAttributeIconSize 0
 skinparam defaultFontName SansSerif
-skinparam defaultFontSize 12
-skinparam packageStyle rectangle
+skinparam defaultFontSize 11
+skinparam nodesep 45
+skinparam ranksep 65
 skinparam ArrowColor #343A40
 skinparam ClassBorderColor #343A40
 skinparam ClassBackgroundColor #F8F9FA
-skinparam ClassHeaderBackgroundColor #E9ECEF
 skinparam PackageBorderColor #6C757D
 skinparam PackageBackgroundColor #FFFFFF
-skinparam NoteBorderColor #C00020
-skinparam NoteBackgroundColor #FFF5F6
-skinparam wrapWidth 220
-skinparam maxMessageSize 180
+skinparam stereotypeCBackgroundColor #F1F3F5
+skinparam stereotypeCBorderColor #868E96
+skinparam stereotypeEBackgroundColor #FFF4D6
+skinparam stereotypeEBorderColor #9A6700
 hide empty members
 
-<style>
-classDiagram {
-  class {
-    FontColor #16191D
-  }
-  class.template {
-    BackgroundColor #FFF4D6
-    LineColor #9A6700
-  }
-  class.external {
-    BackgroundColor #F1F3F5
-    LineColor #868E96
-    FontColor #495057
-  }
-}
-</style>
+title Diagramma UML delle classi — versione locale e GUI
 
-title Diagramma UML delle classi — Progetto MAP 2026\n<size:12>Codice di produzione in <b>src/</b> ed <b>estensioni/gui/</b></size>
-
-package "data" #EAF4FF {
+package "data (src/)" #EAF4FF {
   abstract class Attribute {
-    -name: String
-    -index: int
-    +Attribute(name: String, index: int)
-    +getName(): String
-    +getIndex(): int
-    +toString(): String
+    - name: String
+    - index: int
+    + Attribute(name: String, index: int)
+    + getName(): String
+    + getIndex(): int
+    + toString(): String
   }
 
   class ContinuousAttribute {
-    +ContinuousAttribute(name: String, index: int)
+    + ContinuousAttribute(name: String, index: int)
   }
 
   class DiscreteAttribute {
-    -values: Set<String> = new TreeSet<String>()
-    +DiscreteAttribute(name: String, index: int, values: Set<String>)
-    +getNumberOfDistinctValues(): int
-    +iterator(): Iterator<String>
+    - values: Set<String>
+    + DiscreteAttribute(name: String, index: int, values: Set<String>)
+    + getNumberOfDistinctValues(): int
+    + iterator(): Iterator<String>
   }
 
   class Data {
-    -data: Object[][]
-    -numberOfExamples: int
-    -explanatorySet: List<Attribute> = new LinkedList<Attribute>()
-    -classAttribute: ContinuousAttribute
-    +Data(fileName: String) throws TrainingDataException
-    +getNumberOfExamples(): int
-    +getNumberOfExplanatoryAttributes(): int
-    +getClassValue(exampleIndex: int): Double
-    +getExplanatoryValue(exampleIndex: int, attributeIndex: int): Object
-    +getExplanatoryAttribute(index: int): Attribute
-    +getClassAttribute(): ContinuousAttribute
-    +sort(attribute: Attribute, begin: int, end: int): void
-    +toString(): String
-    -readSchema(sc: Scanner): void throws TrainingDataException
-    -readData(sc: Scanner): void throws TrainingDataException
+    - data: Object[][]
+    - numberOfExamples: int
+    - explanatorySet: List<Attribute>
+    - classAttribute: ContinuousAttribute
+    + Data(fileName: String)
+    + getNumberOfExamples(): int
+    + getNumberOfExplanatoryAttributes(): int
+    + getClassValue(exampleIndex: int): Double
+    + getExplanatoryValue(exampleIndex: int, attributeIndex: int): Object
+    + getExplanatoryAttribute(index: int): Attribute
+    + getClassAttribute(): ContinuousAttribute
+    + sort(attribute: Attribute, begin: int, end: int): void
+    + toString(): String
   }
 
-  class TrainingDataException <<exception>> {
-    +TrainingDataException(message: String)
-    +TrainingDataException(cause: Exception)
+  class TrainingDataException {
+    + TrainingDataException(message: String)
+    + TrainingDataException(cause: Exception)
   }
 }
 
-package "tree" #EFFAF1 {
+package "tree (src/)" #EFFAF1 {
   abstract class Node {
-    {static} #idNodeCount: int = 0
-    #idNode: int
-    #beginExampleIndex: int
-    #endExampleIndex: int
-    #variance: double
-    +Node(trainingSet: Data, begin: int, end: int)
-    +getIdNode(): int
-    +getBeginExampleIndex(): int
-    +getEndExampleIndex(): int
-    +getVariance(): double
-    {abstract} +getNumberOfChildren(): int
-    +toString(): String
+    {static} # idNodeCount: int = 0
+    # idNode: int
+    # beginExampleIndex: int
+    # endExampleIndex: int
+    # variance: double
+    + Node(trainingSet: Data, begin: int, end: int)
+    + getIdNode(): int
+    + getBeginExampleIndex(): int
+    + getEndExampleIndex(): int
+    + getVariance(): double
+    {abstract} + getNumberOfChildren(): int
+    + toString(): String
   }
 
   abstract class SplitNode {
-    #attribute: Attribute
-    #mapSplit: List<SplitInfo> = new ArrayList<SplitInfo>()
-    #splitVariance: double
-    +SplitNode(trainingSet: Data, begin: int, end: int, attribute: Attribute)
-    {abstract} +setSplitInfo(trainingSet: Data, begin: int, end: int, attribute: Attribute): void
-    {abstract} +testCondition(value: Object): int
-    ~getAttribute(): Attribute
-    +getVariance(): double
-    +compareTo(other: SplitNode): int
-    +getNumberOfChildren(): int
-    ~getSplitInfo(child: int): SplitInfo
-    +formulateQuery(): String
-    +toString(): String
+    # attribute: Attribute
+    # mapSplit: List<SplitInfo>
+    # splitVariance: double
+    + SplitNode(trainingSet: Data, begin: int, end: int, attribute: Attribute)
+    {abstract} + setSplitInfo(trainingSet: Data, begin: int, end: int, attribute: Attribute): void
+    {abstract} + testCondition(value: Object): int
+    ~ getAttribute(): Attribute
+    + getVariance(): double
+    + getNumberOfChildren(): int
+    ~ getSplitInfo(child: int): SplitInfo
+    + formulateQuery(): String
+    + compareTo(other: SplitNode): int
   }
 
-  class SplitInfo <<inner>> {
-    ~splitValue: Object
-    ~beginIndex: int
-    ~endIndex: int
-    ~numberChild: int
-    ~comparator: String = "="
-    ~SplitInfo(splitValue: Object, begin: int, end: int, child: int)
-    ~SplitInfo(splitValue: Object, begin: int, end: int, child: int, comparator: String)
-    ~getBeginindex(): int
-    ~getEndIndex(): int
-    ~getSplitValue(): Object
-    ~getComparator(): String
-    +toString(): String
+  class SplitInfo {
+    ~ splitValue: Object
+    ~ beginIndex: int
+    ~ endIndex: int
+    ~ numberChild: int
+    ~ comparator: String
+    ~ SplitInfo(splitValue: Object, begin: int, end: int, child: int)
+    ~ SplitInfo(splitValue: Object, begin: int, end: int, child: int, comparator: String)
+    ~ getBeginindex(): int
+    ~ getEndIndex(): int
+    ~ getSplitValue(): Object
+    ~ getComparator(): String
+    + toString(): String
+  }
+
+  class ContinuousNode {
+    + ContinuousNode(trainingSet: Data, begin: int, end: int, attribute: ContinuousAttribute)
+    + setSplitInfo(trainingSet: Data, begin: int, end: int, attribute: Attribute): void
+    + testCondition(value: Object): int
   }
 
   class DiscreteNode {
-    +DiscreteNode(trainingSet: Data, begin: int, end: int, attribute: DiscreteAttribute)
-    +setSplitInfo(trainingSet: Data, begin: int, end: int, attribute: Attribute): void
-    +testCondition(value: Object): int
-    +toString(): String
+    + DiscreteNode(trainingSet: Data, begin: int, end: int, attribute: DiscreteAttribute)
+    + setSplitInfo(trainingSet: Data, begin: int, end: int, attribute: Attribute): void
+    + testCondition(value: Object): int
   }
 
   class LeafNode {
-    -predictedClassValue: Double
-    +LeafNode(trainingSet: Data, begin: int, end: int)
-    +getPredictedClassValue(): Double
-    +getNumberOfChildren(): int
-    +toString(): String
+    - predictedClassValue: Double
+    + LeafNode(trainingSet: Data, begin: int, end: int)
+    + getPredictedClassValue(): Double
+    + getNumberOfChildren(): int
   }
 
   class RegressionTree {
-    -root: Node
-    -childTree: RegressionTree[]
-    +RegressionTree()
-    +RegressionTree(trainingSet: Data)
-    +getRoot(): Node
-    +getChildren(): RegressionTree[]
-    ~isLeaf(trainingSet: Data, begin: int, end: int, maxPerLeaf: int): boolean
-    ~determineBestSplitNode(trainingSet: Data, begin: int, end: int): SplitNode
-    ~learnTree(trainingSet: Data, begin: int, end: int, maxPerLeaf: int): void
-    +printTree(): void
-    +printRules(): void
-    ~printRules(current: String): void
-    +toString(): String
-    +predictClass(): Double throws UnknownValueException
+    - root: Node
+    - childTree: RegressionTree[]
+    + RegressionTree()
+    + RegressionTree(trainingSet: Data)
+    + getRoot(): Node
+    + getChildren(): RegressionTree[]
+    + printTree(): void
+    + printRules(): void
+    + toString(): String
+    + salva(fileName: String): void
+    {static} + carica(fileName: String): RegressionTree
+    + predictClass(): Double
   }
 
-  class UnknownValueException <<exception>> {
-    +UnknownValueException(message: String)
+  class UnknownValueException {
+    + UnknownValueException(message: String)
   }
 }
 
 package "estensioni.gui" #FFF4E6 {
-  class VisualTree <<final>> {
-    {static} -NUMBER_FORMAT: DecimalFormat
-    -root: VisualNode
-    -VisualTree(root: VisualNode)
-    {static} ~from(tree: RegressionTree): VisualTree
-    ~getRoot(): VisualNode
-    ~getStatistics(): String
-    ~getLevelCount(): int
-    {static} -createNode(tree: RegressionTree, branch: String): VisualNode
-    {static} -attributeName(query: String): String
-    {static} -branchName(query: String): String
-    {static} -condition(query: String): String
-    {static} -countNodes(node: VisualNode): int
-    {static} -countLeaves(node: VisualNode): int
-    {static} -depth(node: VisualNode): int
+  class "DatabaseTreeClient {leaf}" as DatabaseTreeClient {
+    - socket: Socket {frozen}
+    - output: ObjectOutputStream {frozen}
+    - input: ObjectInputStream {frozen}
+    - visitedNodes: int
+    ~ DatabaseTreeClient(host: String, port: int)
+    ~ train(tableName: String): DatabaseTreeResult
+    + close(): void
   }
 
-  class VisualNode <<final>> {
-    ~title: String {readOnly}
-    ~meta: String {readOnly}
-    ~branch: String {readOnly}
-    ~leaf: boolean {readOnly}
-    ~children: List<VisualNode> = new ArrayList<VisualNode>() {readOnly}
-    ~subtreeWidth: int
-    ~x: int
-    ~y: int
-    ~VisualNode(title: String, meta: String, branch: String, leaf: boolean)
+  class "DatabaseTreeResult {leaf}" as DatabaseTreeResult {
+    ~ tree: VisualTree {frozen}
+    ~ details: String {frozen}
+    ~ DatabaseTreeResult(tree: VisualTree, details: String)
   }
 
-  class RegressionTreeCanvas <<final>> {
-    {static} -serialVersionUID: long = 1
-    {static} -PAPER: Color
-    {static} -INK: Color
-    {static} -MUTED: Color
-    {static} -RED: Color
-    {static} -NODE_WIDTH: int = 200
-    {static} -NODE_HEIGHT: int = 72
-    {static} -HORIZONTAL_GAP: int = 48
-    {static} -LEVEL_GAP: int = 90
-    {static} -MARGIN: int = 36
-    -tree: VisualTree {transient}
-    -scale: double = 1.0
-    -baseWidth: int = 600
-    -baseHeight: int = 460
-    ~RegressionTreeCanvas()
-    ~setTree(tree: VisualTree): void
-    ~setScale(scale: double): void
-    ~hasTree(): boolean
-    ~getScale(): double
-    ~getRootCenterX(): double
-    +getPreferredSize(): Dimension
-    #paintComponent(graphics: Graphics): void
-    -layoutTree(): void
-    -measure(node: VisualNode): int
-    -layout(node: VisualNode, left: int, top: int): void
-    -drawEdges(g: Graphics2D, node: VisualNode): void
-    -drawBranch(g: Graphics2D, text: String, centerX: int, centerY: int): void
-    -drawNodes(g: Graphics2D, node: VisualNode): void
-    -drawNode(g: Graphics2D, node: VisualNode): void
-    -drawCentered(g: Graphics2D, text: String, x: int, baseline: int): void
-    -fit(text: String, metrics: FontMetrics, maxWidth: int): String
+  class "DatabaseTreeSnapshot {leaf}" as DatabaseTreeSnapshot {
+    ~ query: String {frozen}
+    ~ prediction: double {frozen}
+    {static} ~ split(query: String): DatabaseTreeSnapshot
+    {static} ~ leaf(prediction: double): DatabaseTreeSnapshot
   }
 
-  class RegressionTreeGUI <<final>> {
-    {static} -serialVersionUID: long = 1
-    {static} ~PAPER: Color
-    {static} ~INK: Color
-    {static} ~MUTED: Color
-    {static} ~RED: Color
-    {static} -BUTTON_UI: BasicButtonUI
-    -fileField: JTextField
-    -detailsArea: JTextArea
-    -detailsButton: JButton
-    -statusLabel: JLabel
-    -treeCanvas: RegressionTreeCanvas
-    -graphScroll: JScrollPane
-    +RegressionTreeGUI()
-    -createTop(): JPanel
-    -createHeader(): JPanel
-    -createControls(): JPanel
-    -createCenter(): JPanel
-    -zoomBy(amount: double, zoomValue: JLabel): void
-    -chooseFile(): void
-    -showDetails(): void
-    -train(): void
-    -centerTree(): void
-    -showError(message: String): void
-    {static} -styleButton(button: JButton, background: Color, foreground: Color): void
-    {static} +main(args: String[]): void
+  class "VisualNode {leaf}" as VisualNode {
+    ~ title: String {frozen}
+    ~ meta: String {frozen}
+    ~ branch: String {frozen}
+    ~ leaf: boolean {frozen}
+    ~ children: List<VisualNode> {frozen}
+    ~ subtreeWidth: int
+    ~ x: int
+    ~ y: int
+  }
+
+  class "VisualTree {leaf}" as VisualTree {
+    {static} - NUMBER_FORMAT: DecimalFormat {frozen}
+    - root: VisualNode {frozen}
+    ~ VisualTree(root: VisualNode)
+    {static} ~ from(tree: RegressionTree): VisualTree
+    ~ getRoot(): VisualNode
+    ~ getStatistics(): String
+    ~ getLevelCount(): int
+  }
+
+  class "RegressionTreeCanvas {leaf}" as RegressionTreeCanvas {
+    {static} - serialVersionUID: long = 1 {frozen}
+    {static} - PAPER: Color {frozen}
+    {static} - INK: Color {frozen}
+    {static} - MUTED: Color {frozen}
+    {static} - RED: Color {frozen}
+    {static} - NODE_WIDTH: int = 200 {frozen}
+    {static} - NODE_HEIGHT: int = 72 {frozen}
+    {static} - HORIZONTAL_GAP: int = 48 {frozen}
+    {static} - LEVEL_GAP: int = 90 {frozen}
+    {static} - MARGIN: int = 36 {frozen}
+    - tree: VisualTree
+    - scale: double
+    ~ RegressionTreeCanvas()
+    ~ setTree(tree: VisualTree): void
+    ~ setScale(scale: double): void
+    ~ hasTree(): boolean
+    ~ getScale(): double
+    + getPreferredSize(): Dimension
+    # paintComponent(graphics: Graphics): void
+  }
+
+  class "RegressionTreeGUI {leaf}" as RegressionTreeGUI {
+    {static} - serialVersionUID: long = 1 {frozen}
+    {static} ~ PAPER: Color {frozen}
+    {static} ~ INK: Color {frozen}
+    {static} ~ MUTED: Color {frozen}
+    {static} ~ RED: Color {frozen}
+    {static} - LABEL_FONT: Font {frozen}
+    {static} - LOCAL_SOURCE: String = "locale" {frozen}
+    {static} - DATABASE_SOURCE: String = "database" {frozen}
+    - treeCanvas: RegressionTreeCanvas {frozen}
+    - graphScroll: JScrollPane {frozen}
+    - detailsArea: JTextArea {frozen}
+    + RegressionTreeGUI()
+    - train(): void
+    - trainFromLocalFile(): void
+    - trainFromDatabase(): void
+    {static} + main(args: String[]): void
   }
 }
 
 package "utility" #F5F0FF {
   class Keyboard {
-    {static} -printErrors: boolean = true
-    {static} -errorCount: int = 0
-    {static} -current_token: String
-    {static} -reader: StringTokenizer
-    {static} -in: BufferedReader
-    {static} +getErrorCount(): int
-    {static} +resetErrorCount(count: int): void
-    {static} +getPrintErrors(): boolean
-    {static} +setPrintErrors(flag: boolean): void
-    {static} -error(str: String): void
-    {static} -getNextToken(): String
-    {static} -getNextToken(skip: boolean): String
-    {static} -getNextInputToken(skip: boolean): String
-    {static} +endOfLine(): boolean
-    {static} +readString(): String
-    {static} +readWord(): String
-    {static} +readBoolean(): boolean
-    {static} +readChar(): char
-    {static} +readInt(): int
-    {static} +readLong(): long
-    {static} +readFloat(): float
-    {static} +readDouble(): double
+    {static} - printErrors: boolean
+    {static} - errorCount: int
+    {static} - current_token: String
+    {static} + getErrorCount(): int
+    {static} + resetErrorCount(count: int): void
+    {static} + getPrintErrors(): boolean
+    {static} + setPrintErrors(flag: boolean): void
+    {static} + endOfLine(): boolean
+    {static} + readString(): String
+    {static} + readWord(): String
+    {static} + readBoolean(): boolean
+    {static} + readChar(): char
+    {static} + readInt(): int
+    {static} + readLong(): long
+    {static} + readFloat(): float
+    {static} + readDouble(): double
   }
 }
 
 package "applicazione (default package)" #F8F9FA {
   class MainTest {
-    {static} +main(args: String[]): void
+    {static} + main(args: String[]): void
   }
 }
 
-package "java.util (tipi di libreria usati)" #FFF9DB {
-  interface "Iterable<E>" as JavaIterable <<template>>
-  interface "Comparable<E>" as JavaComparable <<template>>
-  interface "List<E>" as JavaList <<template>> {
-    +add(element: E): boolean
-    +get(index: int): E
-    +size(): int
-    +isEmpty(): boolean
-  }
-  interface "Set<E>" as JavaSet <<template>>
-
-  class "ArrayList<E>" as JavaArrayList <<template>>
-  class "LinkedList<E>" as JavaLinkedList <<template>>
-  class "TreeSet<E>" as JavaTreeSet <<template>>
-  class "Iterator<E>" as JavaIterator <<template>>
-  class StringTokenizer <<external>>
+package "Java API — tipi utilizzati" #F1F3F5 {
+  class "Serializable" as JSerializable <<interface>>
+  class "Iterable<T>" as JIterable <<interface>>
+  class "Comparable<T>" as JComparable <<interface>>
+  class "List<E>" as JList <<interface>>
+  class "Set<E>" as JSet <<interface>>
+  class "Iterator<E>" as JIterator <<interface>>
+  class "ArrayList<E>" as JArrayList
+  class "LinkedList<E>" as JLinkedList
+  class "TreeSet<E>" as JTreeSet
+  class "Exception" as JException
+  class "ObjectInputStream" as JObjectInputStream
+  class "ObjectOutputStream" as JObjectOutputStream
+  class "Socket" as JSocket
+  class "Closeable" as JCloseable <<interface>>
+  class "JFrame" as JFrame
+  class "JPanel" as JPanel
+  class "JScrollPane" as JScrollPane
+  class "JTextArea" as JTextArea
+  class "Color" as JColor
+  class "Font" as JFont
+  class "Dimension" as JDimension
+  class "Graphics" as JGraphics
+  class "DecimalFormat" as JDecimalFormat
 }
 
-package "tipi esterni Java e Swing" #F1F3F5 {
-  class Exception <<external>>
-  class BufferedReader <<external>>
-  class JFrame <<external>>
-  class JPanel <<external>>
-}
-
-' Generalizzazioni del dominio.
+' Generalizzazioni e realizzazioni.
 ContinuousAttribute --|> Attribute
 DiscreteAttribute --|> Attribute
-SplitNode --|> Node
+ContinuousNode --|> SplitNode
 DiscreteNode --|> SplitNode
 LeafNode --|> Node
-
-' Eccezioni e classi Swing.
-TrainingDataException --|> Exception
-UnknownValueException --|> Exception
+SplitNode --|> Node
+Attribute ..|> JSerializable
+Node ..|> JSerializable
+RegressionTree ..|> JSerializable
+SplitInfo ..|> JSerializable
+DiscreteAttribute ..|> JIterable : E = String
+SplitNode ..|> JComparable : T = SplitNode
+TrainingDataException --|> JException
+UnknownValueException --|> JException
+DatabaseTreeClient ..|> JCloseable
 RegressionTreeGUI --|> JFrame
 RegressionTreeCanvas --|> JPanel
 
-' Composizioni e aggregazioni del modello.
-Data "1" *-- "0..*" Attribute : explanatorySet
-Data "1" *-- "0..1" ContinuousAttribute : classAttribute
-SplitNode "1" *-- "0..*" SplitInfo : mapSplit
+' Struttura del modello dati e dell'albero.
+Data "1" o-- "0..*" Attribute : explanatorySet
+Data "1" *-- "1" ContinuousAttribute : classAttribute
+SplitNode "1" +-- "0..*" SplitInfo : mapSplit / inner class
 SplitNode "0..*" o-- "1" Attribute : attribute
 RegressionTree "1" *-- "0..1" Node : root
 RegressionTree "1" *-- "0..*" RegressionTree : childTree
-VisualTree "1" *-- "1" VisualNode : root
+VisualTree "1" +-- "1" VisualNode : root / inner class
+VisualNode "1" *-- "0..*" VisualNode : children
+DatabaseTreeResult "1" o-- "1" VisualTree : tree
 RegressionTreeGUI "1" *-- "1" RegressionTreeCanvas : treeCanvas
 RegressionTreeCanvas "1" o-- "0..1" VisualTree : tree
 
-' Collezioni Java esplicitate come template, come richiesto nella revisione UML.
-JavaArrayList ..|> JavaList : implements
-JavaLinkedList ..|> JavaList : implements
-JavaTreeSet ..|> JavaSet : implements
-DiscreteAttribute ..|> JavaIterable : «bind» E = String
-SplitNode ..|> JavaComparable : «bind» E = SplitNode
-DiscreteAttribute "1" o-- "1" JavaTreeSet : values\n«bind» E = String
-Data "1" o-- "1" JavaLinkedList : explanatorySet\n«bind» E = Attribute
-SplitNode "1" o-- "1" JavaArrayList : mapSplit\n«bind» E = SplitInfo
-VisualNode "1" o-- "1" JavaArrayList : children\n«bind» E = VisualNode
-JavaTreeSet "1" o-- "0..*" String : elements\nE = String
-JavaLinkedList "1" o-- "0..*" Attribute : elements\nE = Attribute
-JavaArrayList "1" o-- "0..*" SplitInfo : elements\nE = SplitInfo
-JavaArrayList "1" o-- "0..*" VisualNode : elements\nE = VisualNode
-
-' Relazione fra classe interna e contenitrice.
-SplitNode .. SplitInfo : «inner»
-
-' Dipendenze principali (parametri, creazione e invocazioni).
-Node ..> Data : calcola SSE da
+' Dipendenze applicative e di libreria.
+Node ..> Data : calcola la varianza
 SplitNode ..> Data : ordina/partiziona
-DiscreteNode ..> DiscreteAttribute : usa
 RegressionTree ..> Data : apprende da
-RegressionTree ..> JavaTreeSet : «create local» E = SplitNode
-RegressionTree ..> Keyboard : acquisisce scelta
+RegressionTree ..> JObjectInputStream : carica
+RegressionTree ..> JObjectOutputStream : salva
+RegressionTree ..> Keyboard : predizione interattiva
 RegressionTree ..> UnknownValueException : solleva
-VisualTree ..> RegressionTree : converte
-RegressionTreeGUI ..> Data : crea
-RegressionTreeGUI ..> RegressionTree : crea
-RegressionTreeGUI ..> TrainingDataException : gestisce
+Data ..> TrainingDataException : solleva
+DiscreteAttribute ..> JIterator : iterator
 MainTest ..> Data : crea
-MainTest ..> RegressionTree : crea
+MainTest ..> RegressionTree : crea/carica
 MainTest ..> Keyboard : usa
 MainTest ..> TrainingDataException : gestisce
 MainTest ..> UnknownValueException : gestisce
-Keyboard "1" o-- "0..1" StringTokenizer : reader {static}
-Keyboard "1" o-- "1" BufferedReader : in {static}
+VisualTree ..> RegressionTree : converte
+VisualTree ..> JDecimalFormat : formatta
+RegressionTreeCanvas ..> JColor : costanti
+RegressionTreeCanvas ..> JDimension : dimensione
+RegressionTreeCanvas ..> JGraphics : disegno
+RegressionTreeGUI ..> JColor : costanti
+RegressionTreeGUI ..> JFont : costante
+RegressionTreeGUI ..> JScrollPane : graphScroll
+RegressionTreeGUI ..> JTextArea : detailsArea
+DatabaseTreeClient ..> DatabaseTreeSnapshot : riceve
+DatabaseTreeClient ..> DatabaseTreeResult : restituisce
+DatabaseTreeClient ..> VisualNode : costruisce
+DatabaseTreeClient ..> JSocket : TCP
+DatabaseTreeClient ..> JObjectInputStream : usa
+DatabaseTreeClient ..> JObjectOutputStream : usa
+RegressionTreeGUI ..> Data : training locale
+RegressionTreeGUI ..> RegressionTree : training locale
+RegressionTreeGUI ..> DatabaseTreeClient : training database
+RegressionTreeGUI ..> TrainingDataException : gestisce
+
+' Tipi generici dichiarati nei campi/collezioni.
+JArrayList ..|> JList
+JLinkedList ..|> JList
+JTreeSet ..|> JSet
+Data ..> JList : explanatorySet
+DiscreteAttribute ..> JSet : values
+VisualNode ..> JList : children
+SplitNode ..> JList : mapSplit
+Data ..> JLinkedList : <<bind>> (Attribute)
+DiscreteAttribute ..> JTreeSet : <<bind>> (String)
+SplitNode ..> JArrayList : <<bind>> (SplitInfo)
+VisualNode ..> JArrayList : <<bind>> (VisualNode)
+RegressionTree ..> JTreeSet : <<bind>> (SplitNode)
+
+note bottom of "Java API — tipi utilizzati"
+  Sono mostrati i tipi di libreria usati dal modello; String, Object e i tipi primitivi
+  restano nelle firme senza diventare nodi del diagramma.
+end note
 
 @enduml
