@@ -1,9 +1,11 @@
 package estensioni.gui;
 
+import java.io.EOFException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Verifica il client con un server MAP simulato. */
 public final class DatabaseTreeClientTest {
@@ -19,7 +21,14 @@ public final class DatabaseTreeClientTest {
      */
     public static void main(String[] args) throws Exception {
         ServerSocket serverSocket = new ServerSocket(0);
-        Thread server = new Thread(() -> serve(serverSocket), "map-test-server");
+        AtomicReference<Throwable> failure = new AtomicReference<>();
+        Thread server = new Thread(() -> {
+            try {
+                serve(serverSocket);
+            } catch (Throwable exception) {
+                failure.set(exception);
+            }
+        }, "map-test-server");
         server.start();
 
         try (DatabaseTreeClient client = new DatabaseTreeClient(
@@ -38,14 +47,18 @@ public final class DatabaseTreeClientTest {
 
         server.join(5_000);
         assert !server.isAlive() : "Il server simulato non si è arrestato.";
+        if (failure.get() != null) {
+            throw new AssertionError("Errore del server simulato.", failure.get());
+        }
     }
 
     /**
      * Serve i comandi della verifica.
      *
      * @param serverSocket socket del server simulato
+     * @throws Exception se il protocollo fallisce
      */
-    private static void serve(ServerSocket serverSocket) {
+    private static void serve(ServerSocket serverSocket) throws Exception {
         try (
             Socket socket = serverSocket.accept();
             ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
@@ -55,6 +68,7 @@ public final class DatabaseTreeClientTest {
                 int command = (Integer) input.readObject();
                 if (command == 0) {
                     input.readObject();
+                    send(output, "Table found!");
                     send(output, "OK");
                 } else if (command == 1) {
                     send(output, "OK");
@@ -64,8 +78,8 @@ public final class DatabaseTreeClientTest {
                     return;
                 }
             }
-        } catch (Exception exception) {
-            throw new IllegalStateException(exception);
+        } catch (EOFException expected) {
+            // Il client chiude la sessione disconnettendosi, come nella base.
         }
     }
 
@@ -90,6 +104,7 @@ public final class DatabaseTreeClientTest {
             send(output, "0:Y<=2\n1:Y>2\n");
             prediction = (Integer) input.readObject() == 0 ? 1.0 : 2.0;
         }
+        send(output, "QUERY");
         send(output, "OK");
         send(output, prediction);
     }

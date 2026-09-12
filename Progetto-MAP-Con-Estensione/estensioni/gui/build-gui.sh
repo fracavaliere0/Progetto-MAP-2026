@@ -3,6 +3,7 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
+BASE="$ROOT/project/src/src"
 JAR="$ROOT/distribution/gui/mapGUI.jar"
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/map-gui.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
@@ -14,7 +15,7 @@ else
 fi
 
 mapfile -t SOURCES < <(
-    find "$ROOT/src/data" "$ROOT/src/tree" "$ROOT/src/utility" "$HERE" \
+    find "$BASE/data" "$BASE/tree" "$BASE/utility" "$HERE" \
         -type f -name '*.java' ! -name '*Test.java' -print | sort
 )
 mkdir -p "$WORK/classes" "$(dirname "$JAR")"
@@ -28,11 +29,20 @@ if [[ "${1:-}" == "--check" ]]; then
     mkdir -p "$WORK/check"
     javac "${JAVA_LEVEL[@]}" -encoding UTF-8 -cp "$JAR" \
         -d "$WORK/check" "$HERE/DatabaseTreeClientTest.java" \
-        "$HERE/VisualTreeStatisticsTest.java"
+        "$HERE/VisualTreeStatisticsTest.java" \
+        "$ROOT/tests/estensioni/gui/DatabaseTreeIntegrationTest.java"
+    mapfile -t SERVER_SOURCES < <(
+        find "$ROOT/project/mapServer/src" -type f -name '*.java' -print | sort
+    )
+    mkdir -p "$WORK/server"
+    javac "${JAVA_LEVEL[@]}" -encoding UTF-8 -d "$WORK/server" \
+        "${SERVER_SOURCES[@]}" "$ROOT/tests/server/src/com/mysql/cj/jdbc/Driver.java"
     (
         cd "$ROOT"
         java -ea -cp "$WORK/check:$JAR" estensioni.gui.DatabaseTreeClientTest
         java -ea -cp "$WORK/check:$JAR" estensioni.gui.VisualTreeStatisticsTest
+        java -ea -cp "$WORK/check:$JAR" estensioni.gui.DatabaseTreeIntegrationTest \
+            "$WORK/server" "$ROOT/tests/server/fixtures"
     )
     printf 'Verifiche GUI: OK\n'
 fi

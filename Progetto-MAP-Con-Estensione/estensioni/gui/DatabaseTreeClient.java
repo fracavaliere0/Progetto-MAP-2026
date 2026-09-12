@@ -20,7 +20,6 @@ final class DatabaseTreeClient implements Closeable {
     private static final int LOAD_DATA = 0;
     private static final int LEARN_TREE = 1;
     private static final int PREDICT = 3;
-    private static final int CLOSE_SESSION = -1;
     private static final int TIMEOUT_MILLIS = 30_000;
     private static final int MAX_NODES = 10_000;
     private static final DecimalFormat NUMBER_FORMAT = new DecimalFormat(
@@ -68,6 +67,10 @@ final class DatabaseTreeClient implements Closeable {
     DatabaseTreeResult train(String tableName) throws IOException, ClassNotFoundException {
         write(LOAD_DATA);
         write(tableName);
+        String response = read().toString();
+        if (!"Table found!".equals(response)) {
+            throw new IOException("Errore durante caricamento della tabella: " + response);
+        }
         requireOk("caricamento della tabella");
         write(LEARN_TREE);
         requireOk("training");
@@ -122,7 +125,8 @@ final class DatabaseTreeClient implements Closeable {
     }
 
     /**
-     * Ispeziona un nodo remoto.
+     * Ispeziona un nodo remoto con il protocollo della base definitiva.
+     * Ogni domanda e il messaggio finale {@code OK} sono preceduti da {@code QUERY}.
      *
      * @param path cammino del nodo
      * @return istantanea del nodo
@@ -137,8 +141,12 @@ final class DatabaseTreeClient implements Closeable {
         DatabaseTreeSnapshot target = null;
         while (true) {
             String response = read().toString();
-            if (QUERY.equals(response)) {
-                String query = read().toString();
+            if (!QUERY.equals(response)) {
+                throw new IOException("Errore del server: " + response);
+            }
+            response = read().toString();
+            if (!OK.equals(response)) {
+                String query = response;
                 int choice;
                 if (target != null) {
                     choice = 0;
@@ -156,9 +164,6 @@ final class DatabaseTreeClient implements Closeable {
                 continue;
             }
 
-            if (!OK.equals(response)) {
-                throw new IOException("Errore del server: " + response);
-            }
             double prediction = prediction(read());
             if (target == null) {
                 if (depth < path.size()) {
@@ -334,13 +339,9 @@ final class DatabaseTreeClient implements Closeable {
         }
     }
 
-    /** Chiude la sessione e il socket. */
+    /** Chiude il socket: la base termina la sessione alla disconnessione. */
     @Override
     public void close() {
-        try {
-            write(CLOSE_SESSION);
-        } catch (IOException ignored) {
-        }
         try {
             socket.close();
         } catch (IOException ignored) {

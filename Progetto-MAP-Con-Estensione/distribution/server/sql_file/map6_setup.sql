@@ -1,13 +1,13 @@
-DROP DATABASE IF EXISTS MapDB;
-CREATE DATABASE IF NOT EXISTS MapDB;
+-- Initial setup for a fresh installation (MAP6). No database or user is dropped.
+-- Run once with an administrator account; stop on errors rather than using --force.
+CREATE DATABASE MapDB;
 
 USE MapDB;
 
-DROP USER IF EXISTS 'MapUser'@'localhost';
 CREATE USER 'MapUser'@'localhost' IDENTIFIED BY 'map';
 GRANT SELECT ON MapDB.* TO 'MapUser'@'localhost';
 
-CREATE TABLE IF NOT EXISTS MapDB.provaC(
+CREATE TABLE MapDB.provaC(
     X varchar(10),
     Y float(5,2),
     C float(5,2)
@@ -29,7 +29,7 @@ INSERT INTO MapDB.provaC VALUES ('B',12,10);
 INSERT INTO MapDB.provaC VALUES ('B',14,10);
 INSERT INTO MapDB.provaC VALUES ('A',1,1);
 
-CREATE TABLE IF NOT EXISTS MapDB.servo(
+CREATE TABLE MapDB.servo(
     motor varchar(10),
     screw varchar(10),
     pgain varchar(10),

@@ -81,7 +81,7 @@ public class RegressionTreeGUITest {
             RegressionTreeCanvas.class
         );
 
-        assertEquals("prova.dat", file.getText());
+        assertEquals("distribution/standalone/prova.dat", file.getText());
         assertFalse(details.isEnabled());
         assertEquals("Pronto", status.getText());
         assertFalse(canvas.hasTree());
@@ -218,7 +218,7 @@ public class RegressionTreeGUITest {
     public void chooseFileHandlesAClosedDialog() throws Exception {
         clickWithAutoClosingDialog("Scegli file");
 
-        assertEquals("prova.dat", field("fileField", JTextField.class).getText());
+        assertEquals("distribution/standalone/prova.dat", field("fileField", JTextField.class).getText());
     }
 
     /**

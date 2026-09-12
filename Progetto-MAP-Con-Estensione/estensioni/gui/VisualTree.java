@@ -39,7 +39,7 @@ final class VisualTree {
      * @throws IllegalStateException se l'albero è incompleto
      */
     static VisualTree from(RegressionTree tree) {
-        return new VisualTree(createNode(tree, ""));
+        return new VisualTree(createNode(tree, "", new RegressionTreeAccess()));
     }
 
     /**
@@ -76,10 +76,16 @@ final class VisualTree {
      *
      * @param tree sotto-albero
      * @param branch ramo entrante
+     * @param access adattatore in sola lettura della base
      * @return nodo visuale
      */
-    private static VisualNode createNode(RegressionTree tree, String branch) {
-        Node node = tree.getRoot();
+    private static VisualNode createNode(
+        RegressionTree tree, String branch, RegressionTreeAccess access
+    ) {
+        if (tree == null) {
+            throw new IllegalStateException("Sotto-albero mancante.");
+        }
+        Node node = access.rootOf(tree);
         if (node == null) {
             throw new IllegalStateException("Albero privo di radice.");
         }
@@ -104,14 +110,14 @@ final class VisualTree {
             false
         );
 
-        RegressionTree[] children = tree.getChildren();
-        if (children.length == 0) {
-            throw new IllegalStateException("Nodo di split privo di figli.");
+        RegressionTree[] children = access.childrenOf(tree);
+        if (children.length == 0 || children.length != node.getNumberOfChildren()) {
+            throw new IllegalStateException("Nodo di split con figli mancanti.");
         }
         for (int i = 0; i < children.length; i++) {
             String childBranch =
                 i < conditions.length ? branchName(conditions[i]) : String.valueOf(i);
-            visual.children.add(createNode(children[i], childBranch));
+            visual.children.add(createNode(children[i], childBranch, access));
         }
         return visual;
     }
@@ -124,8 +130,8 @@ final class VisualTree {
      */
     private static String attributeName(String query) {
         String value = condition(query);
-        int equals = value.indexOf('=');
-        return equals < 0 ? value : value.substring(0, equals).trim();
+        int comparator = comparatorIndex(value);
+        return comparator < 0 ? value : value.substring(0, comparator).trim();
     }
 
     /**
@@ -136,8 +142,28 @@ final class VisualTree {
      */
     private static String branchName(String query) {
         String value = condition(query);
-        int equals = value.indexOf('=');
-        return equals < 0 ? value : "= " + value.substring(equals + 1).trim();
+        int comparator = comparatorIndex(value);
+        if (comparator < 0) {
+            return value;
+        }
+        String branch = value.substring(comparator).trim();
+        return branch.startsWith("=") ? "= " + branch.substring(1).trim() : branch;
+    }
+
+    /**
+     * Trova il comparatore di uno split discreto o continuo.
+     *
+     * @param value condizione senza indice
+     * @return posizione del comparatore, oppure {@code -1}
+     */
+    private static int comparatorIndex(String value) {
+        for (int index = 0; index < value.length(); index++) {
+            char character = value.charAt(index);
+            if (character == '=' || character == '<' || character == '>') {
+                return index;
+            }
+        }
+        return -1;
     }
 
     /**

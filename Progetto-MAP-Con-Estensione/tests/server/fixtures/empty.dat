@@ -1,0 +1,4 @@
+@schema 1
+@desc x A,B
+@target y
+@data 0

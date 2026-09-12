@@ -17,7 +17,7 @@ public final class VisualTreeStatisticsTest {
      * @throws TrainingDataException se il training set non è valido
      */
     public static void main(String[] args) throws TrainingDataException {
-        RegressionTree tree = new RegressionTree(new Data("prova.dat"));
+        RegressionTree tree = new RegressionTree(new Data("distribution/standalone/prova.dat"));
         String statistics = VisualTree.from(tree).getStatistics();
         assert statistics.equals("5 nodi  |  3 foglie  |  profondità 2") : statistics;
     }
