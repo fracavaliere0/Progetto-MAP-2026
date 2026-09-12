@@ -13,7 +13,7 @@ import utility.Keyboard;
 
 import static org.junit.Assert.fail;
 
-/** Shared helpers for the standalone black-box and white-box tests. */
+/** Shared helpers for the src black-box and white-box tests. */
 public final class TestSupport {
     private TestSupport() {}
 

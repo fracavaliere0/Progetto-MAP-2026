@@ -97,7 +97,7 @@ public class MainTestIntegrationTest {
 
     @Test
     public void dataDemonstrationLoadsAndSortsTheMaximumFixture() throws Exception {
-        Path source = Paths.get("../../distribution/standalone/servo.dat").toAbsolutePath().normalize();
+        Path source = Paths.get("../../distribution/src/servo.dat").toAbsolutePath().normalize();
         Path local = Paths.get("servo.dat").toAbsolutePath().normalize();
         boolean copied = !source.equals(local);
         if (copied) Files.copy(source, local, StandardCopyOption.REPLACE_EXISTING);

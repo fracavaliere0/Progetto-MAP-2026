@@ -51,7 +51,7 @@ public class DataTest {
 
     @Test
     public void loadsMaximumProjectFixture() throws Exception {
-        Path servo = Paths.get("../../distribution/standalone/servo.dat").toAbsolutePath().normalize();
+        Path servo = Paths.get("../../distribution/src/servo.dat").toAbsolutePath().normalize();
         assertTrue("servo.dat fixture should exist", Files.exists(servo));
         Data data = new Data(servo.toString());
         assertEquals(167, data.getNumberOfExamples());
@@ -117,7 +117,7 @@ public class DataTest {
         TestSupport.expect(ArrayIndexOutOfBoundsException.class, () -> data.getExplanatoryValue(-1, 0));
         TestSupport.expect(ArrayIndexOutOfBoundsException.class, () -> data.getExplanatoryValue(0, -1));
         TestSupport.expect(ArrayIndexOutOfBoundsException.class, () -> data.getExplanatoryValue(5, 0));
-        // The standalone implementation exposes the target column when passed the
+        // The src implementation exposes the target column when passed the
         // first non-explanatory index; pin that legacy behavior explicitly.
         assertEquals(50.0, (Double) data.getExplanatoryValue(0, 2), 0.0);
         TestSupport.expect(IndexOutOfBoundsException.class, () -> data.getExplanatoryValue(0, 3));
@@ -128,7 +128,7 @@ public class DataTest {
     @Test
     public void dataMainLoadsAndSortsTheMaximumFixture() throws Exception {
         Path localServo = Paths.get("servo.dat");
-        Path source = Paths.get("../../distribution/standalone/servo.dat").toAbsolutePath().normalize();
+        Path source = Paths.get("../../distribution/src/servo.dat").toAbsolutePath().normalize();
         Files.copy(source, localServo);
         try {
             String output = TestSupport.captureOutput(() -> Data.main(new String[0]));

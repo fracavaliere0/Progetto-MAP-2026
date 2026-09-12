@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Progetto MAP con estensione — Diagrammi UML</title>
+  <style>
+    body { margin: 0 auto; padding: 1.5rem; max-width: 90rem; font: 1rem/1.6 system-ui, sans-serif; color: #20202a; background: #fafafa; }
+    a { color: #443399; text-underline-offset: .15em; }
+    a:focus-visible { outline: 3px solid #443399; outline-offset: 4px; }
+    nav ul { display: flex; flex-wrap: wrap; gap: 1.5rem; list-style: none; padding: 0; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: 1.25rem; }
+    article { border: 1px solid #d4d0e2; border-radius: .5rem; padding: 1rem; background: white; }
+    h3 { margin-top: 0; }
+    img { display: block; width: 100%; height: 14rem; object-fit: contain; }
+    code { font-size: .85rem; overflow-wrap: anywhere; }
+    section { margin-top: 2.5rem; }
+    @media print { nav { display: none; } article { break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <header>
+    <p><a href="../README.md">Documentazione</a> · <a href="README.md">Guida ai diagrammi e rigenerazione</a> · <a href="../report_tecnico.pdf">Report tecnico</a></p>
+    <h1>Diagrammi UML — Progetto MAP con estensione</h1>
+    <p>16 diagrammi: 11 delle classi, 4 dei package e una panoramica architetturale. Alla GUI sono dedicati soltanto un diagramma delle classi e uno dei package.</p>
+    <p>Le viste dei package e la panoramica usano flowchart Mermaid. La raccolta documenta i 38 file Java applicativi della base e le 8 classi dell’estensione Swing; i test sono esclusi.</p>
+    <p>Apri gli SVG per leggere i dettagli con lo zoom; usa i PNG nei documenti e i file Mermaid per modificare i diagrammi. La galleria e le immagini sono consultabili offline, senza JavaScript o servizi esterni.</p>
+    <p>Visibilità: <code>+</code> public, <code>-</code> private, <code>#</code> protected, <code>~</code> package-private.
+      Sottolineatura: statico; corsivo: metodo astratto. Triangolo: ereditarietà o realizzazione;
+      rombo pieno: composizione; freccia continua: associazione; freccia tratteggiata: dipendenza.</p>
+    <p>Server e applicazione <code>src</code> contengono classi omonime ma distinte. La GUI include soltanto la base locale da <code>project/src/src/</code> e comunica con il server via TCP. I gruppi interni della GUI non sono sottopackage.</p>
+    <nav aria-label="Sezioni UML"><ul>
+      <li><a href="#panoramica">Panoramica</a></li>
+      <li><a href="#gui">Estensione GUI</a></li>
+      <li><a href="#client">Client da console</a></li>
+      <li><a href="#server">Server</a></li>
+      <li><a href="#src">src e base locale della GUI</a></li>
+    </ul></nav>
+  </header>
+  <main>
+    <section id="panoramica" aria-labelledby="title-panoramica">
+      <h2 id="title-panoramica">Panoramica</h2>
+      <div class="cards">
+        <article>
+          <h3>Panoramica MAP con estensione GUI</h3>
+          <a href="panoramica/img/progetto.svg"><img src="panoramica/img/progetto.png" alt="Apri il diagramma: Panoramica MAP con estensione GUI" loading="lazy"></a>
+          <p><a href="panoramica/img/progetto.svg">SVG ingrandibile</a> · <a href="panoramica/img/progetto.png">PNG</a> · <a href="panoramica/progetto.mmd">Sorgente Mermaid</a></p>
+          <p><code>panoramica/progetto.mmd</code></p>
+        </article>
+      </div>
+    </section>
+    <section id="gui" aria-labelledby="title-gui">
+      <h2 id="title-gui">Estensione GUI</h2>
+      <div class="cards">
+        <article>
+          <h3>GUI - package e dipendenze dalla base</h3>
+          <a href="client/gui/package/img/estensioni_gui.svg"><img src="client/gui/package/img/estensioni_gui.png" alt="Apri il diagramma: GUI - package e dipendenze dalla base" loading="lazy"></a>
+          <p><a href="client/gui/package/img/estensioni_gui.svg">SVG ingrandibile</a> · <a href="client/gui/package/img/estensioni_gui.png">PNG</a> · <a href="client/gui/package/estensioni_gui.mmd">Sorgente Mermaid</a></p>
+          <p><code>client/gui/package/estensioni_gui.mmd</code></p>
+        </article>
+        <article>
+          <h3>Package estensioni.gui - classi della GUI</h3>
+          <a href="client/gui/classi/img/mapClient.svg"><img src="client/gui/classi/img/mapClient.png" alt="Apri il diagramma: Package estensioni.gui - classi della GUI" loading="lazy"></a>
+          <p><a href="client/gui/classi/img/mapClient.svg">SVG ingrandibile</a> · <a href="client/gui/classi/img/mapClient.png">PNG</a> · <a href="client/gui/classi/mapClient.mmd">Sorgente Mermaid</a></p>
+          <p><code>client/gui/classi/mapClient.mmd</code></p>
+        </article>
+      </div>
+    </section>
+    <section id="client" aria-labelledby="title-client">
+      <h2 id="title-client">Client da console</h2>
+      <div class="cards">
+        <article>
+          <h3>Package map7Client - client da console</h3>
+          <a href="client/progettoBase/classi/img/map7Client.svg"><img src="client/progettoBase/classi/img/map7Client.png" alt="Apri il diagramma: Package map7Client - client da console" loading="lazy"></a>
+          <p><a href="client/progettoBase/classi/img/map7Client.svg">SVG ingrandibile</a> · <a href="client/progettoBase/classi/img/map7Client.png">PNG</a> · <a href="client/progettoBase/classi/map7Client.mmd">Sorgente Mermaid</a></p>
+          <p><code>client/progettoBase/classi/map7Client.mmd</code></p>
+        </article>
+        <article>
+          <h3>Package utility - client</h3>
+          <a href="client/progettoBase/classi/img/utility.svg"><img src="client/progettoBase/classi/img/utility.png" alt="Apri il diagramma: Package utility - client" loading="lazy"></a>
+          <p><a href="client/progettoBase/classi/img/utility.svg">SVG ingrandibile</a> · <a href="client/progettoBase/classi/img/utility.png">PNG</a> · <a href="client/progettoBase/classi/utility.mmd">Sorgente Mermaid</a></p>
+          <p><code>client/progettoBase/classi/utility.mmd</code></p>
+        </article>
+        <article>
+          <h3>Diagramma dei package di project/mapClient/src</h3>
+          <a href="client/progettoBase/package/img/mapClient_src.svg"><img src="client/progettoBase/package/img/mapClient_src.png" alt="Apri il diagramma: Diagramma dei package di project/mapClient/src" loading="lazy"></a>
+          <p><a href="client/progettoBase/package/img/mapClient_src.svg">SVG ingrandibile</a> · <a href="client/progettoBase/package/img/mapClient_src.png">PNG</a> · <a href="client/progettoBase/package/mapClient_src.mmd">Sorgente Mermaid</a></p>
+          <p><code>client/progettoBase/package/mapClient_src.mmd</code></p>
+        </article>
+      </div>
+    </section>
+    <section id="server" aria-labelledby="title-server">
+      <h2 id="title-server">Server</h2>
+      <div class="cards">
+        <article>
+          <h3>Package Server - server TCP</h3>
+          <a href="server/classi/img/Server.svg"><img src="server/classi/img/Server.png" alt="Apri il diagramma: Package Server - server TCP" loading="lazy"></a>
+          <p><a href="server/classi/img/Server.svg">SVG ingrandibile</a> · <a href="server/classi/img/Server.png">PNG</a> · <a href="server/classi/Server.mmd">Sorgente Mermaid</a></p>
+          <p><code>server/classi/Server.mmd</code></p>
+        </article>
+        <article>
+          <h3>Package data - server</h3>
+          <a href="server/classi/img/data.svg"><img src="server/classi/img/data.png" alt="Apri il diagramma: Package data - server" loading="lazy"></a>
+          <p><a href="server/classi/img/data.svg">SVG ingrandibile</a> · <a href="server/classi/img/data.png">PNG</a> · <a href="server/classi/data.mmd">Sorgente Mermaid</a></p>
+          <p><code>server/classi/data.mmd</code></p>
+        </article>
+        <article>
+          <h3>Package database - server</h3>
+          <a href="server/classi/img/database.svg"><img src="server/classi/img/database.png" alt="Apri il diagramma: Package database - server" loading="lazy"></a>
+          <p><a href="server/classi/img/database.svg">SVG ingrandibile</a> · <a href="server/classi/img/database.png">PNG</a> · <a href="server/classi/database.mmd">Sorgente Mermaid</a></p>
+          <p><code>server/classi/database.mmd</code></p>
+        </article>
+        <article>
+          <h3>Package tree - server</h3>
+          <a href="server/classi/img/tree.svg"><img src="server/classi/img/tree.png" alt="Apri il diagramma: Package tree - server" loading="lazy"></a>
+          <p><a href="server/classi/img/tree.svg">SVG ingrandibile</a> · <a href="server/classi/img/tree.png">PNG</a> · <a href="server/classi/tree.mmd">Sorgente Mermaid</a></p>
+          <p><code>server/classi/tree.mmd</code></p>
+        </article>
+        <article>
+          <h3>Diagramma dei package di project/mapServer/src</h3>
+          <a href="server/package/img/mapServer_src.svg"><img src="server/package/img/mapServer_src.png" alt="Apri il diagramma: Diagramma dei package di project/mapServer/src" loading="lazy"></a>
+          <p><a href="server/package/img/mapServer_src.svg">SVG ingrandibile</a> · <a href="server/package/img/mapServer_src.png">PNG</a> · <a href="server/package/mapServer_src.mmd">Sorgente Mermaid</a></p>
+          <p><code>server/package/mapServer_src.mmd</code></p>
+        </article>
+      </div>
+    </section>
+    <section id="src" aria-labelledby="title-src">
+      <h2 id="title-src">src e base locale della GUI</h2>
+      <div class="cards">
+        <article>
+          <h3>MainTest - src, default package</h3>
+          <a href="src/classi/img/MainTest.svg"><img src="src/classi/img/MainTest.png" alt="Apri il diagramma: MainTest - src, default package" loading="lazy"></a>
+          <p><a href="src/classi/img/MainTest.svg">SVG ingrandibile</a> · <a href="src/classi/img/MainTest.png">PNG</a> · <a href="src/classi/MainTest.mmd">Sorgente Mermaid</a></p>
+          <p><code>src/classi/MainTest.mmd</code></p>
+        </article>
+        <article>
+          <h3>Package data - src</h3>
+          <a href="src/classi/img/data.svg"><img src="src/classi/img/data.png" alt="Apri il diagramma: Package data - src" loading="lazy"></a>
+          <p><a href="src/classi/img/data.svg">SVG ingrandibile</a> · <a href="src/classi/img/data.png">PNG</a> · <a href="src/classi/data.mmd">Sorgente Mermaid</a></p>
+          <p><code>src/classi/data.mmd</code></p>
+        </article>
+        <article>
+          <h3>Package tree - src</h3>
+          <a href="src/classi/img/tree.svg"><img src="src/classi/img/tree.png" alt="Apri il diagramma: Package tree - src" loading="lazy"></a>
+          <p><a href="src/classi/img/tree.svg">SVG ingrandibile</a> · <a href="src/classi/img/tree.png">PNG</a> · <a href="src/classi/tree.mmd">Sorgente Mermaid</a></p>
+          <p><code>src/classi/tree.mmd</code></p>
+        </article>
+        <article>
+          <h3>Package utility - src</h3>
+          <a href="src/classi/img/utility.svg"><img src="src/classi/img/utility.png" alt="Apri il diagramma: Package utility - src" loading="lazy"></a>
+          <p><a href="src/classi/img/utility.svg">SVG ingrandibile</a> · <a href="src/classi/img/utility.png">PNG</a> · <a href="src/classi/utility.mmd">Sorgente Mermaid</a></p>
+          <p><code>src/classi/utility.mmd</code></p>
+        </article>
+        <article>
+          <h3>Diagramma dei package di project/src/src</h3>
+          <a href="src/package/img/src.svg"><img src="src/package/img/src.png" alt="Apri il diagramma: Diagramma dei package di project/src/src" loading="lazy"></a>
+          <p><a href="src/package/img/src.svg">SVG ingrandibile</a> · <a href="src/package/img/src.png">PNG</a> · <a href="src/package/src.mmd">Sorgente Mermaid</a></p>
+          <p><code>src/package/src.mmd</code></p>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

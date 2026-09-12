@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>standalone</module>
+        <module>src</module>
         <module>server</module>
         <module>client</module>
     </modules>

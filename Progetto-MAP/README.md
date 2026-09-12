@@ -1,8 +1,8 @@
 # Progetto MAP 2026 — Alberi di regressione
 
 Applicazione Java per apprendere alberi di regressione e svolgere predizioni
-interattive, disponibile come client/server su MySQL e come programma standalone
-su file.
+interattive, disponibile come client/server su MySQL e come applicazione locale
+`src` su file.
 
 ## Struttura
 
@@ -10,7 +10,7 @@ su file.
 project/
   mapClient/       Client da console — progetto Eclipse
   mapServer/       Server TCP multiclient — progetto Eclipse
-  standalone/      Applicazione locale — progetto Eclipse
+  src/             Applicazione locale — progetto Eclipse
 distribution/     JAR eseguibili, driver JDBC, script SQL e dataset
 docs/             Javadoc e diagrammi UML
 tests/            Suite Maven con tre moduli indipendenti
@@ -43,24 +43,24 @@ In un altro terminale, dalla radice del progetto, avviare il client:
 java -jar distribution/client/client_base.jar localhost 8080
 ```
 
-Per lo standalone, senza MySQL:
+Per l'applicazione locale `src`, senza MySQL:
 
 ```sh
-cd distribution/standalone
-java -jar standalone.jar
+cd distribution/src
+java -jar src.jar
 ```
 
 Sono inclusi i dataset `prova`, `provaC` e `servo`. Inserire i nomi senza
-estensione: lo standalone aggiunge `.dat` ai dataset e `.dmp` agli archivi.
+estensione: l'applicazione `src` aggiunge `.dat` ai dataset e `.dmp` agli archivi.
 Nel client inserire il nome della tabella per apprendere, oppure il nome
 senza `.dmp` per caricare un albero. Il server salva gli archivi nella propria
-directory di lavoro. Gli archivi di server e standalone non sono intercambiabili.
+directory di lavoro. Gli archivi di server e `src` non sono intercambiabili.
 
 ## Sorgenti ed Eclipse
 
 Importare `project/` con **File → Import → Existing Projects into Workspace**,
 abilitando **Search for nested projects**. Selezionare `mapClient`, `mapServer`
-e `standalone`, senza copiare i progetti nel workspace; configurare `JavaSE-1.8`
+e `src`, senza copiare i progetti nel workspace; configurare `JavaSE-1.8`
 con un JDK disponibile. Se erano già importati prima dello spostamento, rimuovere
 solo i vecchi riferimenti dal workspace, senza cancellare i file, e reimportarli.
 
@@ -78,7 +78,7 @@ Con Maven e un JDK che supporti `--release 8`, dalla radice:
 mvn -f tests/pom.xml clean verify
 ```
 
-I moduli isolano client, server e standalone. Le prove server usano un driver
+I moduli isolano client, server e `src`. Le prove server usano un driver
 JDBC simulato e non modificano MySQL. I report sono generati nelle directory
 `tests/*/target/`. Per importarli in Eclipse usare **Existing Maven Projects**.
 
@@ -105,7 +105,7 @@ Per rigenerare i Javadoc, dalla radice:
 ```sh
 javadoc @docs/javadoc-mapClient.args
 javadoc @docs/javadoc-mapServer.args
-javadoc @docs/javadoc-standalone.args
+javadoc @docs/javadoc-src.args
 ```
 
 In PowerShell racchiudere gli argomenti `@docs/...` fra apici. I file `.mmd`

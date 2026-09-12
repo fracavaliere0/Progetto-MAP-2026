@@ -1,0 +1,21 @@
+---
+title: MainTest - src, default package
+---
+%% Sorgente: project/src/src/MainTest.java
+classDiagram
+  direction TB
+  class MainTest {
+    +main(in args: String[])$
+  }
+
+  class Data["data.Data"]
+  class RegressionTree["tree.RegressionTree"]
+  class Keyboard["utility.Keyboard"]
+  class TrainingDataException["data.TrainingDataException"]
+  class UnknownValueException["tree.UnknownValueException"]
+
+  MainTest ..> Data
+  MainTest ..> RegressionTree
+  MainTest ..> Keyboard
+  MainTest ..> TrainingDataException
+  MainTest ..> UnknownValueException

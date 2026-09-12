@@ -21,7 +21,7 @@ flowchart LR
     model -.-> data
     data --> database
   end
-  subgraph standalone["project/standalone - progetto Eclipse indipendente"]
+  subgraph src["project/src - progetto Eclipse indipendente"]
     main["MainTest\nDefault package"]
     localData["data\nTraining set su file"]
     localTree["tree\nAlbero di regressione"]
@@ -36,4 +36,4 @@ flowchart LR
   database -->|JDBC / Connector-J| mysql[("MySQL / MapDB")]
   model <-->|salva / carica| serverFiles[("Archivi .dmp del server")]
   datFiles[("Dataset .dat")] --> localData
-  localTree <-->|salva / carica| localFiles[("Archivi .dmp standalone")]
+  localTree <-->|salva / carica| localFiles[("Archivi .dmp di src")]

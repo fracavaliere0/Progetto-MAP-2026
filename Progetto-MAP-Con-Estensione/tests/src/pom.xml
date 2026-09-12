@@ -8,10 +8,10 @@
         <artifactId>map-tests</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>standalone-tests</artifactId>
+    <artifactId>src-tests</artifactId>
 
     <build>
-        <sourceDirectory>${project.basedir}/../../project/standalone/src</sourceDirectory>
+        <sourceDirectory>${project.basedir}/../../project/src/src</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src</testSourceDirectory>
         <plugins>
             <plugin>

@@ -1,0 +1,61 @@
+---
+title: Panoramica MAP con estensione GUI
+---
+%% Vista architetturale: i raggruppamenti indicano moduli/processi, non classi Java.
+flowchart LR
+  subgraph gui["distribution/gui/mapGUI.jar - processo Swing"]
+    window["estensioni.gui.RegressionTreeGUI"]
+    visual["VisualTree / VisualNode"]
+    canvas["RegressionTreeCanvas"]
+    adapter["RegressionTreeAccess"]
+    remote["DatabaseTreeClient"]
+    localData["data - base src\nproject/src/src/data"]
+    localTree["tree - base src\nproject/src/src/tree"]
+    window -->|training locale| localData
+    window --> localTree
+    localTree -.-> localData
+    window -->|conversione locale| visual
+    visual -.-> adapter
+    adapter -.->|riflessione in sola lettura| localTree
+    window -->|training remoto| remote
+    remote -->|ricostruisce con predizioni| visual
+    window --> canvas
+    canvas -->|visualizza| visual
+  end
+  subgraph client["project/mapClient - processo CLI"]
+    cli["map7Client.MainTest"]
+    keyboardClient["utility.Keyboard"]
+    cli -.-> keyboardClient
+  end
+  subgraph server["project/mapServer - processo server"]
+    boot["Server.Server"]
+    multi["Server.MultiServer"]
+    session["Server.ServerOneClient\nUn thread per connessione"]
+    model["tree - implementazione server"]
+    data["data - training set da database"]
+    database["database - JDBC"]
+    boot --> multi
+    multi -->|crea| session
+    session --> model
+    session --> data
+    model -.-> data
+    data --> database
+  end
+  subgraph src["project/src - processo CLI locale"]
+    main["MainTest - default package"]
+    srcData["data - lettura file"]
+    srcTree["tree - albero di regressione"]
+    srcKeyboard["utility.Keyboard"]
+    main --> srcData
+    main --> srcTree
+    main -.-> srcKeyboard
+    srcTree -.-> srcData
+    srcTree -.-> srcKeyboard
+  end
+  remote <-->|TCP / oggetti Java: comandi 0, 1, 3| session
+  cli <-->|TCP / oggetti Java: comandi 0-3| session
+  database -->|Connector/J| mysql[("MySQL / MapDB")]
+  model <-->|salva / carica| serverFiles[("Archivi .dmp del server")]
+  datFiles[("Dataset .dat")] --> localData
+  datFiles --> srcData
+  srcTree <-->|salva / carica| localFiles[("Archivi .dmp di src")]

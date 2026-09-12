@@ -1,0 +1,63 @@
+---
+title: Package Server - server TCP
+---
+%% Sorgente: project/mapServer/src/Server/MultiServer.java
+%% Sorgente: project/mapServer/src/Server/Server.java
+%% Sorgente: project/mapServer/src/Server/ServerOneClient.java
+%% Sorgente: project/mapServer/src/Server/UnknownValueException.java
+classDiagram
+  direction TB
+  namespace Server {
+    class MultiServer
+    class ServerEntry
+    class ServerOneClient
+    class UnknownValueException
+  }
+
+  class MultiServer {
+    -PORT: int
+    +MultiServer(in port: int)
+    -run()
+  }
+
+  class ServerEntry["Server"] {
+    +main(in args: String[])$
+  }
+
+  class ServerOneClient {
+    -socket: Socket
+    -in: ObjectInputStream
+    -out: ObjectOutputStream
+    -trainingSet: Data
+    -tree: RegressionTree
+    -fileName: String
+    +ServerOneClient(in s: Socket)
+    +run()
+    -readName() String
+    -loadData()
+    -learnTree()
+    -loadTree()
+    -predict()
+    -predictClass(in currentTree: RegressionTree) Double
+  }
+
+  class UnknownValueException {
+    +UnknownValueException(in message: String)
+  }
+
+  class Thread
+  class Exception
+  class Socket
+  class Data["data.Data"]
+  class RegressionTree["tree.RegressionTree"]
+
+  ServerEntry ..> MultiServer : avvia
+  MultiServer ..> ServerOneClient : crea
+  ServerOneClient --|> Thread
+  ServerOneClient --> "1" Socket : socket
+  ServerOneClient --> "0..1" Data : trainingSet
+  ServerOneClient --> "0..1" RegressionTree : tree
+  ServerOneClient ..> UnknownValueException
+  UnknownValueException --|> Exception
+
+  note for ServerOneClient "Sessione con thread dedicato e stato indipendente (comandi 0-3)."

@@ -1,0 +1,67 @@
+\clearpage
+\subsection*{Testing dell'estensione GUI}
+
+L'estensione dispone di tre classi JUnit 4 e tre programmi autonomi con
+asserzioni Java. Sono stati verificati con \textbf{OpenJDK 21}, compilando
+per Java 8, e un display disponibile per le finestre Swing.
+
+\begin{itemize}
+  \item \texttt{VisualTreeTest}: conversione di foglie e split discreti e
+        continui, etichette, statistiche, lettura di alberi serializzati,
+        isolamento dell'array dei figli e rifiuto di strutture incomplete.
+        Esercita anche \texttt{VisualNode} e \texttt{RegressionTreeAccess}.
+  \item \texttt{RegressionTreeCanvasTest}: stato vuoto, dimensioni,
+        disposizione dei figli, rendering su immagine, abbreviazione delle
+        etichette e limiti dello zoom, inclusi valori infiniti e NaN.
+  \item \texttt{RegressionTreeGUITest}: stato iniziale, training locale,
+        dettagli, file assente o percorso vuoto, centraggio, zoom, chiusura
+        del selettore file, stile dei pulsanti e avvio della finestra.
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Classe JUnit} & \textbf{Test} & \textbf{Fall.} & \textbf{Errori} & \textbf{Saltati} \\
+\midrule
+\texttt{VisualTreeTest} & 9 & 0 & 0 & 0 \\
+\texttt{RegressionTreeCanvasTest} & 4 & 0 & 0 & 0 \\
+\texttt{RegressionTreeGUITest} & 9 & 0 & 0 & 0 \\
+\midrule
+\textbf{Totale GUI} & \textbf{22} & \textbf{0} & \textbf{0} & \textbf{0} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+I programmi autonomi completano i controlli:
+\texttt{DatabaseTreeClientTest} verifica il protocollo con un server simulato;
+\texttt{VisualTreeStatisticsTest} controlla le statistiche di
+\texttt{prova.dat}; \texttt{DatabaseTreeIntegrationTest} usa la vera classe
+\texttt{ServerOneClient} con il solo driver JDBC simulato. Quest'ultima prova
+controlla alberi multilivello, una singola foglia, salvataggio, tabella assente
+e fallimento della scrittura. Un class loader separato isola le classi
+\texttt{data}/\texttt{tree} del server da quelle del modulo \texttt{src}.
+
+\textbf{Esito:} 22 test JUnit superati e tre programmi autonomi completati
+con asserzioni abilitate. Con la base, i test JUnit sono 118, senza fallimenti,
+errori o test saltati; i programmi autonomi non si sommano al conteggio JUnit.
+
+\subsection*{Riproducibilità e ambito dei risultati}
+
+Dalla cartella principale si possono rieseguire le suite della base e i tre
+programmi autonomi della GUI con:
+
+\begin{lstlisting}
+mvn -f tests/server/pom.xml verify
+mvn -f tests/client/pom.xml verify
+bash estensioni/gui/build-gui.sh --check
+\end{lstlisting}
+
+Le classi JUnit in \path{tests/estensioni/gui/} non sono collegate a Maven
+né eseguite da \texttt{-{}-check}. Per avviarle con \texttt{JUnitCore}, seguire
+\path{docs/README.md}. Senza display i nove test della finestra vengono
+saltati per assunzione JUnit.
+
+Non è stata misurata una copertura JaCoCo della GUI: le percentuali della
+base non si estendono a questo package. Le prove remote non certificano una
+connessione a MySQL reale; non sono prove di carico o di usabilità e non
+coprono ogni errore di rete o ogni validazione dei campi database.

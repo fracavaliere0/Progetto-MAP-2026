@@ -1,0 +1,181 @@
+\clearpage
+\section*{Estensione GUI}
+
+L'estensione aggiunge un'interfaccia desktop realizzata con \textbf{Java Swing}
+e \textbf{Java2D}. Consente di apprendere un albero da un file locale oppure da
+una tabella MySQL attraverso il server MAP, mostrandone nodi, rami, valori
+predetti e statistiche. Il client da console resta disponibile per la
+predizione guidata e il caricamento degli archivi.
+
+\subsection*{Architettura e riuso della base}
+
+I sorgenti aggiunti appartengono al package \texttt{estensioni.gui} e non
+modificano il codice applicativo della base. Il training locale riutilizza i
+package \texttt{data} e \texttt{tree} dell'applicazione locale \texttt{src}, in
+\path{project/src/src/}; il training remoto utilizza il server già presente in
+\path{project/mapServer/src/}.
+
+I due moduli contengono classi con gli stessi nomi qualificati, ma con modalità
+di acquisizione differenti: file nel modulo \texttt{src}, JDBC nel server.
+Per questo la GUI include soltanto la base locale nel proprio JAR e
+comunica con il server tramite socket, senza mescolare le due implementazioni
+nello stesso classpath.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Classe} & \textbf{Responsabilità} \\
+\midrule
+\texttt{RegressionTreeGUI} & Finestra principale, selezione dell'origine,
+validazione, avvio del training, stato e dialoghi. \\
+\texttt{RegressionTreeAccess} & Adattatore in sola lettura della struttura
+privata dell'albero del modulo \texttt{src}. \\
+\texttt{VisualTree} & Conversione dell'albero locale e calcolo delle
+statistiche della rappresentazione visuale. \\
+\texttt{VisualNode} & Titolo, metadati, ramo entrante, figli e coordinate
+di un nodo visuale. \\
+\texttt{RegressionTreeCanvas} & Disposizione dell'albero, disegno e zoom. \\
+\texttt{DatabaseTreeClient} & Sessione TCP e ricostruzione dell'albero remoto
+tramite il protocollo della base. \\
+\texttt{DatabaseTreeSnapshot} & Risultato dell'ispezione di un nodo remoto:
+domanda di split oppure predizione. \\
+\texttt{DatabaseTreeResult} & Albero visuale e dettagli testuali restituiti
+al termine del training remoto. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection*{Training locale}
+
+\texttt{Data} legge il file \texttt{.dat}; \texttt{RegressionTree} esegue
+l'induzione ricorsiva già implementata nella base. La soglia di arresto per
+numero di esempi è il 10\% del training set iniziale, calcolato con divisione
+intera. In alternativa si genera una foglia quando lo split non produce più
+di un ramo; il valore della foglia è la media del target.
+
+\texttt{VisualTree.from()} costruisce una rappresentazione separata, senza
+cambiare il modello appreso. La base locale non espone radice e figli:
+\texttt{RegressionTreeAccess} legge per riflessione i campi \texttt{root} e
+\texttt{childTree}, restituendo una copia dell'array dei figli. Questo conserva
+l'API originale, ma lega l'adattatore ai nomi e ai tipi dei campi privati.
+
+\clearpage
+\subsection*{Rappresentazione grafica}
+
+Entrambe le origini producono un \texttt{VisualTree}: il pannello di disegno
+non deve conoscere né il formato dei file né il protocollo di rete.
+\texttt{RegressionTreeCanvas} misura prima la larghezza dei sotto-alberi e
+poi dispone ogni padre al centro dello spazio riservato ai propri figli.
+Nodi e collegamenti vengono disegnati ricorsivamente con antialiasing.
+
+\begin{itemize}
+  \item I nodi interni hanno sfondo nero e mostrano l'attributo di split;
+        le foglie hanno sfondo bianco e valore predetto in rosso.
+  \item Le etichette dei rami riportano uguaglianze discrete oppure confronti
+        continui, conservando gli operatori \texttt{<=} e \texttt{>}.
+  \item I valori predetti sono formattati con il punto decimale e fino a
+        quattro cifre decimali. Questa formattazione non cambia il modello.
+  \item Lo zoom varia dal 50\% al 150\%, in passi di 10 punti percentuali.
+        Le barre di scorrimento consentono l'esplorazione; \textbf{Centra}
+        riporta la vista verso la radice senza modificare lo zoom.
+\end{itemize}
+
+Le statistiche comprendono numero di nodi, foglie e profondità massima,
+misurata in archi: una sola foglia ha profondità zero. In modalità locale
+sono mostrati anche numero di esempi, attributi e intervalli degli esempi
+associati ai nodi. Gli indici si riferiscono ai dati riordinati durante
+l'apprendimento, non alle righe originarie del file. La modalità database
+non dispone di questi intervalli e usa metadati descrittivi dell'origine.
+
+\subsection*{Training remoto e protocollo}
+
+La GUI si collega al \textbf{server MAP}, non direttamente a MySQL.
+\texttt{DatabaseTreeClient} usa un socket TCP con
+\texttt{ObjectOutputStream} e \texttt{ObjectInputStream}. I comandi sono
+oggetti \texttt{Integer}; nomi e messaggi sono stringhe serializzate.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}lXX@{}}
+\toprule
+\textbf{Codice} & \textbf{Richiesta} & \textbf{Risposta attesa} \\
+\midrule
+\texttt{0} & Caricamento della tabella; segue il nome. &
+\texttt{Table found!}, poi \texttt{OK}. \\
+\texttt{1} & Apprendimento e salvataggio sul server. & \texttt{OK}. \\
+\texttt{3} & Predizione a partire dalla radice. &
+\texttt{QUERY} e domanda; al termine \texttt{QUERY}, \texttt{OK} e valore. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Il protocollo originale non esporta l'intero albero. Per ricostruirlo, la GUI
+avvia una predizione per ciascun nodo da ispezionare, ripercorrendo dalla
+radice gli indici dei rami che lo identificano. Quando incontra lo split
+cercato, ne conserva la domanda e completa comunque la predizione scegliendo
+il ramo zero fino a una foglia: in questo modo consuma tutte le risposte e
+mantiene sincronizzati gli stream. La visita prosegue ricorsivamente sui
+figli. Un nodo foglia viene ricostruito dal valore numerico ricevuto.
+
+Il codice \texttt{2}, usato dalla CLI per caricare archivi, non viene inviato
+dalla GUI. Il server continua a salvare \texttt{nomeTabella.dmp} nella propria
+directory di lavoro; la GUI non trasferisce tale archivio al client.
+
+\clearpage
+\subsection*{Gestione dello stato e degli errori}
+
+La finestra viene creata sull'\emph{Event Dispatch Thread} di Swing.
+Un \texttt{CardLayout} alterna i campi per file e database. Le operazioni di
+training sono eseguite direttamente negli ascoltatori dei pulsanti; durante
+l'elaborazione viene impostato il cursore di attesa. Al successo, la GUI
+aggiorna albero e testo, abilita \textbf{Dettagli} e pianifica il centraggio.
+
+Prima della connessione vengono controllati host non vuoto, porta numerica
+nell'intervallo 1--65535 e nome di tabella conforme a
+\verb|[A-Za-z][A-Za-z0-9_$]*|. Per il file viene verificato che il percorso non
+sia vuoto; i controlli sul contenuto sono demandati a \texttt{Data}.
+
+Un errore preliminare mostra un dialogo senza sostituire l'eventuale risultato
+precedente. Se invece il caricamento o il training falliscono, l'albero viene
+rimosso, i dettagli vengono svuotati e disabilitati e la barra mostra
+\texttt{Training non completato}. Il client di rete implementa
+\texttt{Closeable} ed è gestito con \emph{try-with-resources}; la chiusura del
+socket termina la sessione lato server.
+
+\subsection*{Limiti dell'implementazione corrente}
+
+\begin{itemize}
+  \item Training e comunicazione sono sincroni sul thread Swing: con dati
+        grandi o rete lenta la finestra può non rispondere temporaneamente.
+        Non sono presenti annullamento o avanzamento percentuale.
+  \item La ricostruzione remota ripete percorsi dalla radice. Per un albero
+        di $N$ nodi e profondità $h$ richiede fino a un ordine di $N h$ scambi
+        lungo i percorsi, oltre all'apprendimento. Non è un trasferimento
+        diretto del modello.
+  \item Il client remoto impone un limite di 10\,000 nodi e timeout di
+        30 secondi per connessione e singole letture. Il timeout non è un
+        limite alla durata complessiva del training.
+  \item La GUI non offre caricamento o salvataggio locale di \texttt{.dmp},
+        esportazione del grafico, modifica dei nodi o predizione interattiva
+        tramite clic. Per le predizioni guidate resta disponibile la CLI.
+  \item I limiti dell'algoritmo base, compresi alcuni casi continui costanti,
+        restano invariati. La visualizzazione non aggiunge correzioni o
+        parametri di apprendimento.
+  \item Il protocollo usa serializzazione Java senza autenticazione o TLS:
+        il servizio è destinato a un ambiente didattico fidato, non
+        all'esposizione diretta su reti non affidabili.
+\end{itemize}
+
+\subsection*{Compilazione e distribuzione}
+
+Dalla cartella principale, con Bash e un JDK installati:
+
+\begin{lstlisting}
+bash estensioni/gui/build-gui.sh
+java -jar distribution/gui/mapGUI.jar
+\end{lstlisting}
+
+Lo script compila la base locale \texttt{src} e le classi della GUI escludendo i test;
+usa \texttt{-{}-release 8}, oppure \texttt{-source 8 -target 8} sui JDK meno
+recenti. La classe principale indicata nel manifest è
+\texttt{estensioni.gui.RegressionTreeGUI}. Il JAR non richiede librerie grafiche esterne né il driver
+JDBC sul client: Connector/J rimane nella distribuzione del server.

@@ -44,7 +44,7 @@ public final class RegressionTreeGUI extends JFrame {
     private static final String LOCAL_SOURCE = "locale";
     private static final String DATABASE_SOURCE = "database";
 
-    private final JTextField fileField = new JTextField("distribution/standalone/prova.dat");
+    private final JTextField fileField = new JTextField("distribution/src/prova.dat");
     private final JTextField hostField = new JTextField("localhost", 10);
     private final JTextField portField = new JTextField("8080", 5);
     private final JTextField tableField = new JTextField("provaC", 12);

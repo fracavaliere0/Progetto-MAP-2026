@@ -1,0 +1,44 @@
+---
+title: GUI - package e dipendenze dalla base
+---
+%% Sorgente: estensioni/gui/RegressionTreeGUI.java
+%% Sorgente: estensioni/gui/RegressionTreeCanvas.java
+%% Sorgente: estensioni/gui/VisualTree.java
+%% Sorgente: estensioni/gui/VisualNode.java
+%% Sorgente: estensioni/gui/RegressionTreeAccess.java
+%% Sorgente: estensioni/gui/DatabaseTreeClient.java
+%% Sorgente: estensioni/gui/DatabaseTreeSnapshot.java
+%% Sorgente: estensioni/gui/DatabaseTreeResult.java
+%% Presentazione, modello e rete sono gruppi di responsabilita, NON sottopackage.
+flowchart TB
+  subgraph jar["mapGUI.jar - classpath src, separato dal server"]
+    subgraph extension["package estensioni.gui"]
+      direction TB
+      ui["Presentazione Swing\nRegressionTreeGUI\nRegressionTreeCanvas"]
+      model["Modello visuale e adattatore\nVisualTree\nVisualNode\nRegressionTreeAccess"]
+      network["Client remoto\nDatabaseTreeClient\nDatabaseTreeSnapshot\nDatabaseTreeResult"]
+      ui -.->|training remoto| network
+      ui -.->|conversione e disegno| model
+      network -.->|costruisce albero visuale| model
+    end
+    subgraph base["Base src - project/src/src"]
+      data["package data"]
+      tree["package tree"]
+      utility["package utility"]
+      tree -.-> data
+      tree -.-> utility
+    end
+    ui -.->|training locale| data
+    ui -.->|training locale| tree
+    model -.->|conversione e riflessione| tree
+  end
+  swing["JDK: javax.swing / java.awt"]
+  io["JDK: java.io / java.net"]
+  reflect["JDK: java.lang.reflect"]
+  ui -.-> swing
+  network -.-> io
+  model -.-> reflect
+  server["Processo server MAP\nproject/mapServer/src\nServer / data / tree / database"]
+  mysql[("MySQL / MapDB")]
+  network <-->|TCP: Integer e String in richiesta, String e Double in risposta| server
+  server -->|JDBC / Connector-J| mysql
