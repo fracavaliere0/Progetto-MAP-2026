@@ -1,0 +1,116 @@
+---
+title: Package database - server
+---
+%% Sorgente: project/mapServer/src/database/Column.java
+%% Sorgente: project/mapServer/src/database/DatabaseConnectionException.java
+%% Sorgente: project/mapServer/src/database/DbAccess.java
+%% Sorgente: project/mapServer/src/database/EmptySetException.java
+%% Sorgente: project/mapServer/src/database/Example.java
+%% Sorgente: project/mapServer/src/database/TableData.java
+%% Sorgente: project/mapServer/src/database/TableSchema.java
+classDiagram
+  direction TB
+  namespace database {
+    class Column
+    class DatabaseConnectionException
+    class DbAccess
+    class EmptySetException
+    class Example
+    class TableData
+    class QUERY_TYPE
+    class TableSchema
+  }
+
+  class Column {
+    -name: String
+    -type: String
+    ~Column(in name: String, in type: String)
+    +getColumnName() String
+    +isNumber() boolean
+    +toString() String
+  }
+
+  class DatabaseConnectionException {
+    +DatabaseConnectionException(in message: String)
+    +DatabaseConnectionException(in cause: Exception)
+  }
+
+  class DbAccess {
+    -DRIVER_CLASS_NAME: String
+    -DBMS: String
+    -SERVER: String
+    -DATABASE: String
+    -PORT: String
+    -USER_ID: String
+    -PASSWORD: String
+    -conn: Connection
+    +initConnection()
+    +getConnection() Connection
+    +closeConnection()
+  }
+
+  class EmptySetException {
+    +EmptySetException()
+    +EmptySetException(in message: String)
+  }
+
+  class Example {
+    -example: List~Object~
+    +add(in o: Object)
+    +get(in i: int) Object
+    +compareTo(in ex: Example) int
+    +toString() String
+    +iterator() Iterator~Object~
+  }
+
+  class TableData {
+    -db: DbAccess
+    +TableData(in db: DbAccess)
+    +getTransazioni(in table: String) List~Example~
+    +getDistinctColumnValues(in table: String, in column: Column) Set~Object~
+  }
+
+  class QUERY_TYPE {
+    <<enumeration>>
+    MIN
+    MAX
+  }
+
+  class TableSchema {
+    -tableSchema: List~Column~
+    +TableSchema(in db: DbAccess, in tableName: String)
+    +getNumberOfAttributes() int
+    +getColumn(in index: int) Column
+    +iterator() Iterator~Column~
+  }
+
+  class Exception
+  class Connection {
+    <<interface>>
+  }
+  class IterableColumn["Iterable&lt;Column&gt;"] {
+    <<interface>>
+  }
+  class IterableObject["Iterable&lt;Object&gt;"] {
+    <<interface>>
+  }
+  class ComparableExample["Comparable&lt;Example&gt;"] {
+    <<interface>>
+  }
+
+  DatabaseConnectionException --|> Exception
+  EmptySetException --|> Exception
+  DbAccess --> "0..1" Connection : conn
+  DbAccess ..> DatabaseConnectionException
+  TableSchema ..|> IterableColumn
+  Example ..|> IterableObject
+  Example ..|> ComparableExample
+  TableSchema *-- "0..*" Column : tableSchema
+  TableSchema ..> DbAccess
+  TableData --> "1" DbAccess : db
+  TableData ..> TableSchema
+  TableData ..> Column
+  TableData ..> Example
+  TableData ..> EmptySetException
+
+  note for QUERY_TYPE "Enum pubblico annidato in TableData, attualmente non utilizzato."

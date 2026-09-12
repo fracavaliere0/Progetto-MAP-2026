@@ -1,0 +1,39 @@
+---
+title: Panoramica delle applicazioni MAP
+---
+flowchart LR
+  subgraph client["project/mapClient - progetto Eclipse indipendente"]
+    cli["map7Client.MainTest\nClient da console"]
+    keyboardClient["utility.Keyboard"]
+    cli -.-> keyboardClient
+  end
+  subgraph server["project/mapServer - progetto Eclipse indipendente"]
+    boot["Server.Server"]
+    multi["Server.MultiServer"]
+    session["Server.ServerOneClient\nUn thread per client"]
+    model["tree\nAlbero di regressione"]
+    data["data\nTraining set"]
+    database["database\nAccesso JDBC"]
+    boot --> multi
+    multi -->|crea| session
+    session --> model
+    session --> data
+    model -.-> data
+    data --> database
+  end
+  subgraph standalone["project/standalone - progetto Eclipse indipendente"]
+    main["MainTest\nDefault package"]
+    localData["data\nTraining set su file"]
+    localTree["tree\nAlbero di regressione"]
+    localKeyboard["utility.Keyboard"]
+    main --> localData
+    main --> localTree
+    main -.-> localKeyboard
+    localTree -.-> localData
+    localTree -.-> localKeyboard
+  end
+  cli <-->|TCP: oggetti Java, comandi 0-3| session
+  database -->|JDBC / Connector-J| mysql[("MySQL / MapDB")]
+  model <-->|salva / carica| serverFiles[("Archivi .dmp del server")]
+  datFiles[("Dataset .dat")] --> localData
+  localTree <-->|salva / carica| localFiles[("Archivi .dmp standalone")]

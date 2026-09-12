@@ -1,0 +1,93 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{stile}[2026/09/12 Documentazione MAP]
+
+\RequirePackage{iftex}
+\ifPDFTeX
+  \RequirePackage[utf8]{inputenc}
+\fi
+\RequirePackage[T1]{fontenc}
+\RequirePackage[italian]{babel}
+\RequirePackage{lmodern}
+\RequirePackage[a4paper,top=23mm,bottom=24mm,left=23mm,right=23mm,headheight=15pt]{geometry}
+\RequirePackage{xcolor}
+\RequirePackage{microtype}
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{enumitem}
+\RequirePackage{listings}
+\RequirePackage{fancyhdr}
+\RequirePackage{hyperref}
+
+\definecolor{MAPblue}{HTML}{243C58}
+\definecolor{MAPmuted}{HTML}{56616F}
+\definecolor{MAPpaper}{HTML}{F3F5F7}
+\definecolor{MAPline}{HTML}{D8DFE7}
+\definecolor{MAPinput}{HTML}{155FA0}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=MAPblue,
+  urlcolor=MAPblue,
+  pdfauthor={Davide Fornelli, Francesco Cavaliere, Nicola Cialdella},
+  pdfsubject={Progetto di Metodi avanzati di programmazione, A.A. 2025/2026},
+  pdfcreator={LaTeX},
+  bookmarksnumbered=false
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\setlength{\emergencystretch}{2em}
+\linespread{1.05}
+\setlist[itemize]{leftmargin=1.4em,itemsep=0.25em,topsep=0.25em}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=0.4em,topsep=0.35em}
+\renewcommand{\arraystretch}{1.2}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{MAPmuted}Progetto MAP 2026}
+\fancyhead[R]{\small\sffamily\color{MAPmuted}\MAPdocument}
+\fancyfoot[L]{\footnotesize\sffamily\color{MAPmuted}Metodi avanzati di programmazione}
+\fancyfoot[R]{\small\sffamily\color{MAPmuted}\thepage}
+
+\newcommand{\MAPdocument}{}
+\newcommand{\documentotitolo}[2]{%
+  \renewcommand{\MAPdocument}{#1}%
+  \hypersetup{pdftitle={#1 - Alberi di regressione}}%
+  {\sffamily\small\color{MAPmuted}METODI AVANZATI DI PROGRAMMAZIONE\par}
+  \vspace{0.35em}
+  {\sffamily\bfseries\fontsize{27}{32}\selectfont\color{MAPblue}#1\par}
+  \vspace{0.3em}
+  {\sffamily\large #2\par}
+  \vspace{0.65em}
+  {\small Anno accademico 2025/2026\par}
+  \vspace{0.5em}
+  {\small\textbf{Gruppo di lavoro}\par
+   Davide Fornelli\enspace\textbullet\enspace Francesco Cavaliere\enspace\textbullet\enspace Nicola Cialdella\par}
+  \vspace{0.8em}
+  {\color{MAPline}\hrule height 0.7pt}
+  \vspace{0.65em}
+}
+
+\lstdefinestyle{MAPterminal}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{MAPpaper},
+  frame=single,
+  rulecolor=\color{MAPline},
+  framerule=0.4pt,
+  framesep=7pt,
+  xleftmargin=7pt,
+  xrightmargin=7pt,
+  aboveskip=0.7em,
+  belowskip=0.6em,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  breaklines=true,
+  breakatwhitespace=false,
+  upquote=true,
+  escapeinside={(*@}{@*)}
+}
+\lstset{style=MAPterminal}
+\newcommand{\didascalia}[1]{{\footnotesize\sffamily\color{MAPmuted}#1\par}\vspace{0.3em}}
+\newcommand{\inpututente}[1]{\textcolor{MAPinput}{\textbf{#1}}}

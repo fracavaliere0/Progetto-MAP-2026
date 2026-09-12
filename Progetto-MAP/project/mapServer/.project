@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>mapServer</name>
+	<comment>Server TCP MAP con driver JDBC in distribution/server.</comment>
+	<projects/>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments/>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>mysql-connector-java-8.0.17.jar</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/distribution/server/mysql-connector-java-8.0.17.jar</locationURI>
+		</link>
+	</linkedResources>
+</projectDescription>

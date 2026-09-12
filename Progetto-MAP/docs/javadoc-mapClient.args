@@ -1,0 +1,12 @@
+-encoding UTF-8
+-docencoding UTF-8
+-charset UTF-8
+-source 8
+-protected
+-Xdoclint:all
+-notimestamp
+-d docs/javadoc/mapClient
+-windowtitle "mapClient - API"
+-doctitle "mapClient - API"
+-sourcepath project/mapClient/src
+-subpackages map7Client:utility

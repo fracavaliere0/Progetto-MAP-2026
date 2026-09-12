@@ -1,0 +1,17 @@
+@schema 2
+@desc first A,B
+@desc second u,v
+@target y
+@data 12
+A,u,0
+A,u,0
+A,u,0
+A,v,10
+A,v,10
+A,v,10
+B,u,20
+B,u,20
+B,u,20
+B,v,30
+B,v,30
+B,v,30

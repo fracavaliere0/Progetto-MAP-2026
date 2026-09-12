@@ -1,0 +1,13 @@
+-encoding UTF-8
+-docencoding UTF-8
+-charset UTF-8
+-source 8
+-protected
+-Xdoclint:all
+-notimestamp
+-d docs/javadoc/mapServer
+-windowtitle "mapServer - API"
+-doctitle "mapServer - API"
+-classpath distribution/server/mysql-connector-java-8.0.17.jar
+-sourcepath project/mapServer/src
+-subpackages Server:data:database:tree
