@@ -47,19 +47,20 @@ errori o test saltati; i programmi autonomi non si sommano al conteggio JUnit.
 
 \subsection*{Riproducibilità e ambito dei risultati}
 
-Dalla cartella principale si possono rieseguire le suite della base e i tre
-programmi autonomi della GUI con:
+Dalla cartella principale si possono rieseguire le suite della base con:
 
 \begin{lstlisting}
-mvn -f tests/server/pom.xml verify
-mvn -f tests/client/pom.xml verify
-bash estensioni/gui/build-gui.sh --check
+mvn -f tests/pom.xml verify
 \end{lstlisting}
 
-Le classi JUnit in \path{tests/estensioni/gui/} non sono collegate a Maven
-né eseguite da \texttt{-{}-check}. Per avviarle con \texttt{JUnitCore}, seguire
-\path{docs/README.md}. Senza display i nove test della finestra vengono
-saltati per assunzione JUnit.
+Le classi JUnit in \path{tests/estensioni/gui/} non sono collegate a Maven:
+vanno eseguite separatamente con JUnit 4, includendo la base locale e le classi
+della GUI nel classpath. Senza display i nove test della finestra vengono
+saltati per assunzione JUnit. Anche i tre programmi autonomi della GUI vanno
+eseguiti separatamente, con asserzioni abilitate (\texttt{-ea});
+\texttt{DatabaseTreeIntegrationTest} richiede inoltre, come argomenti,
+la directory delle classi server con il driver JDBC simulato e la directory
+\path{tests/server/fixtures/}.
 
 Non è stata misurata una copertura JaCoCo della GUI: le percentuali della
 base non si estendono a questo package. Le prove remote non certificano una

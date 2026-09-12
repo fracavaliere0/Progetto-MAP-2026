@@ -1,0 +1,24 @@
+# Output locali di compilazione e test
+bin/
+target/
+build/
+out/
+dist/
+*.class
+
+# File temporanei e impostazioni del workspace principale
+/.settings/
+*.tmp
+*.bak
+*~
+
+# Le immagini del progetto sono mantenute solo in PNG
+*.[sS][vV][gG]
+*.[sS][vV][gG][zZ]
+*.[jJ][pP][gG]
+*.[jJ][pP][eE][gG]
+*.[gG][iI][fF]
+*.[wW][eE][bB][pP]
+*.[bB][mM][pP]
+*.[iI][cC][oO]
+*.[aA][vV][iI][fF]

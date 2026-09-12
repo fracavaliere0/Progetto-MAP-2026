@@ -165,17 +165,15 @@ socket termina la sessione lato server.
         all'esposizione diretta su reti non affidabili.
 \end{itemize}
 
-\subsection*{Compilazione e distribuzione}
+\subsection*{Distribuzione e avvio}
 
-Dalla cartella principale, con Bash e un JDK installati:
+Dalla cartella principale, con Java 8 o successivo installato:
 
 \begin{lstlisting}
-bash estensioni/gui/build-gui.sh
 java -jar distribution/gui/mapGUI.jar
 \end{lstlisting}
 
-Lo script compila la base locale \texttt{src} e le classi della GUI escludendo i test;
-usa \texttt{-{}-release 8}, oppure \texttt{-source 8 -target 8} sui JDK meno
-recenti. La classe principale indicata nel manifest è
-\texttt{estensioni.gui.RegressionTreeGUI}. Il JAR non richiede librerie grafiche esterne né il driver
+Il JAR include la base locale \texttt{src} e le classi della GUI, senza i test.
+La classe principale è \texttt{estensioni.gui.RegressionTreeGUI}.
+Il JAR non richiede librerie grafiche esterne né il driver
 JDBC sul client: Connector/J rimane nella distribuzione del server.

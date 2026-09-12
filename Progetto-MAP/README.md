@@ -87,26 +87,11 @@ JDBC simulato e non modificano MySQL. I report sono generati nelle directory
 - [Report tecnico](docs/ReportTecnico.pdf)
 - [Manuale utente](docs/GuidaUtente.pdf)
 
-I sorgenti LaTeX sono in `docs/latex/`. Con Tectonic installato, per rigenerare
-entrambi i PDF senza lasciare file ausiliari nel progetto:
-
-```sh
-cd docs/latex
-tectonic --outdir .. ReportTecnico.tex
-tectonic --outdir .. GuidaUtente.tex
-```
+I sorgenti LaTeX sono in `docs/latex/`.
 
 Aprire [docs/index.html](docs/index.html) per consultare i Javadoc separati e i
-[14 diagrammi UML](docs/uml/index.html), disponibili in Mermaid, PNG e SVG.
+[14 diagrammi UML](docs/uml/index.html), disponibili come sorgenti Mermaid e immagini PNG.
 I diagrammi rappresentano le applicazioni, non i test.
 
-Per rigenerare i Javadoc, dalla radice:
-
-```sh
-javadoc @docs/javadoc-mapClient.args
-javadoc @docs/javadoc-mapServer.args
-javadoc @docs/javadoc-src.args
-```
-
-In PowerShell racchiudere gli argomenti `@docs/...` fra apici. I file `.mmd`
-sono modificabili con Mermaid; le immagini corrispondenti si trovano in `img/`.
+I file `.mmd` sono modificabili con Mermaid; le immagini PNG corrispondenti
+si trovano in `img/`.

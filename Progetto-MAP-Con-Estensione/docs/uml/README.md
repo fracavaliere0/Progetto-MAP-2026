@@ -1,9 +1,9 @@
 # Diagrammi UML — Progetto MAP con estensione
 
 Aprire [index.html](index.html) nel browser: la galleria contiene **16 diagrammi**
-con sorgenti Mermaid (`.mmd`), immagini vettoriali SVG e immagini PNG. Le immagini
-sono già generate e si consultano offline, senza Node.js o servizi esterni.
-Per leggere le firme complete, aprire gli SVG e usare lo zoom del browser.
+con sorgenti Mermaid (`.mmd`) e immagini PNG. Le immagini
+si consultano offline, senza Node.js o servizi esterni.
+Per leggere le firme complete, aprire i PNG nelle dimensioni originali.
 
 ## Riferimenti e ambito
 
@@ -48,8 +48,7 @@ I percorsi nella tabella sono relativi a questa cartella.
 | `src/classi/` | `MainTest`, `data`, `tree`, `utility` locali (4 diagrammi) |
 | `src/package/` | Package dell'applicazione locale `src` (1 diagramma) |
 
-Ogni `.mmd` ha i corrispondenti `img/<nome>.svg` e `img/<nome>.png` nella propria
-cartella. I commenti `%% Sorgente:` collegano i diagrammi ai file Java,
+Ogni `.mmd` ha il corrispondente `img/<nome>.png` nella propria cartella. I commenti `%% Sorgente:` collegano i diagrammi ai file Java,
 con percorsi relativi alla radice del progetto.
 
 ## Lettura e scelte di modellazione
@@ -95,47 +94,8 @@ con percorsi relativi alla radice del progetto.
   di training e la gestione degli errori sono descritti nel
   [report tecnico](../report_tecnico.pdf), senza aggiungere diagrammi di sequenza.
 
-## Rigenerazione delle immagini
+## Aggiornamento dei diagrammi
 
-Servono Bash, Node.js compatibile con Mermaid CLI e Chrome/Chromium utilizzabile
-in modalità headless. La versione usata è **Mermaid CLI 11.15.0**.
-La generazione delle immagini non richiede Java, Maven, LaTeX o MySQL.
-
-Per installare lo strumento in una cartella esterna al progetto:
-
-```bash
-npm install --prefix "$HOME/.local/share/map-uml-tools" \
-    @mermaid-js/mermaid-cli@11.15.0
-```
-
-Dalla radice del progetto:
-
-```bash
-MERMAID_CLI="$HOME/.local/share/map-uml-tools/node_modules/.bin/mmdc" \
-    bash docs/build-uml.sh
-```
-
-Se `mmdc` è già nel `PATH`, basta `bash docs/build-uml.sh`.
-Lo script compila tutti i `.mmd`, applica `mermaid-config.json`, produce SVG e
-PNG a scala 2 e pubblica le immagini solo dopo il rendering riuscito di tutti
-i diagrammi. I file temporanei sono rimossi anche in caso di errore.
-
-Per usare un Chromium già installato, evitare il download del browser durante
-l’installazione con `PUPPETEER_SKIP_DOWNLOAD=1` e indicare l’eseguibile durante
-il rendering:
-
-```bash
-PUPPETEER_EXECUTABLE_PATH="$(command -v chromium)" \
-MERMAID_CLI="$HOME/.local/share/map-uml-tools/node_modules/.bin/mmdc" \
-    bash docs/build-uml.sh
-```
-
-Per una configurazione Puppeteer personalizzata usare
-`PUPPETEER_CONFIG=/percorso/puppeteer.json`; lo script la passa alla CLI.
-Non viene disabilitata automaticamente la sandbox del browser.
-
-I `.mmd` sono mantenuti come documentazione del codice: lo script rigenera le
-**immagini**, non deduce automaticamente relazioni UML dai Java e non aggiorna
-l’indice HTML. Se si aggiunge o rinomina un diagramma, aggiornare anche
-`index.html` e questa guida. I PDF LaTeX restano documenti separati: il comando
-non modifica `report_tecnico.pdf` o `manuale_utente.pdf`.
+I `.mmd` sono mantenuti come documentazione del codice. Quando si modifica un
+diagramma, aggiornare anche la corrispondente immagine PNG. Se si aggiunge o
+rinomina un diagramma, aggiornare anche `index.html` e questa guida.

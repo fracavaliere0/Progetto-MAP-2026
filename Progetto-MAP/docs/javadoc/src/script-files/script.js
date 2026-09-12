@@ -545,7 +545,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
             if (id) {
                 var template = document.createElement('template');
                 template.innerHTML =" <a href='#" + encodeURI(id) + "' class='anchor-link' aria-label='"
-                    + linkToSection + "'><img src='" + pathtoroot + "resource-files/link.svg' alt='"
+                    + linkToSection + "'><img src='" + pathtoroot + "resource-files/link.png' alt='"
                     + linkIcon + "' width='16' height='16'></a>";
                 hdr.append(...template.content.childNodes);
             }
