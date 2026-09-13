@@ -176,3 +176,4 @@ illustrate nel report tecnico.
 
 I sorgenti LaTeX sono in `docs/latex/`, incluse le sezioni del manuale dedicate
 alla GUI in `manuale-gui.tex`.
+
