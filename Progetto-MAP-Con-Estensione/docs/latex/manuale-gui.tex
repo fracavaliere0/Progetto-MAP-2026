@@ -8,36 +8,36 @@ predetti sono mostrati direttamente nel grafico.
 
 \subsection*{Avvio e primo training locale}
 
-Aprire un terminale nella \textbf{cartella principale del progetto} ed eseguire:
-
+Su Windows aprire la cartella \texttt{distribution} e fare doppio clic su
+\textbf{\texttt{avvia-gui.bat}}. In alternativa, dal Prompt dei comandi nella
+cartella principale del progetto:
 \begin{lstlisting}
-java -jar distribution/gui/mapGUI.jar
+distribution\avvia-gui.bat
 \end{lstlisting}
 
-Si apre la finestra \textbf{Progetto Map 2026}. All'inizio è selezionata
-l'origine \textbf{File locale}, la barra di stato indica \textbf{Pronto} e
-l'area centrale mostra \textbf{In attesa del training}.
+Lo script esegue \texttt{gui/mapGUI.jar} e imposta la radice del progetto come
+directory di lavoro, anche se richiamato da un'altra cartella. Lasciare aperta
+la console associata. Si apre \textbf{Progetto Map 2026}, con origine
+\textbf{File locale}, stato \textbf{Pronto} e area centrale
+\textbf{In attesa del training}.
 
 \begin{enumerate}
   \item Lasciare selezionato \textbf{File locale}.
   \item Nel campo \textbf{Training set} mantenere il percorso predefinito
         \path{distribution/src/prova.dat}. In alternativa premere
         \textbf{Scegli file} e selezionare un training set \texttt{.dat}.
-  \item Premere \textbf{Avvia training} e attendere il risultato. Non è
-        necessario avviare il server o installare MySQL per questa modalità.
+  \item Premere \textbf{Avvia training}. Questa modalità non richiede server né MySQL.
 \end{enumerate}
 
 \begin{center}
 \includegraphics[width=\textwidth]{immagini/gui-locale.png}
 \end{center}
-\didascalia{GUI dopo il training locale su prova.dat. L'aspetto dei controlli
-può variare con il sistema operativo; il tempo visualizzato dipende dalla macchina.}
+\didascalia{Training locale su prova.dat. L'aspetto dei controlli e il tempo dipendono dal sistema.}
 
-Per questo file il risultato comprende \textbf{15 esempi}, \textbf{2 attributi},
-\textbf{5 nodi}, \textbf{3 foglie} e \textbf{profondità 2}. Il pulsante
-\textbf{Dettagli} diventa disponibile. Se il percorso predefinito non viene
-trovato, avviare il programma dalla cartella principale oppure scegliere il
-file tramite il selettore, che inserisce il percorso assoluto.
+Il risultato comprende \textbf{15 esempi}, \textbf{2 attributi},
+\textbf{5 nodi}, \textbf{3 foglie} e \textbf{profondità 2}; si abilita
+\textbf{Dettagli}. Per un file spostato usare \textbf{Scegli file},
+che inserisce il percorso assoluto.
 
 \clearpage
 \subsection*{Lettura dell'albero e dei risultati}
@@ -103,10 +103,11 @@ precedente; il semplice cambio dell'origine non avvia alcuna elaborazione.
 \clearpage
 \subsection*{Training da database}
 
-Questa modalità richiede MySQL configurato e il \textbf{server MAP già
-avviato}, come descritto all'inizio del manuale. La GUI comunica con il server
-MAP: non si collega direttamente alla porta MySQL e non richiede credenziali
-del database nella finestra.
+Preparare MySQL e \textbf{avviare prima il server MAP} con lo script
+\texttt{avvia-server.bat} su Windows, oppure \texttt{avvia-server.sh} su
+Linux/macOS. Avviare quindi la GUI con il suo script, che non accetta argomenti:
+host e porta si impostano nella finestra. La GUI comunica con il server MAP,
+non direttamente con MySQL.
 
 \begin{enumerate}
   \item Selezionare \textbf{Database} in \textbf{Origine dati}.
@@ -154,11 +155,10 @@ utilizza una soglia:
 \end{tabularx}
 \end{center}
 
-Il server salva automaticamente \texttt{provaC.dmp} nella propria directory
-di lavoro, sovrascrivendo l'eventuale archivio omonimo. La GUI non salva una
-copia sul computer del client e non permette di aprire direttamente gli
-archivi: per riutilizzarli senza apprendere di nuovo, usare l'opzione
-\textbf{2} della CLI.
+Avviato con gli script, il server salva automaticamente \texttt{provaC.dmp}
+in \texttt{distribution/server}, sovrascrivendo l'eventuale archivio omonimo.
+La GUI non salva una copia sul computer del client e non apre archivi:
+per riutilizzarli senza apprendere di nuovo, usare l'opzione \textbf{2} della CLI.
 
 \clearpage
 \subsection*{Formato dei training set locali}
@@ -207,14 +207,16 @@ minuscole dei valori discreti e non aggiungere righe vuote o commenti.
 Nelle dichiarazioni usare un singolo spazio fra i campi, come nell'esempio.
 Il numero di righe e quello delle colonne devono coincidere con lo schema.
 
-Sono disponibili anche \path{distribution/src/provaC.dat}, con un
-attributo continuo, e \path{distribution/src/servo.dat}, più ampio.
-I file non vengono modificati dal training. La modalità locale conserva il
-risultato soltanto in memoria e non crea un archivio \texttt{.dmp}.
+Sono inclusi anche \texttt{provaC.dat}, con un attributo continuo, e
+\texttt{servo.dat}, più ampio, nella cartella \path{distribution/src}.
+Il training non modifica i file. La GUI locale conserva il risultato
+soltanto in memoria e non crea archivi \texttt{.dmp}.
 
 \subsection*{Chiusura}
 
-Chiudere la finestra per terminare la GUI. Il risultato locale non viene
-salvato automaticamente; se serve nuovamente, ripetere il training sul file.
+Chiudere la finestra grafica per terminare la GUI; su Windows premere poi un
+tasto nella console dello script. Il risultato locale non viene salvato:
+se serve nuovamente, ripetere il training sul file.
 Il server MAP resta attivo anche dopo la chiusura della GUI o della CLI:
-per arrestarlo, premere \textbf{Ctrl+C} nel suo terminale.
+per arrestarlo, premere \textbf{Ctrl+C} nel suo terminale e confermare
+l'eventuale richiesta di terminare il processo batch.

@@ -2,50 +2,106 @@
 \usepackage{stile}
 
 \begin{document}
-\documentotitolo{Manuale utente}{Alberi di regressione --- client da console}
+\documentotitolo{Manuale utente}{Alberi di regressione --- esecuzione dei JAR}
 
-Il manuale descrive i passaggi necessari per avviare il server e utilizzare il
-client da console: apprendere un albero dai dati del database, caricare un albero
-salvato e ottenere una predizione.
+Il manuale descrive l'avvio dei JAR tramite script, soprattutto su Windows,
+e l'uso del client per apprendere alberi, caricare archivi e ottenere predizioni.
+È disponibile anche un'applicazione locale su file, senza MySQL né server.
 
 \section*{Prerequisiti}
 
-Per eseguire i JAR distribuiti è necessario avere Java 8 o una versione
-successiva. MySQL deve essere installato e in esecuzione sulla stessa macchina
-del server dell'applicazione.
+Estrarre tutto il progetto in una cartella scrivibile, per esempio Documenti.
+Non avviare i file dallo ZIP e mantenere la struttura di \texttt{distribution}.
 
-Prima del primo utilizzo occorre creare il database e popolarne le tabelle
-eseguendo, con un account amministrativo di MySQL, lo script:
+\subsection*{Java su Windows}
 
+Installare \textbf{Java 8 o successivo}, se non è già disponibile.
+Gli script eseguono i JAR pronti: \textbf{non compilano il progetto e non
+richiedono Eclipse o Maven}. Cercano Java prima in \texttt{JAVA\_HOME} e,
+se questa variabile non è impostata, nel \texttt{PATH}.
+
+Per configurare Java, cercare nel menu Start \textbf{Modifica le variabili di
+ambiente per l'account}. Creare la variabile utente \texttt{JAVA\_HOME} con
+il percorso della cartella del JDK, \textbf{senza virgolette e senza}
+\texttt{\textbackslash bin}. Aprire un nuovo \textbf{Prompt dei comandi} e verificare:
+\begin{lstlisting}
+"%JAVA_HOME%\bin\java.exe" -version
+\end{lstlisting}
+
+In alternativa, senza \texttt{JAVA\_HOME}, deve funzionare \texttt{java -version}.
+Se \texttt{JAVA\_HOME} è errata, correggerla oppure rimuoverla per usare il
+\texttt{PATH}. Gli script non usano la configurazione Java di Eclipse.
+
+\subsection*{MySQL: solo per l'apprendimento client/server}
+
+MySQL deve essere installato e in esecuzione sulla stessa macchina del server,
+sulla porta \texttt{3306}. Prima del primo utilizzo, aprire in
+\textbf{MySQL Workbench} una connessione locale con un account amministrativo;
+con \textbf{File > Open SQL Script} aprire ed eseguire l'intero file:
 \begin{lstlisting}
 distribution/server/sql_file/map6_setup.sql
 \end{lstlisting}
 
-Lo script prepara il database \texttt{MapDB} e le tabelle di esempio
-\texttt{provaC} e \texttt{servo}. È destinato alla prima installazione, quando
-il database e l'utente previsti non sono già presenti.
+Il file crea \texttt{MapDB}, le tabelle \texttt{provaC} e \texttt{servo} e
+l'utente \texttt{MapUser} con password \texttt{map}. Verificare che termini
+senza errori. È per la \textbf{prima installazione}: non rieseguirlo su un
+database già configurato senza controllarne il contenuto.
+Gli script di avvio non installano né configurano MySQL.
 
-Il client deve poter raggiungere il server sulla rete. Se vengono eseguiti sulla
-stessa macchina si può utilizzare l'indirizzo \texttt{localhost}. Il server
-va sempre avviato prima del client.
+\clearpage
+\section*{Avvio su Windows}
 
-\section*{Server}
+Aprire la cartella \texttt{distribution} in Esplora file. I tre script sono:
+\begin{itemize}
+  \item \texttt{avvia-server.bat}: esegue \texttt{server/server.jar};
+  \item \texttt{avvia-client.bat}: esegue \texttt{client/client\_base.jar};
+  \item \texttt{avvia-locale.bat}: esegue \texttt{src/src.jar}, senza server.
+\end{itemize}
 
-Aprire un terminale nella cartella principale del progetto ed eseguire:
+\subsection*{Server}
 
+Dopo aver preparato MySQL, fare doppio clic su \texttt{avvia-server.bat}.
+Senza argomenti viene utilizzata la porta \textbf{8080}.
+Lasciare aperta la finestra e avviare il client come descritto nella pagina
+seguente. Non fare doppio clic direttamente sul JAR: l'applicazione richiede
+una console e gli script impostano la cartella di lavoro corretta.
+
+Lo script stampa un messaggio prima di eseguire Java; non è una verifica
+che il servizio sia già pronto. Il server non stampa una conferma quando
+inizia ad attendere connessioni: se il processo rimane attivo senza altri
+messaggi, si può provare a collegare il client. Se invece compare un errore
+o il messaggio \texttt{Esecuzione terminata}, il server non è in ascolto.
+
+Gli alberi appresi vengono salvati in \texttt{distribution/server}, anche
+se lo script è stato richiamato da un'altra cartella. Il driver
+\texttt{mysql-connector-java-8.0.17.jar} deve rimanere accanto a
+\texttt{server.jar}.
+
+\subsection*{Porta e indirizzo personalizzati}
+
+Il doppio clic usa \texttt{localhost:8080}, adatto a server e client sullo
+stesso computer. Per cambiare porta, aprire due Prompt dei comandi nella
+cartella principale del progetto ed eseguire, prima nel primo e poi nel secondo:
 \begin{lstlisting}
-cd distribution/server
-java -jar server.jar 8080
+distribution\avvia-server.bat 9090
 \end{lstlisting}
-\didascalia{Avvio del server sulla porta 8080.}
+\begin{lstlisting}
+distribution\avvia-client.bat localhost 9090
+\end{lstlisting}
 
-Il terminale rimane occupato mentre il servizio attende le connessioni.
-Questa versione non stampa un messaggio di conferma dell'avvio: l'assenza di
-output non indica, da sola, un errore.
+Se il server è su un altro computer, sostituire \texttt{localhost} con il suo
+indirizzo IP e consentire la porta TCP del server nel firewall, sulla rete
+utilizzata. La porta deve coincidere nei due script; usare un numero tra
+\texttt{1} e \texttt{65535}. Non confondere questa porta con la \texttt{3306}
+di MySQL. In PowerShell anteporre \texttt{.\textbackslash} ai percorsi degli
+script, per esempio \texttt{.\textbackslash distribution\textbackslash avvia-server.bat}.
 
-Lasciare aperto il terminale del server durante l'utilizzo del client. Con i
-comandi indicati, gli alberi appresi vengono salvati nella cartella
-\texttt{distribution/server}, che è la directory di lavoro del servizio.
+\subsection*{Arresto}
+
+Per arrestare il server premere \textbf{Ctrl+C} nella sua finestra e confermare
+l'eventuale richiesta di terminare il processo batch. Gli script Windows
+attendono la pressione di un tasto al termine dell'applicazione, anche in caso
+di errore, per permettere di leggere i messaggi.
 
 \clearpage
 \section*{CLI}
@@ -57,16 +113,17 @@ dell'utente.
 
 \subsection*{Client}
 
-Con il server già avviato, aprire un \textbf{secondo terminale} nella cartella
-principale del progetto ed eseguire:
+Con il server già avviato sulla porta 8080, fare doppio clic su
+\texttt{distribution/avvia-client.bat}. Si apre una \textbf{seconda finestra},
+collegata a \texttt{localhost:8080}. In alternativa, dal Prompt dei comandi
+nella cartella principale del progetto:
 
 \begin{lstlisting}
-java -jar distribution/client/client_base.jar localhost 8080
+distribution\avvia-client.bat
 \end{lstlisting}
 
-Se il server si trova su un altro computer, sostituire \texttt{localhost} con
-il suo indirizzo IP. La porta deve coincidere con quella usata per avviare il
-server.
+Per un indirizzo o una porta diversi, passare gli argomenti allo script come
+indicato nella sezione precedente. Il server va sempre avviato prima del client.
 
 Una volta stabilita la connessione, il client presenta il menu:
 
@@ -163,7 +220,7 @@ prodotto dal server, per esempio \texttt{provaC.dmp} dopo l'apprendimento
 descritto nelle pagine precedenti.
 
 Il file deve trovarsi nella directory di lavoro del server. Se il servizio è
-stato avviato con i comandi di questo manuale, tale directory è
+stato avviato con gli script di questo manuale, tale directory è
 \texttt{distribution/server}. L'archivio non va cercato nella cartella del
 client.
 
@@ -202,5 +259,113 @@ Would you repeat ? (y/n)
 
 Anche dopo il caricamento è possibile rispondere \textbf{y} per ripetere la
 predizione oppure \textbf{n} per terminare.
+
+\clearpage
+\section*{Applicazione locale: prova senza MySQL}
+
+Per usare i dataset su file, senza server né client, aprire la cartella
+\texttt{distribution} e fare doppio clic su \texttt{avvia-locale.bat}.
+Dal Prompt dei comandi nella cartella principale del progetto:
+\begin{lstlisting}
+distribution\avvia-locale.bat
+\end{lstlisting}
+
+Lo script esegue \texttt{src/src.jar} con directory di lavoro
+\texttt{distribution/src}, dove sono già presenti \texttt{prova.dat},
+\texttt{provaC.dat} e \texttt{servo.dat}.
+
+\begin{enumerate}
+  \item Scegliere \textbf{1} per apprendere un albero e, alla richiesta
+        \texttt{File name:}, digitare per esempio \texttt{provaC},
+        \textbf{senza} \texttt{.dat}.
+  \item Il programma legge il dataset, salva \texttt{provaC.dmp} nella stessa
+        cartella e stampa le regole dell'albero.
+  \item Per la predizione scegliere gli indici numerici dei rami proposti.
+        Il valore predetto viene stampato a video; rispondere \textbf{y} per
+        ripetere oppure \textbf{n} per terminare.
+  \item A un avvio successivo, scegliere \textbf{2} e digitare
+        \texttt{provaC}, senza \texttt{.dmp}, per caricare l'albero salvato.
+\end{enumerate}
+
+Gli archivi del server e dell'applicazione locale \textbf{non sono
+intercambiabili}: mantenerli nelle rispettive cartelle. Anche i messaggi della
+console locale possono differire da quelli del client illustrati in precedenza.
+
+\section*{Eclipse e JAR distribuiti}
+
+Per provare i JAR è sufficiente usare gli script da Esplora file o dal terminale,
+anche quando Eclipse è installato. Non occorre importare i progetti.
+
+Solo per consultare o modificare i sorgenti, in Eclipse scegliere
+\textbf{File > Import > General > Existing Projects into Workspace}, selezionare
+\texttt{project} e abilitare \textbf{Search for nested projects}. Importare
+\texttt{mapClient}, \texttt{mapServer} e \texttt{src} senza selezionare
+\textbf{Copy projects into workspace}, così da mantenere il collegamento al
+driver JDBC in \texttt{distribution/server}.
+
+Per compilare i sorgenti serve un JDK compatibile con la versione dell'IDE.
+In \textbf{Window > Preferences > Java > Installed JREs} aggiungere il JDK;
+in \textbf{Java > Installed JREs > Execution Environments} associarlo a
+\texttt{JavaSE-1.8}. Questa impostazione riguarda Eclipse, non
+\texttt{JAVA\_HOME} o il \texttt{PATH} usati dagli script.
+
+\textbf{Run As > Java Application} esegue le classi compilate da Eclipse,
+non i JAR distribuiti. Dopo una modifica ai sorgenti, gli script continuano a
+eseguire i vecchi JAR finché questi non vengono esportati nuovamente.
+
+\clearpage
+\section*{Linux e macOS}
+
+Sono disponibili gli equivalenti \texttt{.sh}, con gli stessi valori predefiniti,
+argomenti e directory di lavoro. Serve Java 8 o successivo disponibile tramite
+\texttt{JAVA\_HOME} oppure \texttt{PATH}; per apprendere dal database occorre
+preparare MySQL come descritto nei prerequisiti.
+
+Dalla cartella principale del progetto, avviare il server:
+\begin{lstlisting}
+sh distribution/avvia-server.sh
+\end{lstlisting}
+Poi, in un secondo terminale, avviare il client:
+\begin{lstlisting}
+sh distribution/avvia-client.sh
+\end{lstlisting}
+Per usare una porta diversa o un altro indirizzo:
+\begin{lstlisting}
+sh distribution/avvia-server.sh 9090
+sh distribution/avvia-client.sh localhost 9090
+\end{lstlisting}
+I due comandi vanno eseguiti in terminali separati. Per la sola applicazione locale:
+\begin{lstlisting}
+sh distribution/avvia-locale.sh
+\end{lstlisting}
+Gli script \texttt{.sh} non attendono un tasto al termine. Per interrompere
+l'esecuzione utilizzare \textbf{Ctrl+C}.
+
+\section*{Problemi comuni}
+
+\begin{description}[style=nextline,leftmargin=0pt]
+  \item[Java non trovato o JAVA\_HOME non valida.]
+    Verificare i passaggi dei prerequisiti e riaprire il terminale dopo aver
+    modificato le variabili di ambiente. Un errore \texttt{UnsupportedClassVersionError}
+    indica che occorre una versione di Java più recente, almeno Java 8 per i JAR forniti.
+  \item[JAR o driver mancante.]
+    Estrarre di nuovo l'intera distribuzione mantenendo cartelle e nomi originali;
+    non spostare gli script separatamente dai JAR.
+  \item[Connection refused oppure errore di connessione del client.]
+    Verificare che il server sia ancora attivo e che indirizzo e porta coincidano.
+    Per collegamenti tra computer verificare anche rete e firewall.
+  \item[Address already in use nel server.]
+    La porta è occupata: chiudere l'altra istanza del server oppure scegliere
+    un'altra porta, passandola anche allo script del client.
+  \item[Errore di database o tabella non trovata.]
+    Controllare che MySQL sia attivo su \texttt{localhost:3306}, che lo script SQL
+    sia stato completato e che l'utente \texttt{MapUser} possa accedere a
+    \texttt{MapDB}. Le tabelle di esempio sono \texttt{provaC} e \texttt{servo}.
+  \item[Archivio o dataset non trovato; salvataggio non riuscito.]
+    Inserire i nomi senza estensione. Gli archivi del server sono in
+    \texttt{distribution/server}; dataset e archivi locali sono in
+    \texttt{distribution/src}. Per caricare un archivio occorre averlo prima
+    generato tramite apprendimento. Verificare che la cartella sia scrivibile.
+\end{description}
 
 \end{document}
