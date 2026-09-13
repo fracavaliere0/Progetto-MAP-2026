@@ -1,0 +1,88 @@
+---
+title: Package data - server
+---
+%% Sorgente: project/mapServer/src/data/Attribute.java
+%% Sorgente: project/mapServer/src/data/ContinuousAttribute.java
+%% Sorgente: project/mapServer/src/data/Data.java
+%% Sorgente: project/mapServer/src/data/DiscreteAttribute.java
+%% Sorgente: project/mapServer/src/data/TrainingDataException.java
+classDiagram
+  direction TB
+  namespace data {
+    class Attribute
+    class ContinuousAttribute
+    class Data
+    class DiscreteAttribute
+    class TrainingDataException
+  }
+
+  class Attribute {
+    <<abstract>>
+    -name: String
+    -index: int
+    +Attribute(in name: String, in index: int)
+    +getName() String
+    +getIndex() int
+    +toString() String
+  }
+
+  class ContinuousAttribute {
+    +ContinuousAttribute(in name: String, in index: int)
+  }
+
+  class Data {
+    -data: List~Example~
+    -numberOfExamples: int
+    -explanatorySet: List~Attribute~
+    -classAttribute: ContinuousAttribute
+    +Data(in tableName: String)
+    +getNumberOfExamples() int
+    +getNumberOfExplanatoryAttributes() int
+    +getClassValue(in exampleIndex: int) Double
+    +getExplanatoryValue(in exampleIndex: int, in attributeIndex: int) Object
+    +getExplanatoryAttribute(in index: int) Attribute
+    +getClassAttribute() ContinuousAttribute
+    +toString() String
+    +sort(in attribute: Attribute, in beginExampleIndex: int, in endExampleIndex: int)
+    -swap(in i: int, in j: int)
+    -partition(in attribute: DiscreteAttribute, in inf: int, in sup: int) int
+    -partition(in attribute: ContinuousAttribute, in inf: int, in sup: int) int
+    -quicksort(in attribute: Attribute, in inf: int, in sup: int)
+  }
+
+  class DiscreteAttribute {
+    -values: Set~String~
+    +DiscreteAttribute(in name: String, in index: int, in values: Set~String~)
+    +getNumberOfDistinctValues() int
+    +iterator() Iterator~String~
+  }
+
+  class TrainingDataException {
+    +TrainingDataException(in message: String)
+    +TrainingDataException(in cause: Exception)
+  }
+
+  class Serializable {
+    <<interface>>
+  }
+  class IterableString["Iterable&lt;String&gt;"] {
+    <<interface>>
+  }
+  class Exception
+  class Example["database.Example"]
+  class DbAccess["database.DbAccess"]
+  class TableSchema["database.TableSchema"]
+  class TableData["database.TableData"]
+
+  ContinuousAttribute --|> Attribute
+  DiscreteAttribute --|> Attribute
+  Attribute ..|> Serializable
+  DiscreteAttribute ..|> IterableString
+  TrainingDataException --|> Exception
+  Data --> "0..*" Attribute : explanatorySet
+  Data --> "1" ContinuousAttribute : classAttribute
+  Data ..> TrainingDataException
+  Data --> "1..*" Example : data
+  Data ..> DbAccess
+  Data ..> TableSchema
+  Data ..> TableData

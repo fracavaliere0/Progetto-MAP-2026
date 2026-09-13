@@ -1,0 +1,19 @@
+---
+title: Diagramma dei package di project/mapClient/src
+---
+%% Sorgente: project/mapClient/src/map7Client/MainTest.java
+%% Sorgente: project/mapClient/src/utility/Keyboard.java
+flowchart TD
+  subgraph src["project/mapClient/src"]
+    direction LR
+    subgraph pkg0["map7Client"]
+      direction TB
+      pkg0c0["MainTest"]
+    end
+    subgraph pkg1["utility"]
+      direction TB
+      pkg1c0["Keyboard"]
+    end
+  end
+
+  pkg0 -.->|dipende da| pkg1

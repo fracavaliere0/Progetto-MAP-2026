@@ -1,0 +1,25 @@
+# Output di compilazione e test
+**/bin/
+**/target/
+*.class
+
+# Archivi creati durante l'esecuzione
+*.dmp
+
+# Cache e impostazioni locali
+**/node_modules/
+.metadata/
+.idea/
+.vscode/
+*.log
+.DS_Store
+Thumbs.db
+
+# File ausiliari LaTeX
+/docs/latex/*.aux
+/docs/latex/*.out
+/docs/latex/*.toc
+/docs/latex/*.fls
+/docs/latex/*.fdb_latexmk
+/docs/latex/*.synctex.gz
+/docs/latex/*.xdv

@@ -1,0 +1,74 @@
+---
+title: Diagramma dei package di project/mapServer/src
+---
+%% Sorgente: project/mapServer/src/Server/MultiServer.java
+%% Sorgente: project/mapServer/src/Server/Server.java
+%% Sorgente: project/mapServer/src/Server/ServerOneClient.java
+%% Sorgente: project/mapServer/src/Server/UnknownValueException.java
+%% Sorgente: project/mapServer/src/data/Attribute.java
+%% Sorgente: project/mapServer/src/data/ContinuousAttribute.java
+%% Sorgente: project/mapServer/src/data/Data.java
+%% Sorgente: project/mapServer/src/data/DiscreteAttribute.java
+%% Sorgente: project/mapServer/src/data/TrainingDataException.java
+%% Sorgente: project/mapServer/src/database/Column.java
+%% Sorgente: project/mapServer/src/database/DatabaseConnectionException.java
+%% Sorgente: project/mapServer/src/database/DbAccess.java
+%% Sorgente: project/mapServer/src/database/EmptySetException.java
+%% Sorgente: project/mapServer/src/database/Example.java
+%% Sorgente: project/mapServer/src/database/TableData.java
+%% Sorgente: project/mapServer/src/database/TableSchema.java
+%% Sorgente: project/mapServer/src/tree/ContinuousNode.java
+%% Sorgente: project/mapServer/src/tree/DiscreteNode.java
+%% Sorgente: project/mapServer/src/tree/LeafNode.java
+%% Sorgente: project/mapServer/src/tree/Node.java
+%% Sorgente: project/mapServer/src/tree/RegressionTree.java
+%% Sorgente: project/mapServer/src/tree/SplitNode.java
+flowchart TD
+  subgraph src["project/mapServer/src"]
+    direction LR
+    subgraph pkg0["Server"]
+      direction TB
+      pkg0c0["MultiServer"]
+      pkg0c1["Server"]
+      pkg0c2["ServerOneClient"]
+      pkg0c3["UnknownValueException"]
+      pkg0c0 ~~~ pkg0c1 ~~~ pkg0c2 ~~~ pkg0c3
+    end
+    subgraph pkg1["data"]
+      direction TB
+      pkg1c0["Attribute"]
+      pkg1c1["ContinuousAttribute"]
+      pkg1c2["Data"]
+      pkg1c3["DiscreteAttribute"]
+      pkg1c4["TrainingDataException"]
+      pkg1c0 ~~~ pkg1c1 ~~~ pkg1c2 ~~~ pkg1c3 ~~~ pkg1c4
+    end
+    subgraph pkg2["database"]
+      direction TB
+      pkg2c0["Column"]
+      pkg2c1["DatabaseConnectionException"]
+      pkg2c2["DbAccess"]
+      pkg2c3["EmptySetException"]
+      pkg2c4["Example"]
+      pkg2c5["TableData"]
+      pkg2c6["TableData.QUERY_TYPE (enum interno)"]
+      pkg2c7["TableSchema"]
+      pkg2c0 ~~~ pkg2c1 ~~~ pkg2c2 ~~~ pkg2c3 ~~~ pkg2c4 ~~~ pkg2c5 ~~~ pkg2c6 ~~~ pkg2c7
+    end
+    subgraph pkg3["tree"]
+      direction TB
+      pkg3c0["ContinuousNode"]
+      pkg3c1["DiscreteNode"]
+      pkg3c2["LeafNode"]
+      pkg3c3["Node"]
+      pkg3c4["RegressionTree"]
+      pkg3c5["SplitNode"]
+      pkg3c6["SplitNode.SplitInfo (classe interna)"]
+      pkg3c0 ~~~ pkg3c1 ~~~ pkg3c2 ~~~ pkg3c3 ~~~ pkg3c4 ~~~ pkg3c5 ~~~ pkg3c6
+    end
+  end
+
+  pkg0 -.->|dipende da| pkg1
+  pkg0 -.->|dipende da| pkg3
+  pkg1 -.->|dipende da| pkg2
+  pkg3 -.->|dipende da| pkg1

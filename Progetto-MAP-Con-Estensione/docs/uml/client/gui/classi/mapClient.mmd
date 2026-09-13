@@ -1,0 +1,241 @@
+---
+title: Package estensioni.gui - classi della GUI
+---
+%% Un solo diagramma delle classi GUI.
+%% Sorgente: estensioni/gui/RegressionTreeGUI.java
+%% Sorgente: estensioni/gui/RegressionTreeCanvas.java
+%% Sorgente: estensioni/gui/VisualTree.java
+%% Sorgente: estensioni/gui/VisualNode.java
+%% Sorgente: estensioni/gui/RegressionTreeAccess.java
+%% Sorgente: estensioni/gui/DatabaseTreeClient.java
+%% Sorgente: estensioni/gui/DatabaseTreeSnapshot.java
+%% Sorgente: estensioni/gui/DatabaseTreeResult.java
+classDiagram
+  direction TB
+  namespace gui["estensioni.gui"] {
+    class RegressionTreeGUI
+    class RegressionTreeCanvas
+    class VisualTree
+    class VisualNode
+    class RegressionTreeAccess
+    class DatabaseTreeClient
+    class DatabaseTreeSnapshot
+    class DatabaseTreeResult
+  }
+
+  class RegressionTreeGUI {
+    <<final>>
+    -serialVersionUID: long$
+    ~PAPER: Color$
+    ~INK: Color$
+    ~MUTED: Color$
+    ~RED: Color$
+    -LABEL_FONT: Font$
+    -LOCAL_SOURCE: String$
+    -DATABASE_SOURCE: String$
+    -fileField: JTextField
+    -hostField: JTextField
+    -portField: JTextField
+    -tableField: JTextField
+    -localSourceButton: JRadioButton
+    -databaseSourceButton: JRadioButton
+    -sourceCards: JPanel
+    -detailsArea: JTextArea
+    -detailsButton: JButton
+    -statusLabel: JLabel
+    -zoomLabel: JLabel
+    -treeCanvas: RegressionTreeCanvas
+    -graphScroll: JScrollPane
+    +RegressionTreeGUI()
+    -createHeader() JPanel
+    -createControls() JPanel
+    -createLocalSourcePanel() JPanel
+    -createDatabaseSourcePanel() JPanel
+    -configureInputField(in field: JTextField)$
+    -inputLabel(in text: String, in field: JTextField) JLabel$
+    -styleSourceButton(in button: JRadioButton)$
+    -showSource(in source: String)
+    -createCenter() JPanel
+    -zoomBy(in amount: double)
+    -chooseFile()
+    -showDetails()
+    -train()
+    -trainFromLocalFile()
+    -trainFromDatabase()
+    -beginTraining(in message: String)
+    -showTrainingResult(in tree: VisualTree, in details: String)
+    -finishTraining()
+    -failTraining(in exception: Exception)
+    -statisticsForStatus(in tree: VisualTree) String$
+    -escapeHtml(in value: String) String$
+    -centerTree()
+    -showError(in message: String)
+    -styleButton(in button: JButton, in background: Color, in foreground: Color)$
+    +main(in args: String[])$
+  }
+
+  class RegressionTreeCanvas {
+    <<final>>
+    -serialVersionUID: long$
+    -PAPER: Color$
+    -INK: Color$
+    -MUTED: Color$
+    -RED: Color$
+    -NODE_WIDTH: int$
+    -NODE_HEIGHT: int$
+    -HORIZONTAL_GAP: int$
+    -LEVEL_GAP: int$
+    -MARGIN: int$
+    -tree: VisualTree
+    -scale: double
+    -baseWidth: int
+    -baseHeight: int
+    ~RegressionTreeCanvas()
+    ~setTree(in tree: VisualTree)
+    ~setScale(in scale: double)
+    ~hasTree() boolean
+    ~getScale() double
+    ~getRootCenterX() double
+    +getPreferredSize() Dimension
+    #paintComponent(in graphics: Graphics)
+    -layoutTree()
+    -measure(in node: VisualNode) int
+    -layout(in node: VisualNode, in left: int, in top: int)
+    -drawEdges(in g: Graphics2D, in node: VisualNode)
+    -drawBranch(in g: Graphics2D, in text: String, in centerX: int, in centerY: int)
+    -drawNodes(in g: Graphics2D, in node: VisualNode)
+    -drawNode(in g: Graphics2D, in node: VisualNode)
+    -drawCentered(in g: Graphics2D, in text: String, in x: int, in baseline: int)
+    -fit(in text: String, in metrics: FontMetrics, in maxWidth: int) String
+  }
+
+  class VisualTree {
+    <<final>>
+    -NUMBER_FORMAT: DecimalFormat$
+    -root: VisualNode
+    ~VisualTree(in root: VisualNode)
+    ~from(in tree: RegressionTree) VisualTree$
+    ~getRoot() VisualNode
+    ~getStatistics() String
+    ~getLevelCount() int
+    -createNode(in tree: RegressionTree, in branch: String, in access: RegressionTreeAccess) VisualNode$
+    -attributeName(in query: String) String$
+    -branchName(in query: String) String$
+    -comparatorIndex(in value: String) int$
+    -condition(in query: String) String$
+    -statistics() int[]
+    -collectStatistics(in node: VisualNode, in level: int, in values: int[])$
+  }
+
+  class VisualNode {
+    <<final>>
+    ~title: String
+    ~meta: String
+    ~branch: String
+    ~leaf: boolean
+    ~children: List~VisualNode~
+    ~subtreeWidth: int
+    ~x: int
+    ~y: int
+    ~VisualNode(in title: String, in meta: String, in branch: String, in leaf: boolean)
+  }
+
+  class RegressionTreeAccess {
+    <<final>>
+    -root: Field
+    -children: Field
+    ~RegressionTreeAccess()
+    ~rootOf(in tree: RegressionTree) Node
+    ~childrenOf(in tree: RegressionTree) RegressionTree[]
+    -read(in field: Field, in tree: RegressionTree) Object
+  }
+
+  class DatabaseTreeClient {
+    <<final>>
+    -OK: String$
+    -QUERY: String$
+    -LOAD_DATA: int$
+    -LEARN_TREE: int$
+    -PREDICT: int$
+    -TIMEOUT_MILLIS: int$
+    -MAX_NODES: int$
+    -NUMBER_FORMAT: DecimalFormat$
+    -socket: Socket
+    -output: ObjectOutputStream
+    -input: ObjectInputStream
+    -visitedNodes: int
+    ~DatabaseTreeClient(in host: String, in port: int)
+    ~train(in tableName: String) DatabaseTreeResult
+    -buildNode(in path: List~Integer~, in branch: String) VisualNode
+    -inspect(in path: List~Integer~) DatabaseTreeSnapshot
+    -prediction(in value: Object) double$
+    -requireOk(in operation: String)
+    -write(in value: Object)
+    -read() Object
+    -conditions(in query: String) List~String~$
+    -attributeName(in query: String) String$
+    -branchName(in query: String) String$
+    -condition(in query: String) String$
+    -comparatorIndex(in value: String) int$
+    -createDetails(in tableName: String, in root: VisualNode) String$
+    -appendDetails(in details: StringBuilder, in node: VisualNode, in indent: String)$
+    +close()
+  }
+
+  class DatabaseTreeSnapshot {
+    <<final>>
+    ~query: String
+    ~prediction: double
+    -DatabaseTreeSnapshot(in query: String, in prediction: double)
+    ~split(in query: String) DatabaseTreeSnapshot$
+    ~leaf(in prediction: double) DatabaseTreeSnapshot$
+  }
+
+  class DatabaseTreeResult {
+    <<final>>
+    ~tree: VisualTree
+    ~details: String
+    ~DatabaseTreeResult(in tree: VisualTree, in details: String)
+  }
+
+  class JFrame["javax.swing.JFrame"]
+  class JPanel["javax.swing.JPanel"]
+  class Closeable["java.io.Closeable"] {
+    <<interface>>
+  }
+  class Data["data.Data (src)"]
+  class RegressionTree["tree.RegressionTree (src)"]
+  class Node["tree.Node (src)"] {
+    <<abstract>>
+  }
+
+  RegressionTreeGUI --|> JFrame
+  RegressionTreeCanvas --|> JPanel
+  DatabaseTreeClient ..|> Closeable
+
+  RegressionTreeGUI "1" *-- "1" RegressionTreeCanvas : treeCanvas
+  RegressionTreeGUI ..> DatabaseTreeClient : apre sessione
+  RegressionTreeGUI ..> DatabaseTreeResult : legge risultato
+  RegressionTreeGUI ..> Data : training locale
+  RegressionTreeGUI ..> RegressionTree : apprende in locale
+  RegressionTreeGUI ..> VisualTree : converte e mostra
+
+  RegressionTreeCanvas --> "0..1" VisualTree : tree (transient)
+  RegressionTreeCanvas ..> VisualNode : dispone e disegna
+  RegressionTreeCanvas ..> RegressionTreeGUI : colori condivisi
+  VisualTree "0..1" *-- "1" VisualNode : root
+  VisualNode "0..1" *-- "0..*" VisualNode : children
+  VisualTree ..> RegressionTree : from
+  VisualTree ..> RegressionTreeAccess : crea adattatore
+  RegressionTreeAccess ..> RegressionTree : legge root e childTree
+  RegressionTreeAccess ..> Node : restituisce radice
+
+  DatabaseTreeClient ..> DatabaseTreeSnapshot : inspect
+  DatabaseTreeClient ..> DatabaseTreeResult : crea e restituisce
+  DatabaseTreeClient ..> VisualNode : buildNode
+  DatabaseTreeClient ..> VisualTree : crea
+  DatabaseTreeResult --> "1" VisualTree : tree
+
+  note for RegressionTreeGUI "Solo RegressionTreeGUI è pubblica.<br/>Le altre sette classi GUI sono package-private."
+  note for RegressionTreeAccess "Accesso riflessivo in sola lettura alla base locale.<br/>childrenOf restituisce una copia dell’array."
+  note for DatabaseTreeClient "Protocollo TCP del server MAP: comandi 0, 1, 3.<br/>Ricostruisce l’albero tramite predizioni; nessun JDBC."

@@ -1,0 +1,24 @@
+---
+title: Package map7Client - client da console
+---
+%% Sorgente: project/mapClient/src/map7Client/MainTest.java
+classDiagram
+  direction TB
+  namespace map7Client {
+    class MainTest
+  }
+
+  class MainTest {
+    +main(in args: String[])$
+    -readInt() int$
+  }
+
+  class Keyboard["utility.Keyboard"]
+  class Socket
+  class ObjectInputStream
+  class ObjectOutputStream
+
+  MainTest ..> Keyboard
+  MainTest ..> Socket
+  MainTest ..> ObjectInputStream
+  MainTest ..> ObjectOutputStream
